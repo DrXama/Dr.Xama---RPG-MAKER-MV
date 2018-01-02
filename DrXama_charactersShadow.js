@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Adiciona sombras aos objetos.
+ * @plugindesc v1.02 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -46,6 +46,16 @@
     };
 
     //-----------------------------------------------------------------------------
+    // Game_Followers
+    //    
+    Game_Followers.prototype.isSomeoneCollidedEx = function (followerBack, x, y) {
+        return this.visibleFollowers().some(function (follower) {
+            if (followerBack != follower)
+                return follower.pos(x, y);
+        }, this);
+    };
+
+    //-----------------------------------------------------------------------------
     // Sprite_CharacterShadow
     //
 
@@ -75,6 +85,7 @@
         this.updateFollowers();
         this.updateEvents();
         this.updateMoving();
+        this.updateVehicles();
     };
 
     Sprite_CharacterShadow.prototype.setBitmap = function (bitmap) {
@@ -128,6 +139,28 @@
         if (this._character instanceof Game_Follower) {
             if (!this._character.isVisible()) {
                 this.hide();
+            } else {
+                if ($gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY)) {
+                    switch ($gamePlayer._followers.visibleFollowers().length) {
+                        case 2:
+                            this.opacity = 155;
+                            break;
+                        default:
+                            this.opacity = 125;
+                            break;
+                    }
+                } else {
+                    this.opacity = 255;
+                }
+                if (this._character.pos($gamePlayer._realX, $gamePlayer._realY)) {
+                    this.hide();
+                } else {
+                    if ($gamePlayer.isInVehicle()) {
+                        this.hide();
+                    } else {
+                        this.show();
+                    }
+                }
             }
         }
     };
@@ -182,6 +215,26 @@
                     if (this.scale.x > 1.0) this.scale.x -= 0.025;
                     else this._isMoving = false;
                 }
+            }
+        }
+    };
+
+    Sprite_CharacterShadow.prototype.updateVehicles = function () {
+        if (this._character instanceof Game_Vehicle) {
+            if (this._character._driving || this._character.isTransparent() || this._character.pos($gamePlayer._realX, $gamePlayer._realY) ||
+                $gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY)) {
+                if (this._character.isAirship()) {
+                    this.hide();
+                }
+            } else {
+                this.show();
+            }
+        }
+        if (this._character instanceof Game_Player) {
+            if (this._character.isInVehicle()) {
+                this.hide();
+            } else {
+                this.show();
             }
         }
     };

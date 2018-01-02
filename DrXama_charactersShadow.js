@@ -223,7 +223,7 @@
         if (this._character instanceof Game_Vehicle) {
             if (this._character._driving || this._character.isTransparent() || this._character.pos($gamePlayer._realX, $gamePlayer._realY) ||
                 $gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY)) {
-                if (this._character.isAirship()) {
+                if (this._character.isAirship() || this._character.isTransparent()) {
                     this.hide();
                 }
             } else {

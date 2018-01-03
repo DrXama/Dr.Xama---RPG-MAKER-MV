@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.02 - Adiciona sombras aos objetos.
+ * @plugindesc v1.03 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -76,11 +76,13 @@
         this.anchor.x = 0.5;
         this.anchor.y = 1;
         this._character = character;
+        this._characterHide = false;
     };
 
     Sprite_CharacterShadow.prototype.update = function () {
         Sprite_Base.prototype.update.call(this);
         this.updatePosition();
+        this.updateTransparent();
         this.updateJumping();
         this.updateFollowers();
         this.updateEvents();
@@ -118,6 +120,22 @@
         this.x = this.screenX();
         this.y = this.screenY();
         this.z = this.screenZ();
+    };
+
+    Sprite_CharacterShadow.prototype.updateTransparent = function () {
+        if (this._character instanceof Game_Character) {
+            if (this._character.isTransparent()) {
+                if (!this._characterHide) {
+                    this._characterHide = true;
+                    this.hide();
+                }
+            } else {
+                if (this._characterHide) {
+                    this._characterHide = false;
+                    this.show();
+                }
+            }
+        }
     };
 
     Sprite_CharacterShadow.prototype.updateJumping = function () {
@@ -158,7 +176,9 @@
                     if ($gamePlayer.isInVehicle()) {
                         this.hide();
                     } else {
-                        this.show();
+                        if (!this._characterHide) {
+                            this.show();
+                        }
                     }
                 }
             }
@@ -227,14 +247,18 @@
                     this.hide();
                 }
             } else {
-                this.show();
+                if (!this._characterHide) {
+                    this.show();
+                }
             }
         }
         if (this._character instanceof Game_Player) {
             if (this._character.isInVehicle()) {
                 this.hide();
             } else {
-                this.show();
+                if (!this._characterHide) {
+                    this.show();
+                }
             }
         }
     };

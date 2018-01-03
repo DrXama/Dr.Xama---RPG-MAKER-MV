@@ -2,12 +2,13 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.02 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.03 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
  * @param Atores
  * @type struct<Atores>[]
+ * @default []
  * @desc Lista dos atores para o plugin gerenciar
  * 
  * @help

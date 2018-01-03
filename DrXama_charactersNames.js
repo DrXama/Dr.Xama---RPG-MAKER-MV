@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.02 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -282,6 +282,7 @@
         this.updateAnimationScale();
         this.updateAnimationRotation();
         this.updateTransparent();
+        this.updateEvents();
     };
 
     Sprite_CharacterName.prototype.setBitmap = function () {
@@ -597,6 +598,14 @@
                 if (!this._bitmapTextHide) {
                     this.show();
                 }
+            }
+        }
+    };
+
+    Sprite_CharacterName.prototype.updateEvents = function () {
+        if (this._character instanceof Game_Event) {
+            if (this._character._erased) {
+                this.hide();
             }
         }
     };

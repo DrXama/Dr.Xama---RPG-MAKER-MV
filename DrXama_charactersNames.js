@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.01 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -512,7 +512,7 @@
     };
 
     Sprite_CharacterName.prototype.screenZ = function () {
-        return 9;
+        return 6;
     };
 
     Sprite_CharacterName.prototype.updatePosition = function () {

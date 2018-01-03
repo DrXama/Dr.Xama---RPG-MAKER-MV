@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.03 - Adiciona sombras aos objetos.
+ * @plugindesc v1.04 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -187,6 +187,9 @@
 
     Sprite_CharacterShadow.prototype.updateEvents = function () {
         if (this._character instanceof Game_Event) {
+            if (this._character._erased) {
+                return this.hide();
+            }
             if (this._eventHide) {
                 return this.hide();
             }

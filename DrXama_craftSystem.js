@@ -21,7 +21,7 @@
  *    Para os programadores
  * ================================================================================
  * Nome reservado da janela: Window_CraftSystem
- * Obter os items de craft: $gameSystem.craftSystem_items();
+ * Obter as receitas de craft: $gameSystem.craftSystem_recipes();
  * ================================================================================
  *    Texto de conclusão
  * ================================================================================
@@ -117,6 +117,12 @@
  * @type string
  * @default Receita do DrXama
  * 
+ * @param Descrição 
+ * @desc Qual a descrição da sua receita?
+ * - O sistema reconhece 2 linhas
+ * @type note
+ * @default "Receita para testar o sistema\nFeita por mim e pelo Dr.Xamã"
+ * 
  * @param Tipo de classe
  * @desc Quais as classes que podem preparar sua receita?
  * @type class[]
@@ -137,14 +143,14 @@
  * - 60(frames) = 1(segundo), 0(frames) = 0(instantâneo)
  * @type number
  * @min 0
- * @default 1
+ * @default 60
  * @max 999
  * 
  * @param Texto de conclusão
  * @desc Qual o texto que deve ser exibido quando o preparo acabar?
- * - ${Nome}: Retorna o nome da receita
+ * - ${nome}: Retorna o nome da receita
  * @type string
- * @default O preparo da receita ${Nome} está completo!
+ * @default O preparo da receita ${nome} está completa!
  * 
  * @param Animação de conclusão
  * @desc Qual a animação que deve ser exibida quando o preparo acabar?
@@ -300,26 +306,154 @@
  * @type armor
  * @default 0
  */
-(function () {
-    "use strict";
-    //-----------------------------------------------------------------------------
-    // Game_System
-    //
-    Game_System.prototype.craftSystem_items = function () {
-        return this._craftSystem_items || [];
-    };
+ (function () {
+	"use strict";
+//-----------------------------------------------------------------------------
+// Parameters
+//
+const params = PluginManager.parameters('DrXama_craftSystem');
+const craftSystem_items = JSON.parse(params['Lista de receitas']);
 
-    //-----------------------------------------------------------------------------
-    // Window_MenuCommand
-    //
-    const _Window_MenuCommand = Window_MenuCommand.prototype.addMainCommands;
-    Window_MenuCommand.prototype.addMainCommands = function () {
-        _Window_MenuCommand.call(this);
-        var enabled = this.craftSystemEnabled();
-        this.addCommand('Craft', 'craftSystem', enabled);
-    };
+//-----------------------------------------------------------------------------
+// Game_System
+//
+const gameSystem_initialize = Game_System.prototype.initialize;
+Game_System.prototype.initialize = function() {
+	gameSystem_initialize.call(this);
+	this._craftSystem_recipes = [];
+	this.craftSystem_addRecipes();
+};
 
-    Window_MenuCommand.prototype.craftSystemEnabled = function () {
-        return $gameSystem.craftSystem_items().length > 0;
-    };
+//-----------------------------------------------------------------------------
+// Game_System
+//
+Game_System.prototype.craftSystem_recipes = function () {
+	return this._craftSystem_recipes || [];
+};
+
+Game_System.prototype.craftSystem_addRecipes = function () {
+	if (craftSystem_items.length > 0) {
+		craftSystem_items.forEach(function(recipe) {
+			recipe = JSON.parse(recipe) || {};
+			let nome = String(recipe["Nome"]);
+			let descricao = JSON.parse(recipe["Descrição"]).split("\n", 2);
+			let classe = JSON.parse(recipe["Tipo de classe"]);
+			let obtem = JSON.parse(recipe["Obtem"]);
+			let ingredientes = JSON.parse(recipe["Lista de ingredientes"]);
+			let tempoDePreparo = Number(recipe["Tempo de preparo"]);
+			let textDeConclusao = (function(){
+				var string = String(recipe["Texto de conclusão"]);
+				if (string.includes('${nome}')) {
+					string = string.replace(/\${nome}/gi, `"${nome}"`);
+				}
+				return string;
+			})();
+			let animacaoDeConclusao = Number(recipe["Animação de conclusão"]);
+			let bloquearMovimento = (function() {
+				var value = String(recipe["Bloquear movimento"]);
+				switch(value) {
+					case "Sim":
+						value = true;
+					break;
+					case "Não":
+						value = false;
+					break;
+					default:
+						value = false;
+					break;
+				}
+				return value;
+			})();
+			let ocultarJanela = eval(String(recipe["Ocultar janela"]));
+			let tocarMusica = String(recipe["Tocar musica"]);
+			let switchDeConclusao = Number(recipe["Switch de conclusão"]);
+			let switchLocalDeConclusao = eval(String(recipe["Switch local de conclusão"]));
+			let eventoDoSwitchLocalDeConclusao = Number(recipe["Evento do switch local de conclusão"]);
+			let valorDoSwitchLocalDeConclusao = String(recipe["Valor do switch local de conclusão"]);
+			let variavelDeConclusao = eval(String(recipe["Variável de conclusão"]));
+			let valorDaVariavelDeConclusao = Number(recipe["Valor da variável de conclusão"]);
+			let newRecipe = {
+				"nome": nome,
+				"descricao": descricao,
+				"classe": classe,
+				"obtem": obtem,
+				"ingredientes": ingredientes,
+				"tempoDePreparo": tempoDePreparo,
+				"textDeConclusao": textDeConclusao,
+				"animacaoDeConclusao": animacaoDeConclusao,
+				"bloquearMovimento": bloquearMovimento,
+				"ocultarJanela": ocultarJanela,
+				"tocarMusica": tocarMusica,
+				"opcoesAvancadas": {
+					"switchDeConclusao": switchDeConclusao,
+					"switchLocalDeConclusao": switchLocalDeConclusao,
+					"eventoDoSwitchLocalDeConclusao": eventoDoSwitchLocalDeConclusao,
+					"valorDoSwitchLocalDeConclusao": valorDoSwitchLocalDeConclusao,
+					"variavelDeConclusao": variavelDeConclusao,
+					"valorDaVariavelDeConclusao": valorDaVariavelDeConclusao
+				}
+			}
+			this._craftSystem_recipes.push(newRecipe);
+		}, this);
+	}
+};
+
+//-----------------------------------------------------------------------------
+// Window_MenuCommand
+//
+const _Window_MenuCommand = Window_MenuCommand.prototype.addMainCommands;
+Window_MenuCommand.prototype.addMainCommands = function () {
+	_Window_MenuCommand.call(this);
+	var enabled = this.craftSystemEnabled();
+	this.addCommand('Craft', 'craftSystem', enabled);
+};
+
+Window_MenuCommand.prototype.craftSystemEnabled = function () {
+	return $gameSystem.craftSystem_recipes().length > 0;
+};
+
+//-----------------------------------------------------------------------------
+// Scene_Menu
+//
+const sceneMenu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
+Scene_Menu.prototype.createCommandWindow = function() {
+	sceneMenu_createCommandWindow.call(this);
+    this._commandWindow.setHandler('craftSystem', this.commandCraftSystem.bind(this));
+};
+Scene_Menu.prototype.commandCraftSystem = function() {
+    SceneManager.push(Scene_CraftSystem);
+};
+
+//-----------------------------------------------------------------------------
+// Scene_CraftSystem
+//
+function Scene_CraftSystem() {
+    this.initialize.apply(this, arguments);
+}
+
+Scene_CraftSystem.prototype = Object.create(Scene_Base.prototype);
+Scene_CraftSystem.prototype.constructor = Scene_CraftSystem;
+
+Scene_CraftSystem.prototype.initialize = function() {
+    Scene_Base.prototype.initialize.call(this);
+};
+
+Scene_CraftSystem.prototype.create = function() {
+    Scene_Base.prototype.create.call(this);
+    this.createBackground();
+    this.createWindowLayer();
+    this.createHelpWindow();
+};
+
+Scene_CraftSystem.prototype.createBackground = function() {
+    this._backgroundSprite = new Sprite();
+    this._backgroundSprite.bitmap = SceneManager.backgroundBitmap();
+    this.addChild(this._backgroundSprite);
+};
+
+Scene_CraftSystem.prototype.createHelpWindow = function() {
+    this._helpWindow = new Window_Help();
+    this.addWindow(this._helpWindow);
+};
+
 })();

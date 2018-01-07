@@ -31,6 +31,16 @@
  * receita, caso você deixe algum item na lista com o Id 0(None) o sistema assume
  * o valor 1
  * ================================================================================
+ *    Lista de ingredientes
+ * ================================================================================
+ * Sua receita pode ter ingredientes ou não, você escolhe.
+ * Deixe a lista vazia para o jogador preparar a receita sem ingredientes.
+ * ================================================================================
+ *    Obtem
+ * ================================================================================
+ * Sua receita pode gerar alguma coisa ou não, você escolhe.
+ * Deixe a lista vazia para não receber nada por preparar a receita.
+ * ================================================================================
  *    Valor da variável de conclusão
  * ================================================================================
  * Formato válido de valores:
@@ -1335,36 +1345,40 @@
 
     Window_RecipeInformation.prototype.recipeIsValidToCraft = function() {
         var ingredientes = this.recipe()["ingredientes"].length;
-        this.recipe()["ingredientes"].forEach(function(ingrediente) {
-            var ingredienteParse = JSON.parse(ingrediente);
-            switch (ingredienteParse["Tipo de ingrediente"]) {
-                case 'Item':
-                    var itemId = Number(ingredienteParse["ID de Item"]) || 1;
-                    var item = $dataItems[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    if ($gameParty.numItems(item) >= itemQuant) {
-                        ingredientes--;
-                    }
-                    break;
-                case 'Arma':
-                    var itemId = Number(ingredienteParse["ID de Arma"]) || 1;
-                    var item = $dataWeapons[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    if ($gameParty.numItems(item) >= itemQuant) {
-                        ingredientes--;
-                    }
-                    break;
-                case 'Armadura':
-                    var itemId = Number(ingredienteParse["ID de Armadura"]) || 1;
-                    var item = $dataArmors[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    if ($gameParty.numItems(item) >= itemQuant) {
-                        ingredientes--;
-                    }
-                    break;
-            }
-        }, this);
-        return ingredientes <= 0;
+        if (ingredientes > 0) {
+            this.recipe()["ingredientes"].forEach(function(ingrediente) {
+                var ingredienteParse = JSON.parse(ingrediente);
+                switch (ingredienteParse["Tipo de ingrediente"]) {
+                    case 'Item':
+                        var itemId = Number(ingredienteParse["ID de Item"]) || 1;
+                        var item = $dataItems[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        if ($gameParty.numItems(item) >= itemQuant) {
+                            ingredientes--;
+                        }
+                        break;
+                    case 'Arma':
+                        var itemId = Number(ingredienteParse["ID de Arma"]) || 1;
+                        var item = $dataWeapons[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        if ($gameParty.numItems(item) >= itemQuant) {
+                            ingredientes--;
+                        }
+                        break;
+                    case 'Armadura':
+                        var itemId = Number(ingredienteParse["ID de Armadura"]) || 1;
+                        var item = $dataArmors[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        if ($gameParty.numItems(item) >= itemQuant) {
+                            ingredientes--;
+                        }
+                        break;
+                }
+            }, this);
+        } else {
+            ingredientes = 1;
+        }
+        return ingredientes > 0;
     };
 
     Window_RecipeInformation.prototype.refresh = function() {
@@ -1390,132 +1404,150 @@
 
     Window_RecipeInformation.prototype.drawIngredientes = function() {
         this._ingredienteslineY = 0;
-        this.recipe()["ingredientes"].forEach(function(ingrediente, index) {
-            var ingredienteParse = JSON.parse(ingrediente);
-            switch (ingredienteParse["Tipo de ingrediente"]) {
-                case 'Item':
-                    var itemId = Number(ingredienteParse["ID de Item"]) || 1;
-                    var item = $dataItems[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._ingredienteslineY += 40;
-                    this.drawItemName(item, x, this._ingredienteslineY, width);
-                    this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
-                    this.drawHorzLine(this._ingredienteslineY + 20);
-                    this._ItemsRetirados.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Item"
-                    });
-                    break;
-                case 'Arma':
-                    var itemId = Number(ingredienteParse["ID de Arma"]) || 1;
-                    var item = $dataWeapons[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._ingredienteslineY += 40;
-                    this.drawItemName(item, x, this._ingredienteslineY, width);
-                    this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
-                    this.drawHorzLine(this._ingredienteslineY + 20);
-                    this._ItemsRetirados.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Arma"
-                    });
-                    break;
-                case 'Armadura':
-                    var itemId = Number(ingredienteParse["ID de Armadura"]) || 1;
-                    var item = $dataArmors[itemId];
-                    var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._ingredienteslineY += 40;
-                    this.drawItemName(item, x, this._ingredienteslineY, width);
-                    this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
-                    this.drawHorzLine(this._ingredienteslineY + 20);
-                    this._ItemsRetirados.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Armadura"
-                    });
-                    break;
-            }
-        }, this);
+        if (this.recipe()["ingredientes"].length > 0) {
+            this.recipe()["ingredientes"].forEach(function(ingrediente, index) {
+                var ingredienteParse = JSON.parse(ingrediente);
+                switch (ingredienteParse["Tipo de ingrediente"]) {
+                    case 'Item':
+                        var itemId = Number(ingredienteParse["ID de Item"]) || 1;
+                        var item = $dataItems[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._ingredienteslineY += 40;
+                        this.drawItemName(item, x, this._ingredienteslineY, width);
+                        this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
+                        this.drawHorzLine(this._ingredienteslineY + 20);
+                        this._ItemsRetirados.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Item"
+                        });
+                        break;
+                    case 'Arma':
+                        var itemId = Number(ingredienteParse["ID de Arma"]) || 1;
+                        var item = $dataWeapons[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._ingredienteslineY += 40;
+                        this.drawItemName(item, x, this._ingredienteslineY, width);
+                        this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
+                        this.drawHorzLine(this._ingredienteslineY + 20);
+                        this._ItemsRetirados.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Arma"
+                        });
+                        break;
+                    case 'Armadura':
+                        var itemId = Number(ingredienteParse["ID de Armadura"]) || 1;
+                        var item = $dataArmors[itemId];
+                        var itemQuant = Number(ingredienteParse["Quantia do ingrediente"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._ingredienteslineY += 40;
+                        this.drawItemName(item, x, this._ingredienteslineY, width);
+                        this.drawItemNumber(item, itemQuant, 140, this._ingredienteslineY, 192);
+                        this.drawHorzLine(this._ingredienteslineY + 20);
+                        this._ItemsRetirados.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Armadura"
+                        });
+                        break;
+                }
+            }, this);
+        } else {
+            var x = this.textPadding();
+            var y = 35;
+            var width = this.textWidth("Nenhum ingrediente");
+            this.drawText("Nenhum ingrediente", x, y, width, 'left');
+            this.drawHorzLine(y + 20);
+            this._ingredienteslineY = y;
+        }
     };
 
     Window_RecipeInformation.prototype.drawItemsObtidos = function() {
         this._itemObtidoslineY = this._ingredienteslineY + 40;
-        this.recipe()["obtem"].forEach(function(itemObtido, index) {
-            var itemObtidoParse = JSON.parse(itemObtido);
-            switch (itemObtidoParse["Retorno"]) {
-                case 'Item':
-                    var itemId = Number(itemObtidoParse["ID de Item"]) || 1;
-                    var item = $dataItems[itemId];
-                    var itemQuant = Number(itemObtidoParse["Quantia"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._itemObtidoslineY += 40;
-                    this.drawItemName(item, x, this._itemObtidoslineY, width);
-                    this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
-                    this.drawHorzLine(this._itemObtidoslineY + 20);
-                    this._ItemsObtidos.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Item"
-                    });
-                    break;
-                case 'Arma':
-                    var itemId = Number(itemObtidoParse["ID de Arma"]) || 1;
-                    var item = $dataWeapons[itemId];
-                    var itemQuant = Number(itemObtidoParse["Quantia"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._itemObtidoslineY += 40;
-                    this.drawItemName(item, x, this._itemObtidoslineY, width);
-                    this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
-                    this.drawHorzLine(this._itemObtidoslineY + 20);
-                    this._ItemsObtidos.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Arma"
-                    });
-                    break;
-                case 'Armadura':
-                    var itemId = Number(itemObtidoParse["ID de Armadura"]) || 1;
-                    var item = $dataArmors[itemId];
-                    var itemQuant = Number(itemObtidoParse["Quantia"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._itemObtidoslineY += 40;
-                    this.drawItemName(item, x, this._itemObtidoslineY, width);
-                    this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
-                    this.drawHorzLine(this._itemObtidoslineY + 20);
-                    this._ItemsObtidos.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Armadura"
-                    });
-                    break;
-                case 'Habilidade':
-                    var itemId = Number(itemObtidoParse["ID de Habilidade"]) || 1;
-                    var item = $dataSkills[itemId];
-                    var itemQuant = Number(itemObtidoParse["Quantia"]);
-                    var x = this.textPadding();
-                    var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
-                    this._itemObtidoslineY += 40;
-                    this.drawItemName(item, x, this._itemObtidoslineY, width);
-                    this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
-                    this.drawHorzLine(this._itemObtidoslineY + 20);
-                    this._ItemsObtidos.push({
-                        "item": item,
-                        "amount": itemQuant,
-                        "type": "Habilidade"
-                    });
-                    break;
-            }
-        }, this);
+        if (this.recipe()["obtem"].length > 0) {
+            this.recipe()["obtem"].forEach(function(itemObtido, index) {
+                var itemObtidoParse = JSON.parse(itemObtido);
+                switch (itemObtidoParse["Retorno"]) {
+                    case 'Item':
+                        var itemId = Number(itemObtidoParse["ID de Item"]) || 1;
+                        var item = $dataItems[itemId];
+                        var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._itemObtidoslineY += 40;
+                        this.drawItemName(item, x, this._itemObtidoslineY, width);
+                        this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
+                        this.drawHorzLine(this._itemObtidoslineY + 20);
+                        this._ItemsObtidos.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Item"
+                        });
+                        break;
+                    case 'Arma':
+                        var itemId = Number(itemObtidoParse["ID de Arma"]) || 1;
+                        var item = $dataWeapons[itemId];
+                        var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._itemObtidoslineY += 40;
+                        this.drawItemName(item, x, this._itemObtidoslineY, width);
+                        this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
+                        this.drawHorzLine(this._itemObtidoslineY + 20);
+                        this._ItemsObtidos.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Arma"
+                        });
+                        break;
+                    case 'Armadura':
+                        var itemId = Number(itemObtidoParse["ID de Armadura"]) || 1;
+                        var item = $dataArmors[itemId];
+                        var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._itemObtidoslineY += 40;
+                        this.drawItemName(item, x, this._itemObtidoslineY, width);
+                        this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
+                        this.drawHorzLine(this._itemObtidoslineY + 20);
+                        this._ItemsObtidos.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Armadura"
+                        });
+                        break;
+                    case 'Habilidade':
+                        var itemId = Number(itemObtidoParse["ID de Habilidade"]) || 1;
+                        var item = $dataSkills[itemId];
+                        var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        var x = this.textPadding();
+                        var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
+                        this._itemObtidoslineY += 40;
+                        this.drawItemName(item, x, this._itemObtidoslineY, width);
+                        this.drawText(`${itemQuant}`, 360, this._itemObtidoslineY, width, 'left');
+                        this.drawHorzLine(this._itemObtidoslineY + 20);
+                        this._ItemsObtidos.push({
+                            "item": item,
+                            "amount": itemQuant,
+                            "type": "Habilidade"
+                        });
+                        break;
+                }
+            }, this);
+        } else {
+            var x = this.textPadding();
+            var y = this._ingredienteslineY + 80;
+            var width = this.textWidth("Nenhum ingrediente");
+            this.drawText("Nada obtido", x, y, width, 'left');
+            this.drawHorzLine(y + 20);
+            this._itemObtidoslineY = y;
+        }
     };
 
     Window_RecipeInformation.prototype.drawItemNumber = function(item, itemQuant, x, y, width) {

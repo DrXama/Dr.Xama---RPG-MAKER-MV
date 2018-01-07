@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.03 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.04 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -605,7 +605,7 @@
 
     Sprite_CharacterName.prototype.updateEvents = function () {
         if (this._character instanceof Game_Event) {
-            if (this._character._erased) {
+            if (this._character._erased || this._character._pageIndex == -1) {
                 this.hide();
             }
         }

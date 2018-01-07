@@ -1,0 +1,20 @@
+{
+    "Arquivos": [
+        {
+            "nome": "texto",
+            "tipo": "txt",
+            "pasta": "fonts/texts",
+            "link": "https://goo.gl/xZBdyy"
+        }
+    ],
+    "Remover": [
+    ],
+    "Status": {
+        "versão": "1.00",
+        "descrição": "Primeira atualização de 2018",
+        "mudanças": [
+            "Adição de um arquivo de texto",
+            "Criação do sistema de atualizações"
+        ]
+    }
+}

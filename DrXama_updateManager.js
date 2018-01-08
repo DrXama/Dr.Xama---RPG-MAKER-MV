@@ -132,6 +132,29 @@
         return path;
     };
 
+    // Cria o caminho local
+    function localPathCreate(p) {
+        var fs = require('fs');
+        var i = 0;
+        var length = p.length;
+        var paths = [];
+        var pathString = '';
+        for (; i < length; i++) {
+            let letter = String(p[i]);
+            if (letter != '/') {
+                pathString += letter;
+            }
+            if (letter == '/' || i == length - 1) {
+                paths.push(pathString);
+                var pathsJoin = paths.join("/");
+                if (!fs.existsSync(localPath(pathsJoin))) {
+                    fs.mkdirSync(localPath(pathsJoin));
+                }
+                pathString = '';
+            }
+        }
+    };
+
     // Deleta varias pastas/arquivos dentro de uma pasta e por fim a pasta
     function localPathRemoveEx(path) {
         if (!localPathExists(path)) return;
@@ -257,6 +280,78 @@
         }
     };
 
+    // Baixa os arquivos da atualização
+    function downloadUpdateFiles() {
+        var fs = require('fs');
+        var folderDest = localPath('system/updates');
+        var fileDest = `${folderDest}\\${updateFileName}.json`;
+        var http = null;
+        if (fs.existsSync(fileDest)) {
+            var fileUpdate = (function () {
+                var data = fs.readFileSync(fileDest, { encoding: 'utf8' });
+                var dataParse = JSON.parse(data) || {};
+                return dataParse;
+            })();
+            if (fileUpdate["Arquivos"] && fileUpdate["Arquivos"] instanceof Array === true) {
+                if (fileUpdate["Arquivos"].length > 0) {
+                    fileUpdate["Arquivos"].forEach(function (file) {
+                        var pathFolder = file["pasta"];
+                        var pathFile = `${file["nome"]}.${file["tipo"]}`;
+                        var pathFileDest = localPath(pathFolder + '\\' + pathFile);
+                        if (!localPathExists(pathFolder)) {
+                            localPathCreate(pathFolder);
+                        }
+                        var fileUrl = file["link"];
+                        if (fileUrl.substring(0, 5).match(/https/)) {
+                            http = require('https');
+                        } else {
+                            http = require('http');
+                        }
+                        if (!fs.existsSync(pathFileDest)) {
+                            fs.writeFileSync(pathFileDest, '');
+                        }
+                        var file = fs.createWriteStream(pathFileDest);
+                        var request = http.get(fileUrl, function (response) {
+                            response.pipe(file);
+                            file.on('finish', function () {
+                                file.close();
+                                console.log('teste');
+                            });
+                        }).on('error', function (err) {
+                            fs.unlink(pathFileDest);
+                        });
+                    });
+                }
+            }
+        }
+        // var http = null;
+        // var fileUrl = updateFileURL;
+        // var folderDest = localPath('system/updates');
+        // var fileDest = `${folderDest}\\${updateFileName}.json`;
+        // var callback = SceneManager._scene.processUpdates;
+        // var callbackThis = SceneManager._scene;
+        // if (fileUrl.substring(0, 5).match(/https/)) {
+        //     http = require('https');
+        // } else {
+        //     http = require('http');
+        // }
+        // if (fs.existsSync(folderDest)) {
+        //     if (!fs.existsSync(fileDest)) {
+        //         fs.writeFileSync(fileDest, '', { encoding: 'utf8' });
+        //     }
+        //     var file = fs.createWriteStream(fileDest);
+        //     var request = http.get(fileUrl, function (response) {
+        //         response.pipe(file);
+        //         file.on('finish', function () {
+        //             file.close();
+        //             callback.call(callbackThis);
+        //         });
+        //     }).on('error', function (err) {
+        //         fs.unlink(fileDest);
+        //     });
+        // }
+    };
+
     //-----------------------------------------------------------------------------
     // Scene_Boot
     //
@@ -311,6 +406,7 @@
 
     Scene_Boot.prototype.processUpdates = function () {
         deleteUpdateFiles();
+        downloadUpdateFiles();
     };
 
     Scene_Boot.prototype.updateComplete = function () {

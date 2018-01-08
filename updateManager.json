@@ -8,6 +8,11 @@
         }
     ],
     "Remover": [
+        {
+            "nome": "Texto",
+            "tipo": "txt",
+            "pasta": "system/updates"
+        }
     ],
     "Status": {
         "versão": "1.00",

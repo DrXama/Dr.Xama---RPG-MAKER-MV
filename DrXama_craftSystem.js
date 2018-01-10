@@ -2,7 +2,7 @@
 // DrXama_craftSystem.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Sistema de craft do Dr.Xamã
+ * @plugindesc v1.01 - Sistema de craft do Dr.Xamã
  *
  * @author Dr.Xamã
  * 
@@ -801,7 +801,7 @@
                 let switchLocalDeConclusao = eval(String(recipe["Switch local de conclusão"]));
                 let eventoDoSwitchLocalDeConclusao = Number(recipe["Evento do switch local de conclusão"]);
                 let letraDoSwitchLocalDeConclusao = String(recipe["Letra do switch local de conclusão"]);
-                let valorDoSwitchLocalDeConclusao = eval(String(recipe["Valor do switch local de conclusão"]));
+                let valorDoSwitchLocalDeConclusao = String(recipe["Valor do switch local de conclusão"]);
                 let variavelDeConclusao = eval(String(recipe["Variável de conclusão"]));
                 let valorDaVariavelDeConclusao = Number(recipe["Valor da variável de conclusão"]);
                 let newRecipe = {

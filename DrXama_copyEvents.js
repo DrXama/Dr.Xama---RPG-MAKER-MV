@@ -2,7 +2,7 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.05 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
  * 
@@ -15,8 +15,26 @@
  *    Comandos de plugin
  * ================================================================================
  * copyEvent mapId eventId tileX tileY - Copia o evento no mapa atual
+ * copyEventFrontPlayer mapId eventId - Copia o evento para a frente do jogador
+ * copyEventBackPlayer mapId eventId - Copia o evento para trás do jogador
+ * copyEventLeftPlayer mapId eventId - Copia o evento para a esquerda do jogador
+ * copyEventRightPlayer mapId eventId - Copia o evento para a direita do jogador
  * 
- * Exemplo: copyEvent 1 1 10 4
+ * Exemplo: copyEvent 1 1 10 4 - Copia o evento 1 do mapa 1 para a posição x e y
+ * Exemplo: copyEventFrontPlayer 1 1 - Copia o evento 1 do mapa 1 para trás do 
+ *                                     jogador
+ * ================================================================================
+ *    Comandos de script
+ * ================================================================================
+ * $gameMap.copyEvent(mapId, eventId, mapX, mapY) - Copia o evento no mapa atual
+ * $gameMap.copyEventFrontPlayer(mapId, eventId) - Copia o evento 1 do mapa 1 para 
+ *                                                 trás do jogador
+ * $gameMap.copyEventBackPlayer(mapId, eventId) - Copia o evento para trás do 
+ *                                                jogador
+ * $gameMap.copyEventLeftPlayer(mapId, eventId) - Copia o evento para a esquerda do 
+ *                                                jogador
+ * $gameMap.copyEventRightPlayer(mapId, eventId) - Copia o evento para a direita do 
+ *                                                 jogador
  * ================================================================================
  *    Atualização
  * ================================================================================
@@ -50,6 +68,7 @@
                 // Cria o evento no mapa
                 var eventMap = new Game_Event($gameMap._mapId, eventIndexOf);
                 $gameMap._events.push(eventMap);
+                $gameMap._eventsCopy.push(event);
                 SceneManager._scene._spriteset.drXama_copyEvent(eventMap);
             }
             try {
@@ -58,6 +77,133 @@
                 console.warn(`Impossivel copiar o evento(${eventId}) do mapa(${mapId})`);
             }
         }
+        if (typeof command === 'string' && command.toLowerCase() === 'copyeventfrontplayer') {
+            var mapId = parseInt(args[0]) || 0;
+            var eventId = parseInt(args[1]) || 0;
+            $gameMap.copyEventFrontPlayer(mapId, eventId);
+        }
+        if (typeof command === 'string' && command.toLowerCase() === 'copyeventbackplayer') {
+            var mapId = parseInt(args[0]) || 0;
+            var eventId = parseInt(args[1]) || 0;
+            $gameMap.copyEventBackPlayer(mapId, eventId);
+        }
+        if (typeof command === 'string' && command.toLowerCase() === 'copyeventleftplayer') {
+            var mapId = parseInt(args[0]) || 0;
+            var eventId = parseInt(args[1]) || 0;
+            $gameMap.copyEventLeftPlayer(mapId, eventId);
+        }
+        if (typeof command === 'string' && command.toLowerCase() === 'copyeventrightplayer') {
+            var mapId = parseInt(args[0]) || 0;
+            var eventId = parseInt(args[1]) || 0;
+            $gameMap.copyEventRightPlayer(mapId, eventId);
+        }
+    };
+    //================================================================================
+    // Game_Map
+    //================================================================================
+    // Copia o evento para a posição x e y
+    Game_Map.prototype.copyEvent = function (mapId, eventId, mapX, mapY) {
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    };
+
+    // Copia o evento para a frente do jogador
+    Game_Map.prototype.copyEventFrontPlayer = function (mapId, eventId) {
+        var mapX,
+            mapY;
+        switch ($gamePlayer.direction()) {
+            case 2:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y + 1;
+                break;
+            case 8:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y - 1;
+                break;
+            case 4:
+                mapX = $gamePlayer._x - 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 6:
+                mapX = $gamePlayer._x + 1;
+                mapY = $gamePlayer._y;
+                break;
+        }
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    };
+
+    // Copia o evento para trás do jogador
+    Game_Map.prototype.copyEventBackPlayer = function (mapId, eventId) {
+        var mapX,
+            mapY;
+        switch ($gamePlayer.direction()) {
+            case 2:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y - 1;
+                break;
+            case 8:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y + 1;
+                break;
+            case 4:
+                mapX = $gamePlayer._x + 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 6:
+                mapX = $gamePlayer._x - 1;
+                mapY = $gamePlayer._y;
+                break;
+        }
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    };
+
+    // Copia o evento para a esquerda do jogador
+    Game_Map.prototype.copyEventLeftPlayer = function (mapId, eventId) {
+        var mapX,
+            mapY;
+        switch ($gamePlayer.direction()) {
+            case 2:
+                mapX = $gamePlayer._x - 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 8:
+                mapX = $gamePlayer._x - 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 4:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y + 1;
+                break;
+            case 6:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y - 1;
+                break;
+        }
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    };
+
+    // Copia o evento para a direita do jogador
+    Game_Map.prototype.copyEventRightPlayer = function (mapId, eventId) {
+        var mapX,
+            mapY;
+        switch ($gamePlayer.direction()) {
+            case 2:
+                mapX = $gamePlayer._x + 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 8:
+                mapX = $gamePlayer._x + 1;
+                mapY = $gamePlayer._y;
+                break;
+            case 4:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y - 1;
+                break;
+            case 6:
+                mapX = $gamePlayer._x;
+                mapY = $gamePlayer._y + 1;
+                break;
+        }
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
     };
 
     //================================================================================
@@ -81,6 +227,21 @@
         };
         data = null;
         xhr.send();
+    };
+
+    //================================================================================
+    // Scene_Map
+    //================================================================================    
+    const scene_map_createDisplayObjects = Scene_Map.prototype.createDisplayObjects;
+    Scene_Map.prototype.createDisplayObjects = function () {
+        scene_map_createDisplayObjects.call(this);
+        // Carrega os eventos copiados para a data do mapa
+        if (!$gameMap._eventsCopy) $gameMap._eventsCopy = [];
+        if ($gameMap._eventsCopy.length > 0) {
+            $gameMap._eventsCopy.forEach(function (event) {
+                $dataMap.events.push(event);
+            });
+        }
     };
 
     //================================================================================

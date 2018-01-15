@@ -258,10 +258,15 @@
         var sceneSpriteset = SceneManager._scene._spriteset;
         if (sceneSpriteset._eventsNamesLength != $gameMap.events().length) {
             sceneSpriteset._eventsNamesLength = $gameMap.events().length;
-            var index = sceneSpriteset._charactersNames.length;
-            var event = $gameMap.events()[$gameMap.events().length - 1];
-            sceneSpriteset._charactersNames.push(new Sprite_CharacterName(event));
-            for (var i = index; i < sceneSpriteset._charactersNames.length; i++) {
+            for (var i = 0; i < sceneSpriteset._charactersNames.length; i++) {
+                sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
+            }
+            sceneSpriteset._charactersNames = [];
+            $gameMap.events().forEach(function (event) {
+                if (event) this._charactersNames.push(new Sprite_CharacterName(event));
+            }, sceneSpriteset);
+            for (var i = 0; i < sceneSpriteset._charactersNames.length; i++) {
+                sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
                 sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersNames[i]);
             }
         }

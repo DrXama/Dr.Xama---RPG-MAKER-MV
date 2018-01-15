@@ -55,10 +55,14 @@
         var sceneSpriteset = SceneManager._scene._spriteset;
         if (sceneSpriteset._eventsShadowsLength != $gameMap.events().length) {
             sceneSpriteset._eventsShadowsLength = $gameMap.events().length;
-            var index = sceneSpriteset._charactersShadows.length;
-            var event = $gameMap.events()[$gameMap.events().length - 1];
-            sceneSpriteset._charactersShadows.push(new Sprite_CharacterShadow(event));
-            for (var i = index; i < sceneSpriteset._charactersShadows.length; i++) {
+            for (var i = 0; i < sceneSpriteset._charactersShadows.length; i++) {
+                sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersShadows[i]);
+            }
+            sceneSpriteset._charactersShadows = [];
+            $gameMap.events().forEach(function (event) {
+                if (event) this._charactersShadows.push(new Sprite_CharacterShadow(event));
+            }, sceneSpriteset);
+            for (var i = 0; i < sceneSpriteset._charactersShadows.length; i++) {
                 sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersShadows[i]);
             }
         }

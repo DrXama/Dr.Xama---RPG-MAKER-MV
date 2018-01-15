@@ -239,6 +239,7 @@
             }
             return value;
         })();
+        if (regionXy.length <= 0) return;
         var regionEventXy = [];
         var regionEventXyIsValid = function (x, y) {
             var valid = true;

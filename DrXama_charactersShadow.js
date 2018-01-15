@@ -53,18 +53,13 @@
     Game_Map.prototype.update = function (sceneActive) {
         game_map_update.apply(this, arguments);
         var sceneSpriteset = SceneManager._scene._spriteset;
-        if (sceneSpriteset._eventsShadowsLength != $gameMap.events().length) {
-            sceneSpriteset._eventsShadowsLength = $gameMap.events().length;
+        var currentValue = $gameMap.events().length;
+        if (sceneSpriteset._eventsShadowsLength != currentValue) {
+            sceneSpriteset._eventsShadowsLength = currentValue;
             for (var i = 0; i < sceneSpriteset._charactersShadows.length; i++) {
                 sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersShadows[i]);
             }
-            sceneSpriteset._charactersShadows = [];
-            $gameMap.events().forEach(function (event) {
-                if (event) this._charactersShadows.push(new Sprite_CharacterShadow(event));
-            }, sceneSpriteset);
-            for (var i = 0; i < sceneSpriteset._charactersShadows.length; i++) {
-                sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersShadows[i]);
-            }
+            sceneSpriteset.createCharacters();
         }
     };
 

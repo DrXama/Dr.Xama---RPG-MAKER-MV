@@ -238,7 +238,9 @@
         this._charactersNames = [];
         this._eventsNamesLength = $gameMap.events().length;
         $gameMap.events().forEach(function (event) {
-            if (event) this._charactersNames.push(new Sprite_CharacterName(event));
+            if (event) {
+                this._charactersNames.push(new Sprite_CharacterName(event));
+            }
         }, this);
         $gamePlayer.followers().reverseEach(function (follower) {
             this._charactersNames.push(new Sprite_CharacterName(follower));
@@ -256,19 +258,13 @@
     Game_Map.prototype.update = function (sceneActive) {
         game_map_update.apply(this, arguments);
         var sceneSpriteset = SceneManager._scene._spriteset;
-        if (sceneSpriteset._eventsNamesLength != $gameMap.events().length) {
-            sceneSpriteset._eventsNamesLength = $gameMap.events().length;
+        var currentValue = $gameMap.events().length;
+        if (sceneSpriteset._eventsNamesLength != currentValue) {
+            sceneSpriteset._eventsNamesLength = currentValue;
             for (var i = 0; i < sceneSpriteset._charactersNames.length; i++) {
                 sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
             }
-            sceneSpriteset._charactersNames = [];
-            $gameMap.events().forEach(function (event) {
-                if (event) this._charactersNames.push(new Sprite_CharacterName(event));
-            }, sceneSpriteset);
-            for (var i = 0; i < sceneSpriteset._charactersNames.length; i++) {
-                sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
-                sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersNames[i]);
-            }
+            sceneSpriteset.createCharacters();
         }
     };
 

@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.04 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.06 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -237,7 +237,7 @@
         spriteset_map_createCharacters.call(this);
         this._charactersNames = [];
         $gameMap.events().forEach(function (event) {
-            this._charactersNames.push(new Sprite_CharacterName(event));
+            if (event) this._charactersNames.push(new Sprite_CharacterName(event));
         }, this);
         $gamePlayer.followers().reverseEach(function (follower) {
             this._charactersNames.push(new Sprite_CharacterName(follower));

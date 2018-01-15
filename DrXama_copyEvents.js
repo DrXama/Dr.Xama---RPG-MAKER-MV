@@ -2,7 +2,7 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.06 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.07 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
  * 
@@ -298,7 +298,6 @@
     //================================================================================    
     const scene_map_createDisplayObjects = Scene_Map.prototype.createDisplayObjects;
     Scene_Map.prototype.createDisplayObjects = function () {
-        scene_map_createDisplayObjects.call(this);
         // Carrega os eventos copiados para a data do mapa
         if (!$gameMap._eventsCopy) $gameMap._eventsCopy = [];
         if ($gameMap._eventsCopy.length > 0) {
@@ -306,6 +305,7 @@
                 $dataMap.events.push(event);
             });
         }
+        scene_map_createDisplayObjects.call(this);
     };
 
     //================================================================================

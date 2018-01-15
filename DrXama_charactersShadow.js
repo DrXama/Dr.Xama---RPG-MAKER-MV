@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.06 - Adiciona sombras aos objetos.
+ * @plugindesc v1.07 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -30,6 +30,7 @@
     Spriteset_Map.prototype.createCharacters = function () {
         spriteset_map_createCharacters.call(this);
         this._charactersShadows = [];
+        this._eventsShadowsLength = $gameMap.events().length;
         $gameMap.events().forEach(function (event) {
             if (event) this._charactersShadows.push(new Sprite_CharacterShadow(event));
         }, this);
@@ -42,6 +43,24 @@
         this._charactersShadows.push(new Sprite_CharacterShadow($gamePlayer));
         for (var i = 0; i < this._charactersShadows.length; i++) {
             this._tilemap.addChild(this._charactersShadows[i]);
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Map
+    //
+    const game_map_update = Game_Map.prototype.update;
+    Game_Map.prototype.update = function (sceneActive) {
+        game_map_update.apply(this, arguments);
+        var sceneSpriteset = SceneManager._scene._spriteset;
+        if (sceneSpriteset._eventsShadowsLength != $gameMap.events().length) {
+            sceneSpriteset._eventsShadowsLength = $gameMap.events().length;
+            var index = sceneSpriteset._charactersShadows.length;
+            var event = $gameMap.events()[$gameMap.events().length - 1];
+            sceneSpriteset._charactersShadows.push(new Sprite_CharacterShadow(event));
+            for (var i = index; i < sceneSpriteset._charactersShadows.length; i++) {
+                sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersShadows[i]);
+            }
         }
     };
 

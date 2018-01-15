@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.06 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.07 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -236,6 +236,7 @@
     Spriteset_Map.prototype.createCharacters = function () {
         spriteset_map_createCharacters.call(this);
         this._charactersNames = [];
+        this._eventsNamesLength = $gameMap.events().length;
         $gameMap.events().forEach(function (event) {
             if (event) this._charactersNames.push(new Sprite_CharacterName(event));
         }, this);
@@ -245,6 +246,24 @@
         this._charactersNames.push(new Sprite_CharacterName($gamePlayer));
         for (var i = 0; i < this._charactersNames.length; i++) {
             this._tilemap.addChild(this._charactersNames[i]);
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Map
+    //
+    const game_map_update = Game_Map.prototype.update;
+    Game_Map.prototype.update = function (sceneActive) {
+        game_map_update.apply(this, arguments);
+        var sceneSpriteset = SceneManager._scene._spriteset;
+        if (sceneSpriteset._eventsNamesLength != $gameMap.events().length) {
+            sceneSpriteset._eventsNamesLength = $gameMap.events().length;
+            var index = sceneSpriteset._charactersNames.length;
+            var event = $gameMap.events()[$gameMap.events().length - 1];
+            sceneSpriteset._charactersNames.push(new Sprite_CharacterName(event));
+            for (var i = index; i < sceneSpriteset._charactersNames.length; i++) {
+                sceneSpriteset._tilemap.addChild(sceneSpriteset._charactersNames[i]);
+            }
         }
     };
 

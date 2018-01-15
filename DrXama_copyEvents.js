@@ -2,7 +2,7 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.05 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.06 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
  * 
@@ -19,10 +19,13 @@
  * copyEventBackPlayer mapId eventId - Copia o evento para trás do jogador
  * copyEventLeftPlayer mapId eventId - Copia o evento para a esquerda do jogador
  * copyEventRightPlayer mapId eventId - Copia o evento para a direita do jogador
+ * copyEventRegion mapId eventId regionId quantity - Copia o evento para a região
  * 
  * Exemplo: copyEvent 1 1 10 4 - Copia o evento 1 do mapa 1 para a posição x e y
  * Exemplo: copyEventFrontPlayer 1 1 - Copia o evento 1 do mapa 1 para trás do 
  *                                     jogador
+ * Exemplo: copyEventRegion 1 1 1 8 - Copia o evento 1 do mapa 1 para a região 1
+ *                                    8 vezes
  * ================================================================================
  *    Comandos de script
  * ================================================================================
@@ -35,6 +38,8 @@
  *                                                jogador
  * $gameMap.copyEventRightPlayer(mapId, eventId) - Copia o evento para a direita do 
  *                                                 jogador
+ * $gameMap.copyEventRegion(mapId, eventId, regionId, quantity) - Copia o evento
+ *                                                                para a região
  * ================================================================================
  *    Atualização
  * ================================================================================
@@ -96,6 +101,13 @@
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
             $gameMap.copyEventRightPlayer(mapId, eventId);
+        }
+        if (typeof command === 'string' && command.toLowerCase() === 'copyeventregion') {
+            var mapId = parseInt(args[0]) || 0;
+            var eventId = parseInt(args[1]) || 0;
+            var regionId = parseInt(args[2]) || -1;
+            var quantity = parseInt(args[3]) || 0;
+            $gameMap.copyEventRegion(mapId, eventId, regionId, quantity);
         }
     };
     //================================================================================
@@ -204,6 +216,57 @@
                 break;
         }
         this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    };
+
+    // Copia o evento aleatoriamente para a região
+    Game_Map.prototype.copyEventRegion = function (mapId, eventId, regionId, quantity) {
+        var regionXy = (function () {
+            var value = [];
+            var x = 0;
+            var y = 0;
+            var process = $dataMap.width + $dataMap.height;
+            while (process > 0) {
+                if (x < $dataMap.width) {
+                    x++;
+                } else {
+                    x = 0;
+                    y++;
+                    process--;
+                }
+                if ($gameMap.regionId(x, y) === regionId) {
+                    value.push([x, y]);
+                }
+            }
+            return value;
+        })();
+        var regionEventXy = [];
+        var regionEventXyIsValid = function (x, y) {
+            var valid = true;
+            if (regionEventXy.length > 0) {
+                regionEventXy.forEach(function (eventXy) {
+                    if (eventXy[0] == x && eventXy[1] == y) {
+                        return valid = false;
+                    }
+                });
+            }
+            return valid;
+        };
+        while (quantity > 0) {
+            var mapXy = (function () {
+                return regionXy[Math.randomInt(regionXy.length - 1)];
+            })();
+            if (regionEventXyIsValid(mapXy[0], mapXy[1])) {
+                regionEventXy.push([mapXy[0], mapXy[1]]);
+                this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapXy[0]}`, `${mapXy[1]}`]);
+            }
+            if (regionXy.length > quantity) {
+                if (regionEventXy.length >= quantity) {
+                    quantity = 0;
+                }
+            } else {
+                quantity--;
+            }
+        }
     };
 
     //================================================================================

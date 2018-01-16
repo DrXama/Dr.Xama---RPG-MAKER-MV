@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.07 - Adiciona sombras aos objetos.
+ * @plugindesc v1.08 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -29,6 +29,10 @@
     const spriteset_map_createCharacters = Spriteset_Map.prototype.createCharacters;
     Spriteset_Map.prototype.createCharacters = function () {
         spriteset_map_createCharacters.call(this);
+        this.createCharactersShadows();
+    };
+
+    Spriteset_Map.prototype.createCharactersShadows = function () {
         this._charactersShadows = [];
         this._eventsShadowsLength = $gameMap.events().length;
         $gameMap.events().forEach(function (event) {
@@ -59,7 +63,7 @@
             for (var i = 0; i < sceneSpriteset._charactersShadows.length; i++) {
                 sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersShadows[i]);
             }
-            sceneSpriteset.createCharacters();
+            sceneSpriteset.createCharactersShadows();
         }
     };
 

@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.07 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.08 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -235,6 +235,10 @@
     const spriteset_map_createCharacters = Spriteset_Map.prototype.createCharacters;
     Spriteset_Map.prototype.createCharacters = function () {
         spriteset_map_createCharacters.call(this);
+        this.createCharactersNames();
+    };
+
+    Spriteset_Map.prototype.createCharactersNames = function () {
         this._charactersNames = [];
         this._eventsNamesLength = $gameMap.events().length;
         $gameMap.events().forEach(function (event) {
@@ -264,7 +268,7 @@
             for (var i = 0; i < sceneSpriteset._charactersNames.length; i++) {
                 sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
             }
-            sceneSpriteset.createCharacters();
+            sceneSpriteset.createCharactersNames();
         }
     };
 

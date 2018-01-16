@@ -2,9 +2,16 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.07 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.08 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
+ * 
+ * @param Exibir no console
+ * @desc Deseja exibir a depuração no console?
+ * @type boolean
+ * @default true
+ * @on Sim
+ * @off Não
  * 
  * @help
  * ================================================================================
@@ -48,6 +55,12 @@
  */
 (function () {
     "use strict";
+    //-----------------------------------------------------------------------------
+    // Parameters
+    //
+    const params = PluginManager.parameters('DrXama_copyEvents');
+    const console_user = JSON.parse(params['Exibir no console']);
+
     //================================================================================
     // Game_Interpreter
     //================================================================================
@@ -61,25 +74,39 @@
             var mapY = parseInt(args[3]) || 0;
             var src = 'Map%1.json'.format(mapId.padZero(3));
             var callback = function (mapInfo) {
-                if (!mapInfo) return console.warn(`Impossivel coletar as informações do mapa(${mapId})`);
+                if (!mapInfo) {
+                    if (console_user) {
+                        return console.warn(`Impossivel coletar as informações do mapa(${mapId})`);
+                    }
+                    return;
+                }
                 // Copia o evento
                 var event = mapInfo.events[eventId];
                 event.x = mapX;
                 event.y = mapY;
-                // Cria o evento na data
-                $dataMap.events.push(event);
-                // Pega o id do evento na data
-                var eventIndexOf = $dataMap.events.indexOf(event);
-                // Cria o evento no mapa
-                var eventMap = new Game_Event($gameMap._mapId, eventIndexOf);
-                $gameMap._events.push(eventMap);
-                $gameMap._eventsCopy.push(event);
-                SceneManager._scene._spriteset.drXama_copyEvent(eventMap);
+                if ($gameMap.eventsXy(mapX, mapY).length <= 0) {
+                    // Cria o evento na data
+                    $dataMap.events.push(event);
+                    // Pega o id do evento na data
+                    var eventIndexOf = $dataMap.events.indexOf(event);
+                    // Cria o evento no mapa
+                    var eventMap = new Game_Event($gameMap._mapId, eventIndexOf);
+                    $gameMap._events.push(eventMap);
+                    $gameMap._eventsCopy.push(event);
+                    SceneManager._scene._spriteset.drXama_copyEvent(eventMap);
+                } else {
+                    if (console_user) {
+                        return console.warn(`Impossivel copiar o evento(${eventId}) para a posição(x:${mapX} e y:${mapY}) pois já tem um evento nesta posição`);
+                    }
+                    return;
+                }
             }
             try {
                 DataManager.drXama_loadDataFile(src, callback);
             } catch (error) {
-                console.warn(`Impossivel copiar o evento(${eventId}) do mapa(${mapId})`);
+                if (console_user) {
+                    console.warn(`Impossivel copiar o evento(${eventId}) do mapa(${mapId})`);
+                }
             }
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventfrontplayer') {
@@ -257,8 +284,12 @@
                 return regionXy[Math.randomInt(regionXy.length - 1)];
             })();
             if (regionEventXyIsValid(mapXy[0], mapXy[1])) {
-                regionEventXy.push([mapXy[0], mapXy[1]]);
-                this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapXy[0]}`, `${mapXy[1]}`]);
+                if ($gameMap.eventsXy(mapXy[0], mapXy[1]).length <= 0) {
+                    regionEventXy.push([mapXy[0], mapXy[1]]);
+                    this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapXy[0]}`, `${mapXy[1]}`]);
+                } else {
+                    regionEventXy.push([-1, -1]);
+                }
             }
             if (regionXy.length > quantity) {
                 if (regionEventXy.length >= quantity) {

@@ -2,7 +2,7 @@
 // DrXama_windowPauseSign.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Altera a seta de pause da janela de mensagens
+ * @plugindesc v1.01 - Altera a seta de pause da janela de mensagens
  *
  * @author Dr.Xamã
  * 
@@ -23,6 +23,15 @@
  * - x: Posição(X) da seta na imagem
  * - y: Posição(Y) da seta na imagem
  * Exemplo: $gameSystem.setWindowPauseSign(1, 0);
+ * 
+ * $gameSystem.setWindowPauseSignPosition(position) - Define a posição da seta
+ * Exemplo: $gameSystem.setWindowPauseSignPosition('left');
+ * - 'center': Posiciona a seta no centro inferior da janela
+ * - 'left': Posiciona a seta no canto esquerdo inferior da janela
+ * - 'right': Posiciona a seta no canto direito inferior da janela
+ * - 'center_up': Posiciona a seta no centro superior da janela
+ * - 'left_up': Posiciona a seta no canto esquerdo superior da janela
+ * - 'right_up': Posiciona a seta no canto direito superior da janela
  * ================================================================================
  *    Tamanho da imagem
  * ================================================================================
@@ -51,6 +60,7 @@
     Game_System.prototype.initialize = function () {
         game_system_initialize.call(this);
         this._windowPauseSign = [0, 0];
+        this._windowPauseSignPosition = 'center';
     };
 
     Game_System.prototype.setWindowPauseSign = function (x, y) {
@@ -71,8 +81,16 @@
         this._windowPauseSign = arrowXy;
     };
 
+    Game_System.prototype.setWindowPauseSignPosition = function (position) {
+        this._windowPauseSignPosition = position.toString().toLowerCase();
+    };
+
     Game_System.prototype.getWindowPauseSign = function () {
         return this._windowPauseSign;
+    };
+
+    Game_System.prototype.getWindowPauseSignPosition = function () {
+        return this._windowPauseSignPosition;
     };
 
     /**
@@ -104,6 +122,7 @@
         sprite.setFrame(sx, sy, p, p);
         sprite.visible = this.isOpen();
         this._updatePauseSignAnimation();
+        this._updatePauseSignPosition();
     };
 
     /**
@@ -126,7 +145,30 @@
                 this._windowAnimationFrames = null;
             }
         }
+    };
 
+    /**
+     * @method _updatePauseSignPosition
+     * @private
+     */
+    Window.prototype._updatePauseSignPosition = function () {
+        var sprite = this._windowPauseSignSprite;
+        if (this._windowPositionSign != $gameSystem.getWindowPauseSignPosition()) {
+            this._windowPositionSign = $gameSystem.getWindowPauseSignPosition();
+            if ($gameSystem.getWindowPauseSignPosition() == 'center') {
+                sprite.move(this._width / 2, this._height - 4);
+            } else if ($gameSystem.getWindowPauseSignPosition() == 'left') {
+                sprite.move(25, this._height - 4);
+            } else if ($gameSystem.getWindowPauseSignPosition() == 'right') {
+                sprite.move(this._width - 25, this._height - 4);
+            } else if ($gameSystem.getWindowPauseSignPosition() == 'center_up') {
+                sprite.move(this._width / 2, 25);
+            } else if ($gameSystem.getWindowPauseSignPosition() == 'left_up') {
+                sprite.move(25, 25);
+            } else if ($gameSystem.getWindowPauseSignPosition() == 'right_up') {
+                sprite.move(this._width - 25, 25);
+            }
+        }
     };
 
     //-----------------------------------------------------------------------------

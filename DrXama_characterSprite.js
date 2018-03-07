@@ -1,8 +1,8 @@
 //==================================================================================================
-// DrXama_pluginName.js
+// DrXama_characterSprite.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Altera o sprite dos personagens, seguidores, veiculos e eventos
+ * @plugindesc v1.02 - Altera o sprite dos personagens, seguidores, veiculos e eventos
  *
  * @author Dr.Xamã
  *
@@ -76,32 +76,36 @@
                     g = parseInt(args[3]) || 0,
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'event', eventId],
                     [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'event', eventId],
                     [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'event', eventId],
                     [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'event', eventId],
                     [$gameTemp.characterSprite_setBlend, blend]
                 ]);
@@ -116,32 +120,36 @@
                     g = parseInt(args[2]) || 0,
                     b = parseInt(args[3]) || 0,
                     gray = parseInt(args[4]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'player', playerId],
                     [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[1]) || 0, parseFloat(args[2]) || 0];
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'player', playerId],
                     [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[1]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'player', playerId],
                     [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[1]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'player', playerId],
                     [$gameTemp.characterSprite_setBlend, blend]
                 ]);
@@ -156,32 +164,36 @@
                     g = parseInt(args[3]) || 0,
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'follower', followerId],
                     [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'follower', followerId],
                     [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'follower', followerId],
                     [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'follower', followerId],
                     [$gameTemp.characterSprite_setBlend, blend]
                 ]);
@@ -196,32 +208,36 @@
                     g = parseInt(args[3]) || 0,
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
                     [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
                     [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
                     [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
-                $gameTemp.characterSprite_addConfig([
-                    { 'isCallOk': false },
+                $gameTemp.characterSprite_addConfig([{
+                        'isCallOk': false
+                    },
                     [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
                     [$gameTemp.characterSprite_setBlend, blend]
                 ]);
@@ -392,7 +408,9 @@
             fs.mkdirSync(pathData);
         }
         if (fs.existsSync(pathFile)) {
-            var data = JsonEx.parse(LZString.decompressFromBase64(fs.readFileSync(pathFile, { encoding: 'utf8' }))) || [];
+            var data = JsonEx.parse(LZString.decompressFromBase64(fs.readFileSync(pathFile, {
+                encoding: 'utf8'
+            }))) || [];
             data.map(function (character) {
                 var id = this._dataCharacterSprite.id;
                 var color = this._dataCharacterSprite.color;
@@ -421,7 +439,9 @@
         var pathData = localPath('save');
         var pathFile = `${pathData}\\CharacterSprite.drxamasave`;
         if (fs.existsSync(pathData) && fs.existsSync(pathFile)) {
-            var data = JsonEx.parse(LZString.decompressFromBase64(fs.readFileSync(pathFile, { encoding: 'utf8' }))) || [];
+            var data = JsonEx.parse(LZString.decompressFromBase64(fs.readFileSync(pathFile, {
+                encoding: 'utf8'
+            }))) || [];
             data.map(function (character) {
                 var id = this._dataCharacterSprite.id;
                 if (character.id == id) {
@@ -464,21 +484,21 @@
 
     Sprite_Character.prototype.updateCharacterSprite = function () {
         if (this.characterIsId()) {
-            if ($gameTemp.characterSprite_colorTone()) {
+            if ($gameTemp.characterSprite_colorTone() instanceof Array) {
                 this.setColorTone($gameTemp.characterSprite_colorTone());
                 this._dataCharacterSprite.color = $gameTemp.characterSprite_colorTone();
             }
-            if ($gameTemp.characterSprite_scale()) {
+            if (typeof $gameTemp.characterSprite_scale() == 'number') {
                 var x = $gameTemp.characterSprite_scale()[0];
                 var y = $gameTemp.characterSprite_scale()[1];
                 this.scale = new Point(x, y);
                 this._dataCharacterSprite.scale = [x, y];
             }
-            if ($gameTemp.characterSprite_opacity()) {
+            if (typeof $gameTemp.characterSprite_opacity() == 'number') {
                 this.opacity = $gameTemp.characterSprite_opacity();
                 this._dataCharacterSprite.opacity = this.opacity;
             }
-            if ($gameTemp.characterSprite_blend()) {
+            if (typeof $gameTemp.characterSprite_blend() == 'number') {
                 this.blendMode = $gameTemp.characterSprite_blend();
                 this._dataCharacterSprite.blend = this.blendMode;
             }
@@ -499,3 +519,56 @@
         this.blendMode = blend;
     };
 })();
+
+//-----------------------------------------------------------------------------
+// Set Movement Route
+//
+const __Game_Interpreter_command205 = Game_Interpreter.prototype.command205;
+Game_Interpreter.prototype.command205 = function () {
+    __Game_Interpreter_command205.call(this);
+    var routeId = this._params[0];
+    var routeList = this._params[1].list;
+    if (routeId == -1) { // Player
+        routeList[0].routeSprite = 'playersprite';
+        routeList[0].routeId = ['player'];
+        this.characterSpriteProcessCommand(routeList[0]);
+    } else if (routeId == 0) { // This Event
+        routeList[0].routeSprite = 'eventsprite';
+        routeList[0].routeId = ['event', this._eventId];
+        this.characterSpriteProcessCommand(routeList[0]);
+    } else if (routeId > 0) { // Event
+        routeList[0].routeSprite = 'eventsprite';
+        routeList[0].routeId = ['event', routeId];
+        this.characterSpriteProcessCommand(routeList[0]);
+    }
+    return true;
+};
+
+Game_Interpreter.prototype.characterSpriteProcessCommand = function (command) {
+    var gc = Game_Character;
+    var params = command.parameters;
+    switch (command.code) {
+        case gc.ROUTE_CHANGE_OPACITY:
+            if (command.routeId[0] == 'player') {
+                this.pluginCommand.call(this, command.routeSprite, ['opacity', params[0]]);
+                $gamePlayer._followers._data.map(follower => {
+                    var followerId = follower._memberIndex;
+                    this.pluginCommand.call(this, 'followersprite', [followerId, 'opacity', params[0]]);
+                }, this);
+            } else if (command.routeId[0] == 'event') {
+                this.pluginCommand.call(this, command.routeSprite, [command.routeId[1], 'opacity', params[0]]);
+            }
+            break;
+        case gc.ROUTE_CHANGE_BLEND_MODE:
+            if (command.routeId[0] == 'player') {
+                this.pluginCommand.call(this, command.routeSprite, ['blend', params[0]]);
+                $gamePlayer._followers._data.map(follower => {
+                    var followerId = follower._memberIndex;
+                    this.pluginCommand.call(this, 'followersprite', [followerId, 'blend', params[0]]);
+                }, this);
+            } else if (command.routeId[0] == 'event') {
+                this.pluginCommand.call(this, command.routeSprite, [command.routeId[1], 'blend', params[0]]);
+            }
+            break;
+    }
+};

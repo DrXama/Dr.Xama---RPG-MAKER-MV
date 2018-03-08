@@ -2,10 +2,18 @@
 // DrXama_characterSprite.js
 //==================================================================================================
 /*:
- * @plugindesc v1.02 - Altera o sprite dos personagens, seguidores, veiculos e eventos
+ * @plugindesc v1.04 - Altera o sprite dos personagens, seguidores, veiculos e eventos
  *
  * @author Dr.Xamã
  *
+ * @param Frames de alteração
+ * @desc A velocidade em que a alteração é feita.
+ * Padrão: 60 Frames = 1 Segundo
+ * @type number
+ * @default 60
+ * @min 5
+ * @max 999
+ * 
  * @help
  * ================================================================================
  *    Introdução
@@ -42,6 +50,12 @@
  */
 (function () {
     "use strict";
+    //-----------------------------------------------------------------------------
+    // Parameters
+    //    
+    var params = PluginManager.parameters('DrXama_characterSprite');
+    var framesChange = Number(params["Frames de alteração"]) || 0;
+
     //-----------------------------------------------------------------------------
     // Functions
     //
@@ -352,7 +366,7 @@
     };
 
     Game_Map.prototype.updateCharacterSpriteTemp = function () {
-        if (!this._framesOnConfig) this._framesOnConfig = 5;
+        if (!this._framesOnConfig) this._framesOnConfig = framesChange;
         if (this._framesOnConfig > 0) return this._framesOnConfig -= .60;
         var configs = $gameTemp.characterSprite_config();
         var i = 0;
@@ -362,7 +376,7 @@
             var functions = config.slice(1);
             if (!config[0]['isCallOk']) {
                 config[0]['isCallOk'] = true;
-                this._framesOnConfig = 5;
+                this._framesOnConfig = framesChange;
                 return funcExe(functions);
             }
         }
@@ -488,7 +502,7 @@
                 this.setColorTone($gameTemp.characterSprite_colorTone());
                 this._dataCharacterSprite.color = $gameTemp.characterSprite_colorTone();
             }
-            if (typeof $gameTemp.characterSprite_scale() == 'number') {
+            if ($gameTemp.characterSprite_scale() instanceof Array) {
                 var x = $gameTemp.characterSprite_scale()[0];
                 var y = $gameTemp.characterSprite_scale()[1];
                 this.scale = new Point(x, y);
@@ -551,7 +565,7 @@ Game_Interpreter.prototype.characterSpriteProcessCommand = function (command) {
         case gc.ROUTE_CHANGE_OPACITY:
             if (command.routeId[0] == 'player') {
                 this.pluginCommand.call(this, command.routeSprite, ['opacity', params[0]]);
-                $gamePlayer._followers._data.map(follower => {
+                $gamePlayer._followers._data.map(function (follower) {
                     var followerId = follower._memberIndex;
                     this.pluginCommand.call(this, 'followersprite', [followerId, 'opacity', params[0]]);
                 }, this);
@@ -562,7 +576,7 @@ Game_Interpreter.prototype.characterSpriteProcessCommand = function (command) {
         case gc.ROUTE_CHANGE_BLEND_MODE:
             if (command.routeId[0] == 'player') {
                 this.pluginCommand.call(this, command.routeSprite, ['blend', params[0]]);
-                $gamePlayer._followers._data.map(follower => {
+                $gamePlayer._followers._data.map(function (follower) {
                     var followerId = follower._memberIndex;
                     this.pluginCommand.call(this, 'followersprite', [followerId, 'blend', params[0]]);
                 }, this);

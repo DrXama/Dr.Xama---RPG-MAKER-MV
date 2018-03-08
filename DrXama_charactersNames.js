@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.08 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.09 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -510,7 +510,11 @@
             this._bitmapText = bitmapText;
             this.bitmap.textColor = bitmapTextColor;
             this.bitmap.fontSize = bitmapTextSize;
-            if (bitmapTextOutline) { this.bitmap.outlineWidth = 5; } else { this.bitmap.outlineWidth = 3; }
+            if (bitmapTextOutline) {
+                this.bitmap.outlineWidth = 5;
+            } else {
+                this.bitmap.outlineWidth = 3;
+            }
             this.bitmap.outlineColor = bitmapTextOutlineColor;
             this.bitmapTextDistance(bitmapTextDistance);
             this.bitmap.drawText(this._bitmapText, 0, 25, this.bitmap.width, 0, 'center');
@@ -590,7 +594,8 @@
         if (this._animationframesRotation === undefined) {
             this._animationframesRotation = [0, this._animationRotationFrames, 0,
                 this._animationRotationFrames, 0, this._animationRotationFrames,
-                0, this._animationRotationFrames];
+                0, this._animationRotationFrames
+            ];
         }
         if (this._animationframesRotation[0] < this._animationframesRotation[1]) {
             this._animationframesRotation[0] += 0.60;
@@ -617,7 +622,7 @@
 
     Sprite_CharacterName.prototype.updateTransparent = function () {
         if (this._character instanceof Game_Character) {
-            if (this._character.isTransparent()) {
+            if (this._character.isTransparent() || this._character._hideSpriteCharacter) {
                 this.hide();
             } else {
                 if (!this._bitmapTextHide) {

@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.09 - Adiciona sombras aos objetos.
+ * @plugindesc v1.10 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -78,6 +78,32 @@
     };
 
     //-----------------------------------------------------------------------------
+    // Game_Player
+    //       
+    Game_Player.prototype.hideSpriteCharacter = function () {
+        return this._hideSpriteCharacter;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Sprite_Character
+    //
+    const sprite_character_update = Sprite_Character.prototype.update;
+    Sprite_Character.prototype.update = function () {
+        sprite_character_update.call(this);
+        this.updateOpacitySpriteCharacter();
+    };
+
+    Sprite_Character.prototype.updateOpacitySpriteCharacter = function () {
+        if (this.opacity <= 0) {
+            if (!this._character._hideSpriteCharacter)
+                this._character._hideSpriteCharacter = true;
+        } else {
+            if (this._character._hideSpriteCharacter)
+                this._character._hideSpriteCharacter = false;
+        }
+    };
+
+    //-----------------------------------------------------------------------------
     // Sprite_CharacterShadow
     //
 
@@ -146,7 +172,7 @@
 
     Sprite_CharacterShadow.prototype.updateTransparent = function () {
         if (this._character instanceof Game_Character) {
-            if (this._character.isTransparent()) {
+            if (this._character.isTransparent() || this._character._hideSpriteCharacter) {
                 if (!this._characterHide) {
                     this._characterHide = true;
                     this.hide();
@@ -192,7 +218,7 @@
                 } else {
                     this.opacity = 255;
                 }
-                if (this._character.pos($gamePlayer._realX, $gamePlayer._realY)) {
+                if (this._character.pos($gamePlayer._realX, $gamePlayer._realY) && !$gamePlayer.hideSpriteCharacter()) {
                     this.hide();
                 } else {
                     if ($gamePlayer.isInVehicle()) {

@@ -11,8 +11,10 @@
  * @param Idioma
  * @parent Sistema
  * @desc Qual o idioma padrão?
- * @type string
+ * @type combo
  * @default pt_br
+ * @option pt_br
+ * @option en_us
  * 
  * @param Janelas
  * 

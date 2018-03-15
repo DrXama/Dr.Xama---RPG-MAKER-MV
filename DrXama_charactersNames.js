@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.09 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.11 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -269,6 +269,61 @@
                 sceneSpriteset._tilemap.removeChild(sceneSpriteset._charactersNames[i]);
             }
             sceneSpriteset.createCharactersNames();
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // BattleManager
+    //
+    const __BattleManager_startBattle = BattleManager.setup;
+    BattleManager.setup = function (troopId, canEscape, canLose) {
+        __BattleManager_startBattle.apply(this, arguments);
+        $gameTemp._inBattleProcess = true;
+    };
+
+    const __BattleManager_updateBattleEnd = BattleManager.updateBattleEnd;
+    BattleManager.updateBattleEnd = function () {
+        __BattleManager_updateBattleEnd.call(this);
+        $gameTemp._inBattleProcess = null;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Temp
+    //
+    Game_Temp.prototype.inBattleProcess = function () {
+        return this._inBattleProcess;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Player
+    //       
+    Game_Player.prototype.hideSpriteCharacter = function () {
+        return this._hideSpriteCharacter;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Sprite_Character
+    //
+    const sprite_character_update = Sprite_Character.prototype.update;
+    Sprite_Character.prototype.update = function () {
+        sprite_character_update.call(this);
+        this.updateOpacitySpriteCharacter();
+    };
+
+    Sprite_Character.prototype.updateOpacitySpriteCharacter = function () {
+        if ($gameTemp.inBattleProcess()) {
+            if (this._character instanceof Game_Player ||
+                this._character instanceof Game_Follower) {
+                this._character._hideSpriteCharacter = true;
+                return;
+            }
+        }
+        if (this.opacity <= 0) {
+            if (!this._character._hideSpriteCharacter)
+                this._character._hideSpriteCharacter = true;
+        } else {
+            if (this._character._hideSpriteCharacter)
+                this._character._hideSpriteCharacter = false;
         }
     };
 

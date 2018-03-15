@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.10 - Adiciona sombras aos objetos.
+ * @plugindesc v1.11 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -78,6 +78,28 @@
     };
 
     //-----------------------------------------------------------------------------
+    // BattleManager
+    //
+    const __BattleManager_startBattle = BattleManager.setup;
+    BattleManager.setup = function (troopId, canEscape, canLose) {
+        __BattleManager_startBattle.apply(this, arguments);
+        $gameTemp._inBattleProcess = true;
+    };
+
+    const __BattleManager_updateBattleEnd = BattleManager.updateBattleEnd;
+    BattleManager.updateBattleEnd = function () {
+        __BattleManager_updateBattleEnd.call(this);
+        $gameTemp._inBattleProcess = null;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Temp
+    //
+    Game_Temp.prototype.inBattleProcess = function () {
+        return this._inBattleProcess;
+    };
+
+    //-----------------------------------------------------------------------------
     // Game_Player
     //       
     Game_Player.prototype.hideSpriteCharacter = function () {
@@ -94,6 +116,13 @@
     };
 
     Sprite_Character.prototype.updateOpacitySpriteCharacter = function () {
+        if ($gameTemp.inBattleProcess()) {
+            if (this._character instanceof Game_Player ||
+                this._character instanceof Game_Follower) {
+                this._character._hideSpriteCharacter = true;
+                return;
+            }
+        }
         if (this.opacity <= 0) {
             if (!this._character._hideSpriteCharacter)
                 this._character._hideSpriteCharacter = true;

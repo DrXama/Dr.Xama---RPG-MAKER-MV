@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Gerenciador de traduções
+ * @plugindesc v1.02 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  * 
@@ -245,7 +245,7 @@
             return object;
         }
         var file = PluginManager.parameters('DrXama_languageManager');
-        var language = String(file['Idioma']).toLowerCase();
+        var language = String(file['Idioma']);
         var title = JsonParse(JSON.parse(file['Title']));
         var menu = JsonParse(JSON.parse(file['Menu']));
         var shop = JsonParse(JSON.parse(file['Shop']));
@@ -356,7 +356,9 @@
             'language': params.language
         }, null, 2));
         if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_folderLanguage)) {
-            fs.writeFileSync(path_fileSettingsLanguage, data);
+            if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test')) {
+                fs.writeFileSync(path_fileSettingsLanguage, data);
+            }
         }
         if (callback) callback();
     };
@@ -1227,6 +1229,7 @@
         if (command == 'setlanguage') {
             params.language = String(args[0]).toLowerCase();
             translateObject = {};
+            $gameSystem.gameLanguageSetter(params.language);
             createFileSettingsLanguage(defineAllTexts);
         }
         if (command == 'setmessagebox') {

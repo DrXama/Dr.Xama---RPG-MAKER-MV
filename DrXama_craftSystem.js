@@ -15,7 +15,7 @@
  * ================================================================================
  *    Introdução
  * ================================================================================
- * Crie suas receitas de craft e tenha a eficiente de um sistema de craft ;)
+ * Crie suas receitas de craft e tenha a eficiencia de um sistema de craft ;)
  * Deixe o jogador sentir a emoção de criar uma receita!!!
  * 
  * Um sistema complexo e objetivo, com textos intuitivos para facilitar a criação

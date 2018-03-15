@@ -2,7 +2,7 @@
 // DrXama_craftSystem.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Sistema de craft do Dr.Xamã
+ * @plugindesc v1.02 - Sistema de craft do Dr.Xamã
  *
  * @author Dr.Xamã
  * 
@@ -338,7 +338,7 @@
  * @type armor
  * @default 0
  */
-(function() {
+(function () {
     "use strict";
     //-----------------------------------------------------------------------------
     // Parameters
@@ -708,7 +708,9 @@
             return parseInt(value);
         }
         // Verifica se o valor é Bolean
-        try { return eval(value) } catch (error) {};
+        try {
+            return eval(value)
+        } catch (error) {};
         // Verifica se o valor é Array
         try {
             var array = eval(value);
@@ -723,15 +725,15 @@
     //-----------------------------------------------------------------------------
     // Game_Temp
     //
-    Game_Temp.prototype.stopMapPlayerMovement = function() {
+    Game_Temp.prototype.stopMapPlayerMovement = function () {
         this._stopMapPlayer = true;
     };
 
-    Game_Temp.prototype.allowMapPlayerMovement = function() {
+    Game_Temp.prototype.allowMapPlayerMovement = function () {
         this._stopMapPlayer = false;
     };
 
-    Game_Temp.prototype.isStopMapPlayerMovement = function() {
+    Game_Temp.prototype.isStopMapPlayerMovement = function () {
         return this._stopMapPlayer;
     };
 
@@ -739,7 +741,7 @@
     // Game_Player
     //
     const _Game_Player_canMove = Game_Player.prototype.canMove;
-    Game_Player.prototype.canMove = function() {
+    Game_Player.prototype.canMove = function () {
         if ($gameTemp.isStopMapPlayerMovement()) return false;
         return _Game_Player_canMove.call(this);
     };
@@ -748,7 +750,7 @@
     // Game_System
     //
     const gameSystem_initialize = Game_System.prototype.initialize;
-    Game_System.prototype.initialize = function() {
+    Game_System.prototype.initialize = function () {
         gameSystem_initialize.call(this);
         this._craftSystem_recipes = [];
         this.craftSystem_addRecipes();
@@ -757,13 +759,13 @@
     //-----------------------------------------------------------------------------
     // Game_System
     //
-    Game_System.prototype.craftSystem_recipes = function() {
+    Game_System.prototype.craftSystem_recipes = function () {
         return this._craftSystem_recipes || [];
     };
 
-    Game_System.prototype.craftSystem_addRecipes = function() {
+    Game_System.prototype.craftSystem_addRecipes = function () {
         if (craftSystem_items.length > 0) {
-            craftSystem_items.forEach(function(recipe) {
+            craftSystem_items.forEach(function (recipe) {
                 recipe = JSON.parse(recipe) || {};
                 let nome = String(recipe["Nome"]);
                 let descricao = JSON.parse(recipe["Descrição"]).split("\n", 2);
@@ -771,7 +773,7 @@
                 let obtem = JSON.parse(recipe["Obtem"]);
                 let ingredientes = JSON.parse(recipe["Lista de ingredientes"]);
                 let tempoDePreparo = Number(recipe["Tempo de preparo"]);
-                let textDeConclusao = (function() {
+                let textDeConclusao = (function () {
                     var string = String(recipe["Texto de conclusão"]);
                     if (string.includes('${nome}')) {
                         string = string.replace(/\${nome}/gi, `"${nome}"`);
@@ -779,7 +781,7 @@
                     return string;
                 })();
                 let animacaoDeConclusao = Number(recipe["Animação de conclusão"]);
-                let bloquearMovimento = (function() {
+                let bloquearMovimento = (function () {
                     var value = String(recipe["Bloquear movimento"]);
                     switch (value) {
                         case "Sim":
@@ -832,50 +834,50 @@
         }
     };
 
-    Game_System.prototype.craftSystem_recipeSetCraftActive = function(index) {
+    Game_System.prototype.craftSystem_recipeSetCraftActive = function (index) {
         this._craftSystem_recipesCraftActive = this._craftSystem_recipes[index] || [];
     };
 
-    Game_System.prototype.craftSystem_recipeCraftActive = function() {
+    Game_System.prototype.craftSystem_recipeCraftActive = function () {
         return this._craftSystem_recipesCraftActive;
     };
 
-    Game_System.prototype.craftSystem_recipeCraftActiveClear = function() {
+    Game_System.prototype.craftSystem_recipeCraftActiveClear = function () {
         this._craftSystem_recipesCraftActive = null;
         this._craftSystem_recipesCraftStatus = null;
     };
 
-    Game_System.prototype.craftSystem_recipeCraftComplete = function() {
+    Game_System.prototype.craftSystem_recipeCraftComplete = function () {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) this._craftSystem_recipesCraftStatus = {};
         this._craftSystem_recipesCraftStatus["preparoFinalizado"] = true;
     };
 
-    Game_System.prototype.craftSystem_recipeCraftIsComplete = function() {
+    Game_System.prototype.craftSystem_recipeCraftIsComplete = function () {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) return;
         return this._craftSystem_recipesCraftStatus["preparoFinalizado"];
     };
 
-    Game_System.prototype.craftSystem_recipeCraftSetItemsObtidos = function(itemObtidos) {
+    Game_System.prototype.craftSystem_recipeCraftSetItemsObtidos = function (itemObtidos) {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) this._craftSystem_recipesCraftStatus = {};
         this._craftSystem_recipesCraftStatus["itemsObtidos"] = itemObtidos;
     };
 
-    Game_System.prototype.craftSystem_recipeCraftItemsObtidos = function() {
+    Game_System.prototype.craftSystem_recipeCraftItemsObtidos = function () {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) return;
         return this._craftSystem_recipesCraftStatus["itemsObtidos"];
     };
 
-    Game_System.prototype.craftSystem_recipeCraftSetItemsRetirados = function(itemsRetirados) {
+    Game_System.prototype.craftSystem_recipeCraftSetItemsRetirados = function (itemsRetirados) {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) this._craftSystem_recipesCraftStatus = {};
         this._craftSystem_recipesCraftStatus["itemsRetirados"] = itemsRetirados;
     };
 
-    Game_System.prototype.craftSystem_recipeCraftItemsRetirados = function() {
+    Game_System.prototype.craftSystem_recipeCraftItemsRetirados = function () {
         if (!this._craftSystem_recipesCraftActive) return;
         if (!this._craftSystem_recipesCraftStatus) return;
         return this._craftSystem_recipesCraftStatus["itemsRetirados"];
@@ -885,12 +887,12 @@
     // Scene_Map
     //
     const _Scene_Map_Start = Scene_Map.prototype.start;
-    Scene_Map.prototype.start = function() {
+    Scene_Map.prototype.start = function () {
         _Scene_Map_Start.call(this);
         this.drawTextDeConclusao();
     };
 
-    Scene_Map.prototype.drawTextDeConclusao = function() {
+    Scene_Map.prototype.drawTextDeConclusao = function () {
         this._spriteTextdeConclusao = new Sprite(new Bitmap(Graphics.width, Graphics.height));
         this._spriteTextdeConclusao.opacity = 0;
         this._spriteTextdeConclusao.bitmap.fontSize = 18;
@@ -898,7 +900,7 @@
     };
 
     const _Scene_Map_Update = Scene_Map.prototype.update;
-    Scene_Map.prototype.update = function() {
+    Scene_Map.prototype.update = function () {
         _Scene_Map_Update.call(this);
         this.updateCraftIsComplete();
         this.updateTextDeConclusao();
@@ -906,7 +908,7 @@
         this.updateCraftIconTimer();
     };
 
-    Scene_Map.prototype.updateCraftIsComplete = function() {
+    Scene_Map.prototype.updateCraftIsComplete = function () {
         if ($gameSystem.craftSystem_recipeCraftIsComplete()) {
             var animationId = $gameSystem.craftSystem_recipeCraftActive()["animacaoDeConclusao"];
             if (!isNaN(parseInt(animationId, 10))) {
@@ -917,14 +919,14 @@
             this._spriteTextdeConclusao.bitmap.drawText(textDeConclusao, 20, 25, Graphics.width - 20 * 2, 48, 'center');
             this._spriteTextdeConclusao.textDeConclusao = true;
             $gameTemp.allowMapPlayerMovement();
-            $gameSystem.craftSystem_recipeCraftItemsObtidos().forEach(function(item) {
+            $gameSystem.craftSystem_recipeCraftItemsObtidos().forEach(function (item) {
                 if (item.type == 'Item' || item.type == 'Arma' || item.type == 'Armadura') {
                     $gameParty.gainItem(item.item, item.amount, true);
                 } else if (item.type == "Habilidade") {
                     $gameParty.leader().learnSkill(item);
                 }
             });
-            $gameSystem.craftSystem_recipeCraftItemsRetirados().forEach(function(item) {
+            $gameSystem.craftSystem_recipeCraftItemsRetirados().forEach(function (item) {
                 if (item.type == 'Item' || item.type == 'Arma' || item.type == 'Armadura') {
                     $gameParty.loseItem(item.item, item.amount, true);
                 }
@@ -952,7 +954,7 @@
         }
     };
 
-    Scene_Map.prototype.updateTextDeConclusao = function() {
+    Scene_Map.prototype.updateTextDeConclusao = function () {
         if (this._spriteTextdeConclusaoFrames === undefined) {
             this._spriteTextdeConclusaoFrames = 120;
         }
@@ -975,7 +977,7 @@
         }
     };
 
-    Scene_Map.prototype.updateCraftRecipeTimer = function() {
+    Scene_Map.prototype.updateCraftRecipeTimer = function () {
         if ($gameSystem.craftSystem_recipeCraftActive()) {
             if (this._craftRecipeTimer == undefined) {
                 this._craftRecipeTimer = $gameSystem.craftSystem_recipeCraftActive()["tempoDePreparo"];
@@ -991,7 +993,7 @@
         }
     };
 
-    Scene_Map.prototype.updateCraftIconTimer = function() {
+    Scene_Map.prototype.updateCraftIconTimer = function () {
         if ($gameSystem.craftSystem_recipeCraftActive()) {
             if (!this._bitmapCraftIcon) {
                 this._bitmapCraftIcon = new Sprite(new Bitmap(Graphics.width, Graphics.height));
@@ -1059,13 +1061,13 @@
     // Window_MenuCommand
     //
     const _Window_MenuCommand = Window_MenuCommand.prototype.addMainCommands;
-    Window_MenuCommand.prototype.addMainCommands = function() {
+    Window_MenuCommand.prototype.addMainCommands = function () {
         _Window_MenuCommand.call(this);
         var enabled = this.craftSystemEnabled();
         this.addCommand('Craft', 'craftSystem', enabled);
     };
 
-    Window_MenuCommand.prototype.craftSystemEnabled = function() {
+    Window_MenuCommand.prototype.craftSystemEnabled = function () {
         return $gameSystem.craftSystem_recipes().length > 0;
     };
 
@@ -1073,11 +1075,11 @@
     // Scene_Menu
     //
     const sceneMenu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
-    Scene_Menu.prototype.createCommandWindow = function() {
+    Scene_Menu.prototype.createCommandWindow = function () {
         sceneMenu_createCommandWindow.call(this);
         this._commandWindow.setHandler('craftSystem', this.commandCraftSystem.bind(this));
     };
-    Scene_Menu.prototype.commandCraftSystem = function() {
+    Scene_Menu.prototype.commandCraftSystem = function () {
         SceneManager.push(Scene_CraftSystem);
     };
 
@@ -1091,11 +1093,11 @@
     Scene_CraftSystem.prototype = Object.create(Scene_Base.prototype);
     Scene_CraftSystem.prototype.constructor = Scene_CraftSystem;
 
-    Scene_CraftSystem.prototype.initialize = function() {
+    Scene_CraftSystem.prototype.initialize = function () {
         Scene_Base.prototype.initialize.call(this);
     };
 
-    Scene_CraftSystem.prototype.create = function() {
+    Scene_CraftSystem.prototype.create = function () {
         Scene_Base.prototype.create.call(this);
         this.createBackground();
         this.createWindowLayer();
@@ -1110,42 +1112,42 @@
         }
     };
 
-    Scene_CraftSystem.prototype.createBackground = function() {
+    Scene_CraftSystem.prototype.createBackground = function () {
         this._backgroundSprite = new Sprite();
         this._backgroundSprite.bitmap = SceneManager.backgroundBitmap();
         this.addChild(this._backgroundSprite);
     };
 
-    Scene_CraftSystem.prototype.createHelpWindow = function() {
+    Scene_CraftSystem.prototype.createHelpWindow = function () {
         this._helpWindow = new Window_Help();
         this.addWindow(this._helpWindow);
     };
 
-    Scene_CraftSystem.prototype.createRecipesListWindow = function() {
+    Scene_CraftSystem.prototype.createRecipesListWindow = function () {
         this._recipesWindow = new Window_RecipesList();
         this._recipesWindow.y = this._helpWindow.height;
         this._recipesWindow.setHandler('cancel', this.popScene.bind(this));
-        $gameSystem.craftSystem_recipes().forEach(function(recipe) {
+        $gameSystem.craftSystem_recipes().forEach(function (recipe) {
             var command = recipe["nome"];
             this._recipesWindow.setHandler(command, this.commandRecipesWindow.bind(this));
         }, this);
         this.addWindow(this._recipesWindow);
     };
 
-    Scene_CraftSystem.prototype.createRecipesInformationWindow = function() {
+    Scene_CraftSystem.prototype.createRecipesInformationWindow = function () {
         this._recipesInformationWindow = new Window_RecipeInformation();
         this._recipesInformationWindow.y = this._helpWindow.height + this._recipesWindow.height;
         this._recipesInformationWindow.height -= this._recipesInformationWindow.y;
         this.addWindow(this._recipesInformationWindow);
     };
 
-    Scene_CraftSystem.prototype.update = function() {
+    Scene_CraftSystem.prototype.update = function () {
         Scene_Base.prototype.update.call(this);
         this.updateRecipeHelpWindow();
         this.updateTriggeredCancel();
     };
 
-    Scene_CraftSystem.prototype.updateRecipeHelpWindow = function() {
+    Scene_CraftSystem.prototype.updateRecipeHelpWindow = function () {
         if (!this._recipesWindow) return;
         if (this._recipeHelpWindowIndex != this._recipesWindow.index()) {
             this._recipeHelpWindowIndex = this._recipesWindow.index();
@@ -1161,7 +1163,7 @@
         }
     };
 
-    Scene_CraftSystem.prototype.commandRecipesWindow = function() {
+    Scene_CraftSystem.prototype.commandRecipesWindow = function () {
         if (this._recipesInformationWindow.recipeIsValidToCraft()) {
             var index = this._recipesWindow.index();
             $gameSystem.craftSystem_recipeSetCraftActive(this._recipesWindow.commandRecipeIndex(index));
@@ -1192,7 +1194,7 @@
         }
     };
 
-    Scene_CraftSystem.prototype.updateTriggeredCancel = function() {
+    Scene_CraftSystem.prototype.updateTriggeredCancel = function () {
         if (this._updateTriggeredCancel) {
             if (Input.isTriggered('cancel') || TouchInput.isCancelled()) {
                 SoundManager.playCancel();
@@ -1212,24 +1214,24 @@
     Window_RecipesList.prototype = Object.create(Window_HorzCommand.prototype);
     Window_RecipesList.prototype.constructor = Window_RecipesList;
 
-    Window_RecipesList.prototype.initialize = function() {
+    Window_RecipesList.prototype.initialize = function () {
         Window_HorzCommand.prototype.initialize.call(this, 0, 0);
     };
 
-    Window_RecipesList.prototype.windowWidth = function() {
+    Window_RecipesList.prototype.windowWidth = function () {
         return Graphics.boxWidth;
     };
 
-    Window_RecipesList.prototype.maxCols = function() {
+    Window_RecipesList.prototype.maxCols = function () {
         return 1;
     };
 
-    Window_RecipesList.prototype.update = function() {
+    Window_RecipesList.prototype.update = function () {
         Window_HorzCommand.prototype.update.call(this);
     };
 
-    Window_RecipesList.prototype.makeCommandList = function() {
-        $gameSystem.craftSystem_recipes().forEach(function(recipe, recipeIndex) {
+    Window_RecipesList.prototype.makeCommandList = function () {
+        $gameSystem.craftSystem_recipes().forEach(function (recipe, recipeIndex) {
             var command = recipe["nome"];
             var description = recipe["descricao"];
             var classe = recipe["classe"];
@@ -1237,11 +1239,11 @@
         }, this);
     };
 
-    Window_RecipesList.prototype.addCommand = function(name, description, classe, recipeIndex) {
-        var classIsValid = (function() {
+    Window_RecipesList.prototype.addCommand = function (name, description, classe, recipeIndex) {
+        var classIsValid = (function () {
             var isValid = false;
             if (classe.length > 0) {
-                classe.forEach(function(classId) {
+                classe.forEach(function (classId) {
                     if ($gameParty.leader().currentClass() == $dataClasses[classId]) {
                         isValid = true;
                     }
@@ -1261,21 +1263,21 @@
         });
     };
 
-    Window_RecipesList.prototype.commandDescription = function(index) {
+    Window_RecipesList.prototype.commandDescription = function (index) {
         return this._list[index].description;
     };
 
-    Window_RecipesList.prototype.commandRecipe = function(index) {
+    Window_RecipesList.prototype.commandRecipe = function (index) {
         var recipeIndex = this._list[index].recipeIndex;
         return $gameSystem.craftSystem_recipes()[recipeIndex];
     };
 
-    Window_RecipesList.prototype.commandRecipeIndex = function(index) {
+    Window_RecipesList.prototype.commandRecipeIndex = function (index) {
         return this._list[index].recipeIndex;
     };
 
 
-    Window_RecipesList.prototype.scrollDown = function() {
+    Window_RecipesList.prototype.scrollDown = function () {
         if (this.topRow() + 1 < this.maxRows()) {
             var lastIndex = this.index();
             this.setTopRow(this.topRow() + 1);
@@ -1286,7 +1288,7 @@
         }
     };
 
-    Window_RecipesList.prototype.scrollUp = function() {
+    Window_RecipesList.prototype.scrollUp = function () {
         if (this.topRow() > 0) {
             var lastIndex = this.index();
             this.setTopRow(this.topRow() - 1);
@@ -1308,45 +1310,45 @@
     Window_RecipeInformation.prototype = Object.create(Window_Base.prototype);
     Window_RecipeInformation.prototype.constructor = Window_RecipeInformation;
 
-    Window_RecipeInformation.prototype.initialize = function() {
+    Window_RecipeInformation.prototype.initialize = function () {
         var width = this.windowWidth();
         var height = this.windowHeight();
         Window_Base.prototype.initialize.call(this, 0, 0, width, height);
     };
 
-    Window_RecipeInformation.prototype.windowWidth = function() {
+    Window_RecipeInformation.prototype.windowWidth = function () {
         return Graphics.boxWidth;
     };
 
-    Window_RecipeInformation.prototype.windowHeight = function() {
+    Window_RecipeInformation.prototype.windowHeight = function () {
         return Graphics.boxHeight;
     };
 
-    Window_RecipeInformation.prototype.setRecipe = function(recipe) {
+    Window_RecipeInformation.prototype.setRecipe = function (recipe) {
         this._recipe = recipe;
     };
 
-    Window_RecipeInformation.prototype.recipe = function() {
+    Window_RecipeInformation.prototype.recipe = function () {
         return this._recipe;
     };
 
-    Window_RecipeInformation.prototype.resetItemsAgainAndLose = function() {
+    Window_RecipeInformation.prototype.resetItemsAgainAndLose = function () {
         this._ItemsObtidos = [];
         this._ItemsRetirados = [];
     };
 
-    Window_RecipeInformation.prototype.itemsObtidos = function() {
+    Window_RecipeInformation.prototype.itemsObtidos = function () {
         return this._ItemsObtidos;
     };
 
-    Window_RecipeInformation.prototype.itemsRetirados = function() {
+    Window_RecipeInformation.prototype.itemsRetirados = function () {
         return this._ItemsRetirados;
     };
 
-    Window_RecipeInformation.prototype.recipeIsValidToCraft = function() {
+    Window_RecipeInformation.prototype.recipeIsValidToCraft = function () {
         var ingredientes = this.recipe()["ingredientes"].length;
         if (ingredientes > 0) {
-            this.recipe()["ingredientes"].forEach(function(ingrediente) {
+            this.recipe()["ingredientes"].forEach(function (ingrediente) {
                 var ingredienteParse = JSON.parse(ingrediente);
                 switch (ingredienteParse["Tipo de ingrediente"]) {
                     case 'Item':
@@ -1381,7 +1383,7 @@
         return ingredientes > 0;
     };
 
-    Window_RecipeInformation.prototype.refresh = function() {
+    Window_RecipeInformation.prototype.refresh = function () {
         var x = this.textPadding();
         var width = this.contents.width - this.textPadding() * 2;
         var widthHorzLine = 365;
@@ -1402,10 +1404,10 @@
         this.drawTipoDeClasse(centerX + this.textPadding() * 4, 195);
     };
 
-    Window_RecipeInformation.prototype.drawIngredientes = function() {
+    Window_RecipeInformation.prototype.drawIngredientes = function () {
         this._ingredienteslineY = 0;
         if (this.recipe()["ingredientes"].length > 0) {
-            this.recipe()["ingredientes"].forEach(function(ingrediente, index) {
+            this.recipe()["ingredientes"].forEach(function (ingrediente, index) {
                 var ingredienteParse = JSON.parse(ingrediente);
                 switch (ingredienteParse["Tipo de ingrediente"]) {
                     case 'Item':
@@ -1468,16 +1470,23 @@
         }
     };
 
-    Window_RecipeInformation.prototype.drawItemsObtidos = function() {
+    Window_RecipeInformation.prototype.drawItemsObtidos = function () {
         this._itemObtidoslineY = this._ingredienteslineY + 40;
         if (this.recipe()["obtem"].length > 0) {
-            this.recipe()["obtem"].forEach(function(itemObtido, index) {
+            this.recipe()["obtem"].forEach(function (itemObtido, index) {
                 var itemObtidoParse = JSON.parse(itemObtido);
                 switch (itemObtidoParse["Retorno"]) {
                     case 'Item':
                         var itemId = Number(itemObtidoParse["ID de Item"]) || 1;
                         var item = $dataItems[itemId];
                         var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        if (!item) {
+                            SceneManager.stop();
+                            Graphics.printError('DrXama_craftSystem.js',
+                                'Item com o id(' + itemId + ') não encontrado!');
+                            AudioManager.stopAll();
+                            return;
+                        }
                         var x = this.textPadding();
                         var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
                         this._itemObtidoslineY += 40;
@@ -1494,6 +1503,13 @@
                         var itemId = Number(itemObtidoParse["ID de Arma"]) || 1;
                         var item = $dataWeapons[itemId];
                         var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        if (!item) {
+                            SceneManager.stop();
+                            Graphics.printError('DrXama_craftSystem.js',
+                                'Arma com o id(' + itemId + ') não encontrado!');
+                            AudioManager.stopAll();
+                            return;
+                        }
                         var x = this.textPadding();
                         var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
                         this._itemObtidoslineY += 40;
@@ -1510,6 +1526,13 @@
                         var itemId = Number(itemObtidoParse["ID de Armadura"]) || 1;
                         var item = $dataArmors[itemId];
                         var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        if (!item) {
+                            SceneManager.stop();
+                            Graphics.printError('DrXama_craftSystem.js',
+                                'Armadura com o id(' + itemId + ') não encontrado!');
+                            AudioManager.stopAll();
+                            return;
+                        }
                         var x = this.textPadding();
                         var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
                         this._itemObtidoslineY += 40;
@@ -1526,6 +1549,13 @@
                         var itemId = Number(itemObtidoParse["ID de Habilidade"]) || 1;
                         var item = $dataSkills[itemId];
                         var itemQuant = Number(itemObtidoParse["Quantia"]);
+                        if (!item) {
+                            SceneManager.stop();
+                            Graphics.printError('DrXama_craftSystem.js',
+                                'Habilidade com o id(' + itemId + ') não encontrado!');
+                            AudioManager.stopAll();
+                            return;
+                        }
                         var x = this.textPadding();
                         var width = this.textWidth(item.name) < 100 ? (this.textWidth(item.name) * 2) - this.textPadding() * 4 : this.textWidth(item.name) + this.textPadding() * 4;
                         this._itemObtidoslineY += 40;
@@ -1550,31 +1580,31 @@
         }
     };
 
-    Window_RecipeInformation.prototype.drawItemNumber = function(item, itemQuant, x, y, width) {
+    Window_RecipeInformation.prototype.drawItemNumber = function (item, itemQuant, x, y, width) {
         this.changePaintOpacity($gameParty.numItems(item) >= itemQuant);
         this.drawText(`${$gameParty.numItems(item)}/${itemQuant}`, width + x, y, width, 'left');
         this.changePaintOpacity(true);
     };
 
-    Window_RecipeInformation.prototype.drawHorzLine = function(y, width, x) {
+    Window_RecipeInformation.prototype.drawHorzLine = function (y, width, x) {
         var lineY = y + this.lineHeight() / 2 - 1;
         this.contents.paintOpacity = 155;
         this.contents.fillRect(x || this.textPadding(), lineY, width || 365, 2, this.lineColor());
         this.contents.paintOpacity = 255;
     };
 
-    Window_RecipeInformation.prototype.drawVerzLine = function(x) {
+    Window_RecipeInformation.prototype.drawVerzLine = function (x) {
         var lineX = x + this.textPadding();
         this.contents.paintOpacity = 155;
         this.contents.fillRect(lineX, 0, 2, this.contentsHeight(), this.lineColor());
         this.contents.paintOpacity = 255;
     };
 
-    Window_RecipeInformation.prototype.lineColor = function() {
+    Window_RecipeInformation.prototype.lineColor = function () {
         return this.normalColor();
     };
 
-    Window_RecipeInformation.prototype.drawTempoDePreparo = function(x, y) {
+    Window_RecipeInformation.prototype.drawTempoDePreparo = function (x, y) {
         var tempoDePreparo = this.recipe()["tempoDePreparo"];
         this.drawIcon(220, x, y);
         x = x + 38;
@@ -1589,7 +1619,7 @@
         }
     };
 
-    Window_RecipeInformation.prototype.drawMusicaDePreparo = function(x, y) {
+    Window_RecipeInformation.prototype.drawMusicaDePreparo = function (x, y) {
         var musicaDePreparo = this.recipe()["tocarMusica"];
         this.drawIcon(206, x, y);
         x = x + 38;
@@ -1605,7 +1635,7 @@
     };
 
 
-    Window_RecipeInformation.prototype.drawItemName = function(item, x, y, width) {
+    Window_RecipeInformation.prototype.drawItemName = function (item, x, y, width) {
         width = width || 312;
         if (item) {
             var iconBoxWidth = Window_Base._iconWidth + 4;
@@ -1615,11 +1645,11 @@
         }
     };
 
-    Window_RecipeInformation.prototype.drawTipoDeClasse = function(x, y) {
+    Window_RecipeInformation.prototype.drawTipoDeClasse = function (x, y) {
         if (this.recipe()["classe"].length > 0) {
             this._tipoDeClasselineY = y;
             var widthHorzLine = 365;
-            this.recipe()["classe"].forEach(function(classId, index) {
+            this.recipe()["classe"].forEach(function (classId, index) {
                 if (classId <= 0) {
                     classId = 1;
                 }
@@ -1651,31 +1681,31 @@
     Scene_CraftActive.prototype = Object.create(Scene_Base.prototype);
     Scene_CraftActive.prototype.constructor = Scene_CraftActive;
 
-    Scene_CraftActive.prototype.initialize = function() {
+    Scene_CraftActive.prototype.initialize = function () {
         Scene_Base.prototype.initialize.call(this);
     };
 
-    Scene_CraftActive.prototype.start = function() {
+    Scene_CraftActive.prototype.start = function () {
         Scene_Base.prototype.start.call(this);
         SceneManager.clearStack();
         this.startFadeIn(this.fadeSpeed(), false);
         this._craftRecipeTimer = $gameSystem.craftSystem_recipeCraftActive()["tempoDePreparo"];
     };
 
-    Scene_CraftActive.prototype.create = function() {
+    Scene_CraftActive.prototype.create = function () {
         Scene_Base.prototype.create.call(this);
         this.createBackground();
         this.createBackgroundSprite();
         this.drawCraftLoad();
     };
 
-    Scene_CraftActive.prototype.createBackground = function() {
+    Scene_CraftActive.prototype.createBackground = function () {
         this._backgroundSprite = new Sprite();
         this._backgroundSprite.bitmap = ImageManager.loadTitle1('Plain');
         this.addChild(this._backgroundSprite);
     };
 
-    Scene_CraftActive.prototype.createBackgroundSprite = function() {
+    Scene_CraftActive.prototype.createBackgroundSprite = function () {
         this._backgroundSprite2 = new Sprite();
         this._backgroundSprite2.scale = new Point(1.5, 1.5);
         this._backgroundSprite2.anchor = new Point(0.5, 0.5);
@@ -1686,7 +1716,7 @@
         this.addChild(this._backgroundSprite2);
     };
 
-    Scene_CraftActive.prototype.drawCraftLoad = function() {
+    Scene_CraftActive.prototype.drawCraftLoad = function () {
         var x = 20;
         var y = 35;
         var maxWidth = Graphics.width - x * 2;
@@ -1702,7 +1732,7 @@
         this.addChild(this._craftLoadSprite);
     };
 
-    Scene_CraftActive.prototype.update = function() {
+    Scene_CraftActive.prototype.update = function () {
         Scene_Base.prototype.update.call(this);
         this.updateOpacityCraftLoadSprite();
         this.updateBackgroundSprite();
@@ -1710,7 +1740,7 @@
         this.updateCraftComplete();
     };
 
-    Scene_CraftActive.prototype.updateOpacityCraftLoadSprite = function() {
+    Scene_CraftActive.prototype.updateOpacityCraftLoadSprite = function () {
         if (!this._craftLoadSprite) return;
         if (this._craftLoadSpriteFrames === undefined) {
             this._craftLoadSpriteFrames = [60, 120];
@@ -1732,7 +1762,7 @@
         }
     };
 
-    Scene_CraftActive.prototype.updateBackgroundSprite = function() {
+    Scene_CraftActive.prototype.updateBackgroundSprite = function () {
         if (this._backgroundSpriteFrames === undefined) {
             this._backgroundSpriteFrames = [60, 60];
         }
@@ -1759,7 +1789,7 @@
         }
     };
 
-    Scene_CraftActive.prototype.updateCraftRecipeTimer = function() {
+    Scene_CraftActive.prototype.updateCraftRecipeTimer = function () {
         console.log(this._craftRecipeTimer);
         if (this._craftRecipeTimer > 0) {
             this._craftRecipeTimer -= 0.60;
@@ -1768,12 +1798,12 @@
         }
     };
 
-    Scene_CraftActive.prototype.terminate = function() {
+    Scene_CraftActive.prototype.terminate = function () {
         Scene_Base.prototype.terminate.call(this);
         AudioManager.stopBgm();
     };
 
-    Scene_CraftActive.prototype.updateCraftComplete = function() {
+    Scene_CraftActive.prototype.updateCraftComplete = function () {
         if ($gameSystem.craftSystem_recipeCraftIsComplete()) {
             SceneManager.goto(Scene_Map);
         }

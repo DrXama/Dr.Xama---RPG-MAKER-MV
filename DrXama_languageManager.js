@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Gerenciador de traduções
+ * @plugindesc v1.01 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  * 
@@ -118,6 +118,12 @@
  * @type struct<geralTexts>
  * @default {"Texto Party Name":"[\"{\\\"Valor\\\":\\\"O Grupo %1!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1's Party\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Emerge":"[\"{\\\"Valor\\\":\\\"%1 Sugiu!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 emerged!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Preemptive":"[\"{\\\"Valor\\\":\\\"%1 foi o melhor!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 got the upper hand!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Surprise":"[\"{\\\"Valor\\\":\\\"%1 ficou surpreso!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 was surprised!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Escape Start":"[\"{\\\"Valor\\\":\\\"%1 começou a escapar!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 has started to escape!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Escape Failure":"[\"{\\\"Valor\\\":\\\"No entanto, não conseguiu escapar!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"However, it was unable to escape!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Victory":"[\"{\\\"Valor\\\":\\\"%1 saiu vitorioso!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 was victorious!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Defeat":"[\"{\\\"Valor\\\":\\\"%1 saiu derrotado.\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 was defeated.\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Obtain Exp":"[\"{\\\"Valor\\\":\\\"%1 de %2 recebido!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 %2 received!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Obtain Gold":"[\"{\\\"Valor\\\":\\\"%1\\\\\\\\G encontrado!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1\\\\\\\\G found!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Obtain Item":"[\"{\\\"Valor\\\":\\\"%1 encontrado\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 found!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto level Up":"[\"{\\\"Valor\\\":\\\"%1 subiu de nivel: %2 %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 is now %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Obtain Skill":"[\"{\\\"Valor\\\":\\\"Acabou de aprender %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 learned!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Use Item":"[\"{\\\"Valor\\\":\\\"%1 usou %2!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 uses %2!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Critical To Enemy":"[\"{\\\"Valor\\\":\\\"Um excelente golpe!!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"An excellent hit!!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Critical To Actor":"[\"{\\\"Valor\\\":\\\"Um golpe doloroso!!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"A painful blow!!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor Damage":"[\"{\\\"Valor\\\":\\\"%1 tomou %2 de dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 took %2 damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor Recovery":"[\"{\\\"Valor\\\":\\\"%1 recuperou %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 recovered %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor Gain":"[\"{\\\"Valor\\\":\\\"%1 ganhou %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 gained %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor Loss":"[\"{\\\"Valor\\\":\\\"%1 perdeu %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 lost %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor Drain":"[\"{\\\"Valor\\\":\\\"%1 foi drenado, e perdeu %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 was drained of %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor No Damage":"[\"{\\\"Valor\\\":\\\"%1 não deu nenhum dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 took no damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Actor No Hit":"[\"{\\\"Valor\\\":\\\"Errou! %1 não deu nenhum dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Miss! %1 took no damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy Damage":"[\"{\\\"Valor\\\":\\\"%1 tomou %2 de dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 took %2 damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy Recovery":"[\"{\\\"Valor\\\":\\\"%1 recuperou %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 recovered %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy Gain":"[\"{\\\"Valor\\\":\\\"%1 ganhou %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 gained %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy Loss":"[\"{\\\"Valor\\\":\\\"%1 perdeu %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 lost %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy Drain":"[\"{\\\"Valor\\\":\\\"%1 foi drenado, e perdeu %2 de %3!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 was drained of %2 %3!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy No Damage":"[\"{\\\"Valor\\\":\\\"%1 não deu nenhum dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 took no damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Enemy No Hit":"[\"{\\\"Valor\\\":\\\"Errou! %1 não deu nenhum dano!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Miss! %1 took no damage!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Evasion":"[\"{\\\"Valor\\\":\\\"%1 escapou do ataque!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 evaded the attack!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Magic Evasion":"[\"{\\\"Valor\\\":\\\"%1 escapou da magia!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 nullified the magic!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Magic Reflection":"[\"{\\\"Valor\\\":\\\"%1 refletiu a magia!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 reflected the magic!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Counter Attack":"[\"{\\\"Valor\\\":\\\"%1 contra-atacou!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 counterattacked!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Substitute":"[\"{\\\"Valor\\\":\\\"%1 protegido por %2!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 protected %2!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Buff Add":"[\"{\\\"Valor\\\":\\\"%2 aumentou para %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1's %2 went up!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Debuff Add":"[\"{\\\"Valor\\\":\\\"%2 diminuiu para %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1's %2 went down!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Buff Remove":"[\"{\\\"Valor\\\":\\\"%2 voltou ao normal para %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1's %2 returned to normal!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Action Failure":"[\"{\\\"Valor\\\":\\\"Não houve efeito sobre %1!\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"There was no effect on %1!\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]"}
  * 
+ * @param Especiais
+ * @parent Mensagens
+ * @desc Textos gerais
+ * @type struct<especiaisTexts>[]
+ * @default ["{\"Texto Especial Id\":\"1\",\"Texto Especial Face\":\"true\",\"Texto Especial Face Name\":\"Actor1\",\"Texto Especial Face Index\":\"0\",\"Texto Especial Texto\":\"\\\"Testando o sistema!\\\"\",\"Texto Idioma\":\"pt_br\"}"]
+ * 
  * @param Estados
  * @parent Sistema
  * @desc Textos dos estados
@@ -182,8 +188,16 @@
  *    Comandos de Plugin
  * ================================================================================
  * - setLanguage tag - Define o idioma do jogo
- * - Exemplos:
+ * - Exemplo:
  *   setLanguage en_us
+ * 
+ * - setMessageBox id - Exibe a janela de mensagem indicada
+ * - Exemplo:
+ *   setMessageBox 1
+ * ================================================================================
+ *    Comandos de Script
+ * ================================================================================
+ * - this.getterLanguageSystem() - Retorna o idioma do sistema
  * ================================================================================
  *    Janela de Mensagens
  * ================================================================================
@@ -255,6 +269,7 @@
         var armors = JsonParse(JSON.parse(file['Armadura']));
         var enemies = JsonParse(JSON.parse(file['Inimigos']));
         var texts = JsonParse(JSON.parse(file['Textos']));
+        var specialsTexts = JsonParse(JSON.parse(file['Especiais']));
         return {
             'language': language,
             'title': title,
@@ -281,7 +296,8 @@
             'weapons': weapons,
             'armors': armors,
             'enemies': enemies,
-            'texts': texts
+            'texts': texts,
+            'specialsTexts': specialsTexts
         }
     })();
 
@@ -337,7 +353,7 @@
         var data = LZString.compressToBase64(JSON.stringify({
             'language': params.language
         }, null, 2));
-        if (fs.existsSync(path_folderSystem) && fs.existsSync(path_folderLanguage)) {
+        if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_folderLanguage)) {
             fs.writeFileSync(path_fileSettingsLanguage, data);
         }
         if (callback) callback();
@@ -351,8 +367,10 @@
         var path_folderLanguage = localPath('system/language');
         var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settings.drxamasave';
         var language = params.language;
-        if (fs.existsSync()) {
-            var data = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage)));
+        if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_fileSettingsLanguage)) {
+            var data = JSON.parse(LZString.decompressFromBase64(
+                fs.readFileSync(path_fileSettingsLanguage, { 'encoding': 'utf8' })
+            ));
             language = data.language;
         }
         return language;
@@ -636,7 +654,6 @@
             Object.keys(manager).forEach(function (key) {
                 Object.keys(object).forEach(function (key2) {
                     if (key.includesEx(String(key2))) {
-                        console.log(manager[key]);
                         object[key2] = getterTextLanguage(manager[key])
                     }
                 });
@@ -1147,6 +1164,33 @@
         defineSystemEnemies();
     };
 
+    function setMessageBox(messageId) {
+        var specialsTexts = params.specialsTexts;
+        if (specialsTexts instanceof Array) {
+            specialsTexts.forEach(function (specialText) {
+                var language = getterLanguageSystem();
+                var idioma = String(specialText['Texto Idioma']);
+                var id = Number(specialText['Texto Especial Id']);
+                var valor = String(specialText['Texto Especial Texto']).replace(/\"/g, '').split('\\n');
+                var face = [
+                    Boolean(JSON.parse(specialText['Texto Especial Face'])),
+                    String(specialText['Texto Especial Face Name']),
+                    Number(specialText['Texto Especial Face Index'])
+                ];
+                if (id == messageId) {
+                    if (language == idioma || idioma == 'qualquer') {
+                        if (face[0]) {
+                            $gameMessage.setFaceImage(face[1], face[2]);
+                        }
+                        valor.forEach(function (message) {
+                            $gameMessage.add(message);
+                        });
+                    }
+                }
+            });
+        }
+    };
+
     //-----------------------------------------------------------------------------
     // Scene_Boot
     //
@@ -1177,11 +1221,20 @@
     const __Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
     Game_Interpreter.prototype.pluginCommand = function (command, args) {
         __Game_Interpreter_pluginCommand.call(this, command, args);
-        if (String(command).toLowerCase() == 'setlanguage') {
+        command = String(command).toLowerCase();
+        if (command == 'setlanguage') {
             params.language = String(args[0]).toLowerCase();
             translateObject = {};
             createFileSettingsLanguage(defineAllTexts);
         }
+        if (command == 'setmessagebox') {
+            var messageId = Number(args[0]);
+            setMessageBox(messageId);
+        }
+    };
+
+    Game_Interpreter.prototype.getterLanguageSystem = function () {
+        return getterLanguageSystem();
     };
 })();
 //==================================================================================================
@@ -1680,6 +1733,48 @@
  * @param Texto Action Failure
  * @desc Os valores do texto
  * @type struct<TextoMenu>[]
+ * 
+ */
+/*~struct~especiaisTexts:
+ * @param Texto Especial Id
+ * @desc O indicador do texto
+ * @type number
+ * @default 1
+ * @min 1
+ * 
+ * @param Texto Especial Face
+ * @desc O texto deve ter a face?
+ * @type boolean
+ * @default false
+ * @on Sim
+ * @off Não
+ * 
+ * @param Texto Especial Face Name
+ * @parent Texto Especial Face
+ * @desc O nome do arquivo da face
+ * @type file
+ * @dir img/faces/
+ * @require 1
+ * 
+ * @param Texto Especial Face Index
+ * @parent Texto Especial Face
+ * @desc O indicador da face do texto
+ * @type number
+ * @default 1
+ * @min 0
+ * 
+ * @param Texto Especial Texto
+ * @desc O texto especial
+ * @type note
+ * @default ""
+ * 
+ * @param Texto Idioma
+ * @desc Qual o idioma?
+ * @type combo
+ * @default qualquer
+ * @option qualquer
+ * @option pt_br
+ * @option en_us
  * 
  */
 /*~struct~StatesTexts:

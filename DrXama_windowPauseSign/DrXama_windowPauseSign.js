@@ -2,7 +2,7 @@
 // DrXama_windowPauseSign.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Altera a seta de pause da janela de mensagens
+ * @plugindesc v1.02 - Altera a seta de pause da janela de mensagens
  *
  * @author Dr.Xamã
  * 
@@ -10,6 +10,29 @@
  * @desc Qual o nome do arquivo para a seta de pause?
  * @type string
  * @default WindowPauseSign
+ * 
+ * @param Eixo X
+ * @desc Eixo X da posição da seta na imagem
+ * @type number
+ * @default 0
+ * @min 0
+ * 
+ * @param Eixo Y
+ * @desc Eixo Y da posição da seta na imagem
+ * @type number
+ * @default 0
+ * @min 0
+ * 
+ * @param Alinhamento da seta
+ * @desc Alinhamento da seta na janela de mensagens
+ * @type select
+ * @default center
+ * @option center
+ * @option left
+ * @option right
+ * @option center_up
+ * @option left_up
+ * @option right_up
  * 
  * @help
  * ================================================================================
@@ -52,6 +75,11 @@
     //
     const params = PluginManager.parameters('DrXama_windowPauseSign');
     const fileName = params['Nome do arquivo'] || 'WindowPauseSign';
+    const pauseSign = [
+        Number(params['Eixo X']),
+        Number(params['Eixo Y']),
+        String(params['Alinhamento da seta'])
+    ];
 
     //-----------------------------------------------------------------------------
     // Game_System
@@ -59,14 +87,13 @@
     const game_system_initialize = Game_System.prototype.initialize;
     Game_System.prototype.initialize = function () {
         game_system_initialize.call(this);
-        this._windowPauseSign = [0, 0];
-        this._windowPauseSignPosition = 'center';
+        this.setWindowPauseSign(pauseSign[0], pauseSign[1])
+        this.setWindowPauseSignPosition(pauseSign[2]);
     };
 
     Game_System.prototype.setWindowPauseSign = function (x, y) {
         x = x || 0;
         y = y || 0;
-        if (x > 0) x--;
         var arrowXy = [0, 0];
         while (x > 0 || y > 0) {
             if (x > 0) {

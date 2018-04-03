@@ -82,8 +82,6 @@
  *         - %1 : Exibe a informação
  * - Exemplo: this.windowHudDrawInfo(tag, 'Actor', 'Name', null, 'Olá %1, Obrigado por usar o plugin!');
  * 
- * 
- * 
  * - Target 
  *         - InfoId
  * - Actor:

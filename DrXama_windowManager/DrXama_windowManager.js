@@ -40,7 +40,7 @@
  *                    - colorTone : A cor da janela em [r, g, b]
  * 
  * - this.windowHudDrawText(tag, text, x, y, opacity, fontFace, fontSize, 
- * fontItalic, textColor, outlineWidth, outlineColor);
+ * fontItalic, textColor, outlineWidth, outlineColor, textAlign);
  *                    - tag : indicador da janela
  *                    - text : valor do texto
  *                    - x : eixo x do texto
@@ -53,6 +53,8 @@
  *                    - outlineWidth : A largura do contorno do texto.
  *                    - outlineColor : A cor do contorno do texto no formato 
  *                                     CSS.
+ *                    - textAlign : O alinhamento do texto
+ *                                  - left, right e center
  * 
  * - this.windowHudDrawPicture(tag, pictureName, opacity, x, y, scale);
  *                    - tag : indicador da janela
@@ -76,6 +78,12 @@
  * ================================================================================
  *    DrawInfo
  * ================================================================================
+ * - Valor especial para a mensagem: %1
+ *         - %1 : Exibe a informação
+ * - Exemplo: this.windowHudDrawInfo(tag, 'Actor', 'Name', null, 'Olá %1, Obrigado por usar o plugin!');
+ * 
+ * 
+ * 
  * - Target 
  *         - InfoId
  * - Actor:
@@ -164,7 +172,7 @@
         scene.createHudWindow.apply(scene, arguments);
     };
 
-    Game_Interpreter.prototype.windowHudDrawText = function (tag, text, x, y, opacity, fontFace, fontSize, fontItalic, textColor, outlineWidth, outlineColor) {
+    Game_Interpreter.prototype.windowHudDrawText = function (tag, text, x, y, opacity, fontFace, fontSize, fontItalic, textColor, outlineWidth, outlineColor, textAlign) {
         var scene = SceneManager._scene;
         scene.windowHudDrawText.apply(scene, arguments);
     };
@@ -213,7 +221,8 @@
         this.addChildAt(win, zIndex);
     };
 
-    Scene_Base.prototype.windowHudDrawText = function (tag, text, x, y, opacity, fontFace, fontSize, fontItalic, textColor, outlineWidth, outlineColor) {
+    Scene_Base.prototype.windowHudDrawText = function (tag, text, x, y, opacity, fontFace, fontSize, fontItalic,
+        textColor, outlineWidth, outlineColor, textAlign) {
         text = text || '???',
             x = x || 6,
             y = y || 6,
@@ -223,14 +232,17 @@
             fontItalic = fontItalic || false,
             textColor = '#ffffff',
             outlineWidth = outlineWidth || 4,
-            outlineColor = outlineColor || 'rgba(0, 0, 0, 0.5)';
+            outlineColor = outlineColor || 'rgba(0, 0, 0, 0.5)',
+            textAlign = textAlign || 'left',
+            textAlign = String(textAlign).toLowerCase();
         var win = window_huds.map(function (windowHud) {
             if (windowHud.tag == tag)
                 return windowHud;
         });
         win.forEach(function (windowHud) {
             if (windowHud instanceof Window_Hud)
-                windowHud.drawTextMaster(text, x, y, opacity, fontFace, fontSize, fontItalic, textColor, outlineWidth, outlineColor);
+                windowHud.drawTextMaster(text, x, y, opacity, fontFace, fontSize, fontItalic,
+                    textColor, outlineWidth, outlineColor, textAlign);
         });
     };
 
@@ -275,7 +287,7 @@
         if (textSettings instanceof Array == false) {
             textSettings = [
                 0, 0, 255, 'GameFont', 28,
-                false, 'White', 4, 'black'
+                false, 'White', 4, 'black', 'left'
             ]
         }
         var win = window_huds.map(function (windowHud) {
@@ -334,7 +346,7 @@
     Window_Hud.prototype.updateTone = function () {};
 
     Window_Hud.prototype.drawTextMaster = function (text, x, y, opacity, fontFace, fontSize,
-        fontItalic, textColor, outlineWidth, outlineColor) {
+        fontItalic, textColor, outlineWidth, outlineColor, textAlign) {
         x += this.textPadding();
         var width = this.contents.width - this.textPadding() * 2;
         this.contents.fontFace = fontFace;
@@ -344,7 +356,7 @@
         this.contents.textColor = textColor;
         this.contents.outlineWidth = outlineWidth;
         this.contents.outlineColor = outlineColor;
-        this.drawText(text, x, y, width, 0, 'left');
+        this.drawText(text, x, y, width, 0, textAlign);
     };
 
     Window_Hud.prototype.drawPictureMaster = function (pictureName, x, y, scale) {
@@ -419,6 +431,6 @@
         }
         this.drawTextMaster(value, textSettings[0], textSettings[1], textSettings[2],
             textSettings[3], textSettings[4], textSettings[5], textSettings[6],
-            textSettings[7], textSettings[8]);
+            textSettings[7], textSettings[8], textSettings[9]);
     };
 })();

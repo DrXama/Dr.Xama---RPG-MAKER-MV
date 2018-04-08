@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.03 - Gerenciador de traduções
+ * @plugindesc v1.04 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -321,7 +321,7 @@
 	//
 	String.prototype.includesEx = function (string) {
 		return this.toLowerCase().replace(/\s{1,}/g, '')
-		.includes(string.toLowerCase().replace(/\s{1,}/g, ''));
+			.includes(string.toLowerCase().replace(/\s{1,}/g, ''));
 	};
 
 	//-----------------------------------------------------------------------------
@@ -362,8 +362,8 @@
 		var path_folderLanguage = localPath('system/language');
 		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settings.drxamasave';
 		var data = LZString.compressToBase64(JSON.stringify({
-					'language': params.language
-				}, null, 2));
+			'language': params.language
+		}, null, 2));
 		if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_folderLanguage)) {
 			if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test')) {
 				fs.writeFileSync(path_fileSettingsLanguage, data);
@@ -383,9 +383,9 @@
 		var language = params.language;
 		if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_fileSettingsLanguage)) {
 			var data = JSON.parse(LZString.decompressFromBase64(
-						fs.readFileSync(path_fileSettingsLanguage, {
-							'encoding': 'utf8'
-						})));
+				fs.readFileSync(path_fileSettingsLanguage, {
+					'encoding': 'utf8'
+				})));
 			language = data.language;
 		}
 		return language;
@@ -406,94 +406,94 @@
 						var id = key.Element[1];
 						var stringCase = String(key.Element[0]).toLowerCase();
 						switch (stringCase) {
-						case 'equipamento':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'armadura':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'arma':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'habilidade':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'elemento':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'statesmessage':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'skills':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'skillsmessage':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'actors':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'classes':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'items':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'weapons':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'armors':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'enemies':
-							if (!translateObject[stringCase])
-								translateObject[stringCase] = {};
-							if (!translateObject[stringCase][id])
-								translateObject[stringCase][id] = {};
-							return translateObject[stringCase][id];
-						case 'states':
-							return $dataStates[id];
-						case 'item':
-							return $dataItems[id];
+							case 'equipamento':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'armadura':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'arma':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'habilidade':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'elemento':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'statesmessage':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'skills':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'skillsmessage':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'actors':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'classes':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'items':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'weapons':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'armors':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'enemies':
+								if (!translateObject[stringCase])
+									translateObject[stringCase] = {};
+								if (!translateObject[stringCase][id])
+									translateObject[stringCase][id] = {};
+								return translateObject[stringCase][id];
+							case 'states':
+								return $dataStates[id];
+							case 'item':
+								return $dataItems[id];
 						}
 					})();
 				if (idioma == 'qualquer' || idioma == language) {
@@ -652,15 +652,15 @@
 					if (!translateObject[translateId] || translateObject[translateId] && !translateObject[translateId][index] ||
 						translateObject[translateId] && translateObject[translateId][index] && !translateObject[translateId][index].translate) {
 						object[index] = getterTextLanguage([
-									JSON.stringify({
-										'Idioma': language,
-										'Valor': text,
-										'Element': [
-											stringIndex,
-											index
-										]
-									})
-								])
+							JSON.stringify({
+								'Idioma': language,
+								'Valor': text,
+								'Element': [
+									stringIndex,
+									index
+								]
+							})
+						])
 					}
 				}
 			});
@@ -677,44 +677,44 @@
 		};
 		setTextParameterMessage(params.messages, $dataSystem.terms.messages);
 		var i = 0,
-		length = $dataSystem.terms.params.length,
-		object = $dataSystem.terms.params;
+			length = $dataSystem.terms.params.length,
+			object = $dataSystem.terms.params;
 		for (; i < length; i++) {
 			setTextParameter(params.status, object[i], object, i);
 		}
 		i = 0,
-		length = $dataSystem.terms.basic.length,
-		object = $dataSystem.terms.basic;
+			length = $dataSystem.terms.basic.length,
+			object = $dataSystem.terms.basic;
 		for (; i < length; i++) {
 			setTextParameter(params.basic, object[i], object, i);
 		}
 		i = 0,
-		length = $dataSystem.elements.length,
-		object = $dataSystem.elements;
+			length = $dataSystem.elements.length,
+			object = $dataSystem.elements;
 		for (; i < length; i++) {
 			setTextParameter2(params.elementTypes, 'Elemento', object, i);
 		}
 		i = 0,
-		length = $dataSystem.skillTypes.length,
-		object = $dataSystem.skillTypes;
+			length = $dataSystem.skillTypes.length,
+			object = $dataSystem.skillTypes;
 		for (; i < length; i++) {
 			setTextParameter2(params.skillTypes, 'Habilidade', object, i);
 		}
 		i = 0,
-		length = $dataSystem.weaponTypes.length,
-		object = $dataSystem.weaponTypes;
+			length = $dataSystem.weaponTypes.length,
+			object = $dataSystem.weaponTypes;
 		for (; i < length; i++) {
 			setTextParameter2(params.weaponsTypes, 'Arma', object, i);
 		}
 		i = 0,
-		length = $dataSystem.armorTypes.length,
-		object = $dataSystem.armorTypes;
+			length = $dataSystem.armorTypes.length,
+			object = $dataSystem.armorTypes;
 		for (; i < length; i++) {
 			setTextParameter2(params.armorTypes, 'Armadura', object, i);
 		}
 		i = 0,
-		length = $dataSystem.equipTypes.length,
-		object = $dataSystem.equipTypes;
+			length = $dataSystem.equipTypes.length,
+			object = $dataSystem.equipTypes;
 		for (; i < length; i++) {
 			setTextParameter2(params.equipTypes, 'Equipamento', object, i);
 		}
@@ -725,27 +725,27 @@
 		if (params.states instanceof Array) {
 			params.states.forEach(function (state) {
 				var id = Number(state['Texto Estado Id']),
-				name = String(state['Texto Estado Nome']),
-				messages = [
-					String(state['Texto Estado message 1']),
-					String(state['Texto Estado message 2']),
-					String(state['Texto Estado message 3']),
-					String(state['Texto Estado message 4'])
-				],
-				language = String(state['Texto Idioma']);
+					name = String(state['Texto Estado Nome']),
+					messages = [
+						String(state['Texto Estado message 1']),
+						String(state['Texto Estado message 2']),
+						String(state['Texto Estado message 3']),
+						String(state['Texto Estado message 4'])
+					],
+					language = String(state['Texto Idioma']);
 				if ($dataStates[id]) {
 					if (name.length > 0) {
 						if (!$dataStates[id].translate) {
 							$dataStates[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'states',
-												id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'states',
+										id
+									]
+								})
+							]);
 						}
 					}
 					messages.forEach(function (message, index) {
@@ -756,15 +756,15 @@
 								translateObject['statesmessage'] && translateObject['statesmessage']['message' + messageId] &&
 								!translateObject['statesmessage']['message' + messageId].translate) {
 								$dataStates[id]['message' + messageId] = getterTextLanguage([
-											JSON.stringify({
-												'Idioma': language,
-												'Valor': ' ' + message,
-												'Element': [
-													'statesMessage',
-													'message' + messageId
-												]
-											})
-										]);
+									JSON.stringify({
+										'Idioma': language,
+										'Valor': ' ' + message,
+										'Element': [
+											'statesMessage',
+											'message' + messageId
+										]
+									})
+								]);
 							}
 						}
 					});
@@ -778,13 +778,13 @@
 		if (params.skills instanceof Array) {
 			params.skills.forEach(function (skill) {
 				var id = Number(skill['Texto Habilidade Id']),
-				name = String(skill['Texto Habilidade Nome']),
-				description = JSON.parse(skill['Texto Habilidade Descrição']),
-				messages = [
-					String(skill['Texto Habilidade message 1']),
-					String(skill['Texto Habilidade message 2'])
-				],
-				language = String(skill['Texto Idioma']);
+					name = String(skill['Texto Habilidade Nome']),
+					description = JSON.parse(skill['Texto Habilidade Descrição']),
+					messages = [
+						String(skill['Texto Habilidade message 1']),
+						String(skill['Texto Habilidade message 2'])
+					],
+					language = String(skill['Texto Idioma']);
 				if ($dataSkills[id]) {
 					if (name.length > 0) {
 						if (!translateObject['skills'] ||
@@ -794,15 +794,15 @@
 							translateObject['skills']['name' + id] &&
 							!translateObject['skills']['name' + id].translate) {
 							$dataSkills[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'skills',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'skills',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 					if (description.length > 0) {
@@ -813,15 +813,15 @@
 							translateObject['skills']['description' + id] &&
 							!translateObject['skills']['description' + id].translate) {
 							$dataSkills[id].description = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': description,
-											'Element': [
-												'skills',
-												'description' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': description,
+									'Element': [
+										'skills',
+										'description' + id
+									]
+								})
+							]);
 						}
 					}
 					messages.forEach(function (message, index) {
@@ -834,15 +834,15 @@
 								translateObject['skillsmessage']['message' + messageId] &&
 								!translateObject['skillsmessage']['message' + messageId].translate) {
 								$dataSkills[id]['message' + messageId] = getterTextLanguage([
-											JSON.stringify({
-												'Idioma': language,
-												'Valor': ' ' + message,
-												'Element': [
-													'skillsMessage',
-													'message' + messageId
-												]
-											})
-										]);
+									JSON.stringify({
+										'Idioma': language,
+										'Valor': ' ' + message,
+										'Element': [
+											'skillsMessage',
+											'message' + messageId
+										]
+									})
+								]);
 							}
 						}
 					});
@@ -856,10 +856,10 @@
 		if (params.actors instanceof Array) {
 			params.actors.forEach(function (actor) {
 				var id = Number(actor['Texto Ator Id']),
-				name = String(actor['Texto Ator Nome']),
-				nickname = String(actor['Texto Ator Nickname']),
-				profile = JSON.parse(actor['Texto Ator Profile']),
-				language = String(actor['Texto Idioma']);
+					name = String(actor['Texto Ator Nome']),
+					nickname = String(actor['Texto Ator Nickname']),
+					profile = JSON.parse(actor['Texto Ator Profile']),
+					language = String(actor['Texto Idioma']);
 				if ($dataActors[id]) {
 					if (name.length > 0) {
 						if (!translateObject['actors'] ||
@@ -869,15 +869,15 @@
 							translateObject['actors']['name' + id] &&
 							!translateObject['actors']['name' + id].translate) {
 							$dataActors[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Actors',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Actors',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 					if (nickname.length > 0) {
@@ -888,15 +888,15 @@
 							translateObject['actors']['nickname' + id] &&
 							!translateObject['actors']['nickname' + id].translate) {
 							$dataActors[id].nickname = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': nickname,
-											'Element': [
-												'Actors',
-												'nickname' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': nickname,
+									'Element': [
+										'Actors',
+										'nickname' + id
+									]
+								})
+							]);
 						}
 					}
 					if (profile.length > 0) {
@@ -907,15 +907,15 @@
 							translateObject['actors']['profile' + id] &&
 							!translateObject['actors']['profile' + id].translate) {
 							$dataActors[id].profile = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': profile,
-											'Element': [
-												'Actors',
-												'profile' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': profile,
+									'Element': [
+										'Actors',
+										'profile' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -928,8 +928,8 @@
 		if (params.classes instanceof Array) {
 			params.classes.forEach(function (classe) {
 				var id = Number(classe['Texto Classe Id']),
-				name = String(classe['Texto Classe Nome']),
-				language = String(classe['Texto Idioma']);
+					name = String(classe['Texto Classe Nome']),
+					language = String(classe['Texto Idioma']);
 				if ($dataClasses[id]) {
 					if (name.length > 0) {
 						if (!translateObject['classes'] ||
@@ -939,15 +939,15 @@
 							translateObject['classes']['name' + id] &&
 							!translateObject['classes']['name' + id].translate) {
 							$dataClasses[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Classes',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Classes',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -960,9 +960,9 @@
 		if (params.items instanceof Array) {
 			params.items.forEach(function (item) {
 				var id = Number(item['Texto Item Id']),
-				name = String(item['Texto Item Nome']),
-				description = JSON.parse(item['Texto Item Descrição']),
-				language = String(item['Texto Idioma']);
+					name = String(item['Texto Item Nome']),
+					description = JSON.parse(item['Texto Item Descrição']),
+					language = String(item['Texto Idioma']);
 				if ($dataItems[id]) {
 					if (name.length > 0) {
 						if (!translateObject['items'] ||
@@ -972,15 +972,15 @@
 							translateObject['items']['name' + id] &&
 							!translateObject['items']['name' + id].translate) {
 							$dataItems[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Items',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Items',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 					if (description.length > 0) {
@@ -991,15 +991,15 @@
 							translateObject['items']['description' + id] &&
 							!translateObject['items']['description' + id].translate) {
 							$dataItems[id].description = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': description,
-											'Element': [
-												'Items',
-												'description' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': description,
+									'Element': [
+										'Items',
+										'description' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -1012,9 +1012,9 @@
 		if (params.weapons instanceof Array) {
 			params.weapons.forEach(function (weapon) {
 				var id = Number(weapon['Texto Arma Id']),
-				name = String(weapon['Texto Arma Nome']),
-				description = JSON.parse(weapon['Texto Arma Descrição']),
-				language = String(weapon['Texto Idioma']);
+					name = String(weapon['Texto Arma Nome']),
+					description = JSON.parse(weapon['Texto Arma Descrição']),
+					language = String(weapon['Texto Idioma']);
 				if ($dataWeapons[id]) {
 					if (name.length > 0) {
 						if (!translateObject['weapons'] ||
@@ -1024,15 +1024,15 @@
 							translateObject['weapons']['name' + id] &&
 							!translateObject['weapons']['name' + id].translate) {
 							$dataWeapons[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Weapons',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Weapons',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 					if (description.length > 0) {
@@ -1043,15 +1043,15 @@
 							translateObject['weapons']['description' + id] &&
 							!translateObject['weapons']['description' + id].translate) {
 							$dataWeapons[id].description = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': description,
-											'Element': [
-												'Weapons',
-												'description' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': description,
+									'Element': [
+										'Weapons',
+										'description' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -1064,9 +1064,9 @@
 		if (params.armors instanceof Array) {
 			params.armors.forEach(function (armor) {
 				var id = Number(armor['Texto Armadura Id']),
-				name = String(armor['Texto Armadura Nome']),
-				description = JSON.parse(armor['Texto Armadura Descrição']),
-				language = String(armor['Texto Idioma']);
+					name = String(armor['Texto Armadura Nome']),
+					description = JSON.parse(armor['Texto Armadura Descrição']),
+					language = String(armor['Texto Idioma']);
 				if ($dataArmors[id]) {
 					if (name.length > 0) {
 						if (!translateObject['armors'] ||
@@ -1076,15 +1076,15 @@
 							translateObject['armors']['name' + id] &&
 							!translateObject['armors']['name' + id].translate) {
 							$dataArmors[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Armors',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Armors',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 					if (description.length > 0) {
@@ -1095,15 +1095,15 @@
 							translateObject['armors']['description' + id] &&
 							!translateObject['armors']['description' + id].translate) {
 							$dataArmors[id].description = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': description,
-											'Element': [
-												'Armors',
-												'description' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': description,
+									'Element': [
+										'Armors',
+										'description' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -1116,8 +1116,8 @@
 		if (params.enemies instanceof Array) {
 			params.enemies.forEach(function (enemies) {
 				var id = Number(enemies['Texto Inimigo Id']),
-				name = String(enemies['Texto Inimigo Nome']),
-				language = String(enemies['Texto Idioma']);
+					name = String(enemies['Texto Inimigo Nome']),
+					language = String(enemies['Texto Idioma']);
 				if ($dataEnemies[id]) {
 					if (name.length > 0) {
 						if (!translateObject['enemies'] ||
@@ -1127,15 +1127,15 @@
 							translateObject['enemies']['name' + id] &&
 							!translateObject['enemies']['name' + id].translate) {
 							$dataEnemies[id].name = getterTextLanguage([
-										JSON.stringify({
-											'Idioma': language,
-											'Valor': name,
-											'Element': [
-												'Enemies',
-												'name' + id
-											]
-										})
-									]);
+								JSON.stringify({
+									'Idioma': language,
+									'Valor': name,
+									'Element': [
+										'Enemies',
+										'name' + id
+									]
+								})
+							]);
 						}
 					}
 				}
@@ -1149,16 +1149,16 @@
 		if (params.texts instanceof Array) {
 			params.texts.forEach(function (text) {
 				var _id = Number(text['Texto Id']),
-				valor = String(text['Texto Valor']),
-				language = String(text['Texto Idioma']);
+					valor = String(text['Texto Valor']),
+					language = String(text['Texto Idioma']);
 				if (_id == id) {
 					if (params.language == String(language).toLowerCase() || String(language).toLowerCase() == 'qualquer') {
 						return texto = getterTextLanguage([
-									JSON.stringify({
-										'Idioma': language,
-										'Valor': convertEscapeCharacters(valor)
-									})
-								]);
+							JSON.stringify({
+								'Idioma': language,
+								'Valor': convertEscapeCharacters(valor)
+							})
+						]);
 					}
 				}
 			});
@@ -1171,19 +1171,18 @@
 		text = text.replace(/\\/g, '\x1b');
 		text = text.replace(/\x1b\x1b/g, '\\');
 		text = text.replace(/\x1bST\[(.*)\]/gi, function () {
-				console.log(arguments[1])
 				return specialTextValue(arguments[1]);
 			}
-				.bind(this));
+			.bind(this));
 		return text;
 	};
 
 	// Retorna o valor especial
 	function specialTextValue(code) {
 		switch (String(code).toLowerCase()) {
-		case 'username':
-		case '1':
-			return nw.process.env.SteamAppUser || nw.process.env.USERNAME;
+			case 'username':
+			case '1':
+				return process.env.SteamAppUser || process.env.USERNAME;
 		}
 	};
 
@@ -1249,7 +1248,7 @@
 		text = text.replace(/\x1bTX\[(\d+)\]/gi, function () {
 				return getTextForMessages(arguments[1]);
 			}
-				.bind(this));
+			.bind(this));
 		return text;
 	};
 
@@ -2082,4 +2081,4 @@
  * @option qualquer
  * @option pt_br
  * @option en_us
-*/
+ */

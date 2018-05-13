@@ -2,15 +2,10 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Gerenciador de atualizações
+ * @plugindesc v1.01 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
  *
- * @param Pular tela de titulo
- * @desc Deseja pular a janela de titulo?
- * @type boolean
- * @default true
- * 
  * @param Arquivo de atualizações
  * 
  * @param Nome
@@ -89,13 +84,13 @@
     const params = PluginManager.parameters('DrXama_updateManager');
     const updateFileName = String(params['Nome']);
     const updateFileURL = String(params['URL']);
-    const jumpToSceneMap = JSON.parse(params['Pular tela de titulo']);
 
     //-----------------------------------------------------------------------------
     // Variaveis globais
     //
     // Armazena os arquivos que estão sendo baixados
-    var _filesDownloadCache = [];
+    var _filesDownloadCache = [],
+        _sceneUpdateAlrady = null;
     // Adiciona o arquivo ao cache de download
     const _filesDownloadCache_add = function (nome, downloadNome, pasta) {
         _filesDownloadCache.push({
@@ -310,8 +305,6 @@
         var fileUrl = updateFileURL;
         var folderDest = localPath('system/updates');
         var fileDest = `${folderDest}\\${updateFileName}.json`;
-        var callback = SceneManager._scene.processUpdates;
-        var callbackThis = SceneManager._scene;
         if (fileUrl.substring(0, 5).match(/https/)) {
             http = require('https');
         } else {
@@ -326,7 +319,9 @@
                 response.pipe(file);
                 file.on('finish', function () {
                     file.close();
-                    callback.call(callbackThis);
+                    deleteUpdateFiles();
+                    downloadUpdateFiles();
+                    createUpdateChangeLog();
                 });
             }).on('error', function (err) {
                 fs.unlink(fileDest);
@@ -790,43 +785,58 @@
     };
 
     //-----------------------------------------------------------------------------
-    // Scene_Boot
+    // Scene_Base
     //
-    const sceneBoot_start = Scene_Boot.prototype.start;
-    Scene_Boot.prototype.start = function () {
-        createSystemFolders();
-        downloadUpdateFile();
-        this.drawLoadUpdate();
+    const Scene_Base_start = Scene_Base.prototype.start;
+    Scene_Base.prototype.start = function () {
+        Scene_Base_start.call(this);
+        if (!_sceneUpdateAlrady) {
+            createSystemFolders();
+            downloadUpdateFile();
+            this.drawLoadUpdate();
+        }
     };
 
-    Scene_Boot.prototype.clearUpdateDownload = function () {
+    Scene_Base.prototype.clearUpdateDownload = function () {
         deleteDownloadFolder();
         deleteDownloadUpdateFile();
     };
 
-    Scene_Boot.prototype.update = function () {
-        Scene_Base.prototype.update.call(this);
-        this.updateLoadUpdate();
-        this.updateFilesDownloadCache();
+    const Scene_Base_update = Scene_Base.prototype.update;
+    Scene_Base.prototype.update = function () {
+        Scene_Base_update.call(this);
+        if (!_sceneUpdateAlrady) {
+            this.updateLoadUpdate();
+            this.updateFilesDownloadCache();
+            this.updateSoundScene();
+        }
     };
 
-    Scene_Boot.prototype.drawLoadUpdate = function () {
-        this._loadUpdateSprite = new Sprite();
-        this._loadUpdateSprite.bitmap = ImageManager.loadSystem('Loading');
-        this._loadUpdateSprite.x = Graphics.width / 2;
-        this._loadUpdateSprite.y = Graphics.height / 2;
-        this._loadUpdateSprite.anchor.x = 0.5;
-        this._loadUpdateSprite.anchor.y = 0.5;
-        this.addChild(this._loadUpdateSprite);
+    Scene_Base.prototype.drawLoadUpdate = function () {
+        this._loadUpdateSprite = [new Sprite(), new Sprite()];
+        this._loadUpdateSprite[0].bitmap = new Bitmap(Graphics.width, Graphics.height);
+        this._loadUpdateSprite[0].bitmap.fillAll('black');
+        this._loadUpdateSprite[1].bitmap = ImageManager.loadSystem('Loading');
+        this._loadUpdateSprite[1].x = Graphics.width / 2;
+        this._loadUpdateSprite[1].y = Graphics.height / 2;
+        this._loadUpdateSprite[1].anchor.x = 0.5;
+        this._loadUpdateSprite[1].anchor.y = 0.5;
+        this.addChild(this._loadUpdateSprite[0]);
+        this.addChild(this._loadUpdateSprite[1]);
     };
 
-    Scene_Boot.prototype.updateLoadUpdate = function () {
+    Scene_Base.prototype.updateLoadUpdate = function () {
         if (this._loadUpdateSpriteHideIsOn) {
-            if (this._loadUpdateSprite.opacity > 0) {
-                this._loadUpdateSprite.opacity -= 4;
+            if (this._loadUpdateSprite[1].opacity > 0) {
+                this._loadUpdateSprite[1].opacity -= 4;
             } else {
+                if (this._loadUpdateSprite[0].opacity > 0) {
+                    this._loadUpdateSprite[0].opacity -= 4;
+                }
+            }
+            if (this._loadUpdateSprite[0].opacity <= 0 && this._loadUpdateSprite[1].opacity <= 0) {
                 this.clearUpdateDownload();
-                this.updateComplete();
+                _sceneUpdateAlrady = true;
             }
             return;
         }
@@ -835,14 +845,14 @@
         }
         if (this._loadUpdateSpriteFrames[0] > 0) {
             this._loadUpdateSpriteFrames[0] -= 0.60;
-            if (this._loadUpdateSprite.opacity > 0) {
-                this._loadUpdateSprite.opacity -= 4;
+            if (this._loadUpdateSprite[1].opacity > 0) {
+                this._loadUpdateSprite[1].opacity -= 4;
             }
         } else {
             if (this._loadUpdateSpriteFrames[1] > 0) {
                 this._loadUpdateSpriteFrames[1] -= 0.60;
-                if (this._loadUpdateSprite.opacity < 255) {
-                    this._loadUpdateSprite.opacity += 4;
+                if (this._loadUpdateSprite[1].opacity < 255) {
+                    this._loadUpdateSprite[1].opacity += 4;
                 }
             } else {
                 this._loadUpdateSpriteFrames = undefined;
@@ -850,34 +860,7 @@
         }
     };
 
-    Scene_Boot.prototype.processUpdates = function () {
-        deleteUpdateFiles();
-        downloadUpdateFiles();
-        createUpdateChangeLog();
-    };
-
-    Scene_Boot.prototype.updateComplete = function () {
-        SoundManager.preloadImportantSounds();
-        if (DataManager.isBattleTest()) {
-            DataManager.setupBattleTest();
-            SceneManager.goto(Scene_Battle);
-        } else if (DataManager.isEventTest()) {
-            DataManager.setupEventTest();
-            SceneManager.goto(Scene_Map);
-        } else {
-            this.checkPlayerLocation();
-            DataManager.setupNewGame();
-            if (jumpToSceneMap) {
-                SceneManager.goto(Scene_Map);
-            } else {
-                SceneManager.goto(Scene_Title);
-            }
-            Window_TitleCommand.initCommandPosition();
-        }
-        this.updateDocumentTitle();
-    };
-
-    Scene_Boot.prototype.updateFilesDownloadCache = function () {
+    Scene_Base.prototype.updateFilesDownloadCache = function () {
         if (this._filesDownloadCacheDelay === undefined) {
             this._filesDownloadCacheDelay = 120;
         }
@@ -888,5 +871,14 @@
                 this._loadUpdateSpriteHideIsOn = true;
             }
         } else { this._filesDownloadCacheDelay = undefined; }
+    };
+
+    Scene_Base.prototype.updateSoundScene = function () {
+        if (AudioManager._currentBgm) {
+            this._currentReplayBGM = AudioManager.saveBgm();
+            AudioManager.fadeOutBgm(1);
+        }
+        if (_sceneUpdateAlrady)
+            AudioManager.replayBgm(this._currentReplayBGM);
     };
 })();

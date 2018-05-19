@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.06a - Gerenciador de traduções
+ * @plugindesc v1.08 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -363,7 +363,7 @@
 		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave';
 		var data = LZString.compressToBase64(JSON.stringify({
 			'language': params.language,
-			'isCompleteGame': Utils.isOptionValid('test')
+			'isCompleteGame': false
 		}, null, 2));
 		if (fs.existsSync(path_folderLanguage)) {
 			if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test') || setLanguage) {
@@ -374,7 +374,6 @@
 				if (!datafile.isCompleteGame) {
 					datafile.language = params.language;
 					datafile.isCompleteGame = true;
-					fs.unlinkSync(path_fileSettingsLanguage);
 					fs.writeFileSync(path_fileSettingsLanguage,
 						LZString.compressToBase64(JSON.stringify(datafile, null, 2)));
 				}
@@ -1237,14 +1236,28 @@
 		}
 	};
 
+	// Inicia o sistema
+	function initializeSystem() {
+		createSystemFolders();
+		createFileSettingsLanguage(defineAllTexts);
+	};
+
 	//-----------------------------------------------------------------------------
 	// Scene_Boot
 	//
-	const sceneBoot_start = Scene_Boot.prototype.start;
+	const __sceneBoot_start = Scene_Boot.prototype.start;
 	Scene_Boot.prototype.start = function () {
-		sceneBoot_start.call(this);
-		createSystemFolders();
-		createFileSettingsLanguage(defineAllTexts);
+		__sceneBoot_start.call(this);
+		initializeSystem();
+	};
+
+	//-----------------------------------------------------------------------------
+	// DataManager
+	//	
+	const __datamanager_setupBattleTest = DataManager.setupBattleTest;
+	DataManager.setupBattleTest = function () {
+		__datamanager_setupBattleTest.call(this);
+		initializeSystem();
 	};
 
 	//-----------------------------------------------------------------------------
@@ -1274,6 +1287,7 @@
 		if (command == 'setlanguage') {
 			params.language = String(args[0]).toLowerCase();
 			translateObject = {};
+			$gameSystem.setLanguage(params.language);
 			createFileSettingsLanguage(defineAllTexts, true);
 		}
 		if (command == 'setmessagebox') {
@@ -1288,6 +1302,25 @@
 
 	Game_Interpreter.prototype.getTextForMessages = function (id) {
 		return getTextForMessages(id);
+	};
+
+	//-----------------------------------------------------------------------------
+	// Game_System
+	//
+	const __game__system__initialize = Game_System.prototype.initialize;
+	Game_System.prototype.initialize = function () {
+		__game__system__initialize.call(this);
+		this._languageGame = params.language;
+	};
+
+	const __game__system__onAfterLoad = Game_System.prototype.onAfterLoad;
+	Game_System.prototype.onAfterLoad = function () {
+		__game__system__onAfterLoad.call(this);
+		Game_Interpreter.prototype.pluginCommand('setlanguage', [this._languageGame]);
+	};
+
+	Game_System.prototype.setLanguage = function (language) {
+		this._languageGame = language || params.language;
 	};
 })();
 //==================================================================================================

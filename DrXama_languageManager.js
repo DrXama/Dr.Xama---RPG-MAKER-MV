@@ -1,8 +1,8 @@
-//==================================================================================================
+﻿//==================================================================================================
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.06 - Gerenciador de traduções
+ * @plugindesc v1.06a - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -372,6 +372,7 @@
 			if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
 				var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
 				if (!datafile.isCompleteGame) {
+					datafile.language = params.language;
 					datafile.isCompleteGame = true;
 					fs.unlinkSync(path_fileSettingsLanguage);
 					fs.writeFileSync(path_fileSettingsLanguage,

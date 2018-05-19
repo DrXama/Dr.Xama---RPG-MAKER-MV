@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.04 - Gerenciador de traduções
+ * @plugindesc v1.06 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -355,18 +355,28 @@
 	};
 
 	// Cria o arquivo de configuração do sistema
-	function createFileSettingsLanguage(callback) {
+	function createFileSettingsLanguage(callback, setLanguage) {
 		var fs = require('fs');
 		var path = require('path');
 		var path_folderSystem = localPath('system');
 		var path_folderLanguage = localPath('system/language');
-		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settings.drxamasave';
+		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave';
 		var data = LZString.compressToBase64(JSON.stringify({
-			'language': params.language
+			'language': params.language,
+			'isCompleteGame': Utils.isOptionValid('test')
 		}, null, 2));
-		if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_folderLanguage)) {
-			if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test')) {
+		if (fs.existsSync(path_folderLanguage)) {
+			if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test') || setLanguage) {
 				fs.writeFileSync(path_fileSettingsLanguage, data);
+			}
+			if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
+				var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
+				if (!datafile.isCompleteGame) {
+					datafile.isCompleteGame = true;
+					fs.unlinkSync(path_fileSettingsLanguage);
+					fs.writeFileSync(path_fileSettingsLanguage,
+						LZString.compressToBase64(JSON.stringify(datafile, null, 2)));
+				}
 			}
 		}
 		if (callback)
@@ -379,7 +389,7 @@
 		var path = require('path');
 		var path_folderSystem = localPath('system');
 		var path_folderLanguage = localPath('system/language');
-		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settings.drxamasave';
+		var path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave';
 		var language = params.language;
 		if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_fileSettingsLanguage)) {
 			var data = JSON.parse(LZString.decompressFromBase64(
@@ -1171,9 +1181,8 @@
 		text = text.replace(/\\/g, '\x1b');
 		text = text.replace(/\x1b\x1b/g, '\\');
 		text = text.replace(/\x1bST\[(.*)\]/gi, function () {
-				return specialTextValue(arguments[1]);
-			}
-			.bind(this));
+			return specialTextValue(arguments[1]);
+		}.bind(this));
 		return text;
 	};
 
@@ -1246,9 +1255,11 @@
 		text = text.replace(/\\/g, '\x1b');
 		text = text.replace(/\x1b\x1b/g, '\\');
 		text = text.replace(/\x1bTX\[(\d+)\]/gi, function () {
-				return getTextForMessages(arguments[1]);
-			}
-			.bind(this));
+			return getTextForMessages(arguments[1]);
+		}.bind(this));
+		text = text.replace(/\x1bST\[(.*)\]/gi, function () {
+			return specialTextValue(arguments[1]);
+		}.bind(this));
 		return text;
 	};
 
@@ -1262,8 +1273,7 @@
 		if (command == 'setlanguage') {
 			params.language = String(args[0]).toLowerCase();
 			translateObject = {};
-			$gameSystem.gameLanguageSetter(params.language);
-			createFileSettingsLanguage(defineAllTexts);
+			createFileSettingsLanguage(defineAllTexts, true);
 		}
 		if (command == 'setmessagebox') {
 			var messageId = Number(args[0]);

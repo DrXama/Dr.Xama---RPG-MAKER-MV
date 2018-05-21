@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.11 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.12 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -53,161 +53,14 @@
  * Para atualizar esse plugin vá no github do Dr.Xamã
  * https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
  */
-/*~struct~Atores:
- * @param Id
- * @desc Id do ator
- * @type number
- * @min 1
- * @default 1
- * @max 1000
- * 
- * @param Nome
- * @desc Nome do ator
- * @type string
- * @default Harold
- * 
- * @param Exibir nome
- * @desc Deseja exibir o nome do ator?
- * @type boolean
- * @default true
- * @on Exibir
- * @off Ocultar
- * 
- * @param Cor do texto
- * @desc Numero da cor do texto
- * @type select
- * @default 0
- * @option 0
- * @option 1
- * @option 2
- * @option 3
- * @option 4
- * @option 5
- * @option 6
- * @option 7
- * @option 8
- * @option 9
- * @option 10
- * @option 11
- * @option 12
- * @option 14
- * @option 15
- * @option 16
- * @option 17
- * @option 18
- * @option 19
- * @option 20
- * @option 21
- * @option 22
- * @option 23
- * @option 24
- * @option 25
- * @option 26
- * @option 27
- * @option 28
- * @option 29
- * @option 30
- * @option 31
- * 
- * @param Tamanho do texto
- * @desc Qual o tamanho do texto?
- * @type number
- * @min 10
- * @default 14
- * @max 72
- * 
- * @param Distancia do texto
- * @desc Defina a distancia do texto ao objeto
- * @type number
- * @min 0
- * @default 4
- * @max 100
- * 
- * @param Esboço do texto
- * @desc Deseja exibir o esboço do texto?
- * @type boolean
- * @default true
- * @on Exibir
- * @off Ocultar
- * 
- * @param Cor do esboço
- * @desc Numero da cor do esboço
- * @type select
- * @default 15
- * @option 0
- * @option 1
- * @option 2
- * @option 3
- * @option 4
- * @option 5
- * @option 6
- * @option 7
- * @option 8
- * @option 9
- * @option 10
- * @option 11
- * @option 12
- * @option 14
- * @option 15
- * @option 16
- * @option 17
- * @option 18
- * @option 19
- * @option 20
- * @option 21
- * @option 22
- * @option 23
- * @option 24
- * @option 25
- * @option 26
- * @option 27
- * @option 28
- * @option 29
- * @option 30
- * @option 31
- * 
- * @param Animação do texto
- * @desc Escolha a animação do texto
- * @type select
- * @default None
- * @option None
- * @option Fade
- * @option Scale
- * @option Rotation
- * @option Fade, Scale, Rotation
- * @option Fade, Scale
- * @option Fade, Rotation
- * @option Scale, Rotation
- * 
- * @param Animação(Fade) frames
- * @parent Animação do texto
- * @desc total de frames da animação(Fade)
- * @type number
- * @min 1
- * @default 20
- * 
- * @param Animação(Scale) frames
- * @parent Animação do texto
- * @desc total de frames da animação(Scale)
- * @type number
- * @min 1
- * @default 20
- * 
- * @param Animação(Rotation) frames
- * @parent Animação do texto
- * @desc total de frames da animação(Rotation)
- * @type number
- * @min 1
- * @default 20
- * 
- */
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
     // PluginManager
     //
-    var parameters = PluginManager.parameters('DrXama_charactersNames');
-    var parameters_actors = JSON.parse(parameters["Atores"]);
+    var params = PluginManager.parameters('DrXama_charactersNames');
+    params["Atores"] = params["Atores"].length <= 0 ? '[]' : params["Atores"];
+    var parameters_actors = JSON.parse(params["Atores"]);
 
     function actorParameter(actorId) {
         var i = 0;
@@ -695,3 +548,151 @@
         }
     };
 })();
+/*~struct~Atores:
+ * @param Id
+ * @desc Id do ator
+ * @type number
+ * @min 1
+ * @default 1
+ * @max 1000
+ * 
+ * @param Nome
+ * @desc Nome do ator
+ * @type string
+ * @default Harold
+ * 
+ * @param Exibir nome
+ * @desc Deseja exibir o nome do ator?
+ * @type boolean
+ * @default true
+ * @on Exibir
+ * @off Ocultar
+ * 
+ * @param Cor do texto
+ * @desc Numero da cor do texto
+ * @type select
+ * @default 0
+ * @option 0
+ * @option 1
+ * @option 2
+ * @option 3
+ * @option 4
+ * @option 5
+ * @option 6
+ * @option 7
+ * @option 8
+ * @option 9
+ * @option 10
+ * @option 11
+ * @option 12
+ * @option 14
+ * @option 15
+ * @option 16
+ * @option 17
+ * @option 18
+ * @option 19
+ * @option 20
+ * @option 21
+ * @option 22
+ * @option 23
+ * @option 24
+ * @option 25
+ * @option 26
+ * @option 27
+ * @option 28
+ * @option 29
+ * @option 30
+ * @option 31
+ * 
+ * @param Tamanho do texto
+ * @desc Qual o tamanho do texto?
+ * @type number
+ * @min 10
+ * @default 14
+ * @max 72
+ * 
+ * @param Distancia do texto
+ * @desc Defina a distancia do texto ao objeto
+ * @type number
+ * @min 0
+ * @default 4
+ * @max 100
+ * 
+ * @param Esboço do texto
+ * @desc Deseja exibir o esboço do texto?
+ * @type boolean
+ * @default true
+ * @on Exibir
+ * @off Ocultar
+ * 
+ * @param Cor do esboço
+ * @desc Numero da cor do esboço
+ * @type select
+ * @default 15
+ * @option 0
+ * @option 1
+ * @option 2
+ * @option 3
+ * @option 4
+ * @option 5
+ * @option 6
+ * @option 7
+ * @option 8
+ * @option 9
+ * @option 10
+ * @option 11
+ * @option 12
+ * @option 14
+ * @option 15
+ * @option 16
+ * @option 17
+ * @option 18
+ * @option 19
+ * @option 20
+ * @option 21
+ * @option 22
+ * @option 23
+ * @option 24
+ * @option 25
+ * @option 26
+ * @option 27
+ * @option 28
+ * @option 29
+ * @option 30
+ * @option 31
+ * 
+ * @param Animação do texto
+ * @desc Escolha a animação do texto
+ * @type select
+ * @default None
+ * @option None
+ * @option Fade
+ * @option Scale
+ * @option Rotation
+ * @option Fade, Scale, Rotation
+ * @option Fade, Scale
+ * @option Fade, Rotation
+ * @option Scale, Rotation
+ * 
+ * @param Animação(Fade) frames
+ * @parent Animação do texto
+ * @desc total de frames da animação(Fade)
+ * @type number
+ * @min 1
+ * @default 20
+ * 
+ * @param Animação(Scale) frames
+ * @parent Animação do texto
+ * @desc total de frames da animação(Scale)
+ * @type number
+ * @min 1
+ * @default 20
+ * 
+ * @param Animação(Rotation) frames
+ * @parent Animação do texto
+ * @desc total de frames da animação(Rotation)
+ * @type number
+ * @min 1
+ * @default 20
+ * 
+ */

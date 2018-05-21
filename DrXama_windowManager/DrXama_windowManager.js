@@ -2,7 +2,7 @@
 // DrXama_windowManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Gerenciador de janelas
+ * @plugindesc v1.01 - Gerenciador de janelas
  *
  * @author Dr.Xamã
  * 
@@ -138,9 +138,9 @@
     //-----------------------------------------------------------------------------
     // Scene_Boot
     //
-    const __Scene_Boot__prototype__initialize = Scene_Boot.prototype.initialize;
-    Scene_Boot.prototype.initialize = function () {
-        __Scene_Boot__prototype__initialize.call(this);
+    const __Scene_Boot__prototype__start = Scene_Boot.prototype.start;
+    Scene_Boot.prototype.start = function () {
+        __Scene_Boot__prototype__start.call(this);
         loadFonts();
     };
 

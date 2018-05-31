@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.08 - Gerenciador de traduções
+ * @plugindesc v1.08a - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -1236,10 +1236,81 @@
 		}
 	};
 
+	// Cria uma tela de ajuda para o usuario
+	let winHelpSystemInfo;
+	function helpWindowSystemInfo() {
+		if (Utils.isOptionValid('test')) {
+			if (!winHelpSystemInfo) {
+				SceneManager.push(Scene_HelpSystemInfo);
+			}
+		}
+	};
+
 	// Inicia o sistema
 	function initializeSystem() {
 		createSystemFolders();
 		createFileSettingsLanguage(defineAllTexts);
+		helpWindowSystemInfo();
+	};
+
+	//-----------------------------------------------------------------------------
+	// Scene_HelpSystemInfo
+	//
+	// The scene class of the title screen.
+
+	function Scene_HelpSystemInfo() {
+		this.initialize.apply(this, arguments);
+	}
+
+	Scene_HelpSystemInfo.prototype = Object.create(Scene_Base.prototype);
+	Scene_HelpSystemInfo.prototype.constructor = Scene_HelpSystemInfo;
+
+	Scene_HelpSystemInfo.prototype.initialize = function () {
+		Scene_Base.prototype.initialize.call(this);
+	};
+
+	Scene_HelpSystemInfo.prototype.create = function () {
+		Scene_Base.prototype.create.call(this);
+		this.createBackground();
+		this.createButtons();
+	};
+
+	Scene_HelpSystemInfo.prototype.start = function () {
+		Scene_Base.prototype.start.call(this);
+
+	};
+
+	Scene_HelpSystemInfo.prototype.createBackground = function () {
+		var texts = [
+			['Escolha a melhor forma para traduzir o seu jogo', 28],
+			['Está janela só irá ser exibida no modo de teste do projeto!', 18],
+			[`Atualmente o modo teste está ${Utils.isOptionValid('test') ? 'Ativado' : 'Desativado'}!`, 14],
+			['DrXama_languageManager', 14]
+		];
+		this._backSprite = new Sprite(new Bitmap(Graphics.width, Graphics.height));
+		this._backSprite.bitmap.fillAll('#005bb7');
+		texts.forEach(function (text, keyId) {
+			var keyY = 92;
+			if (keyId > 0) {
+				keyY += 42 * keyId;
+			}
+			this._backSprite.bitmap.fontSize = text[1];
+			this._backSprite.bitmap.drawText(text[0],
+				0, keyY, Graphics.width, 0, 'center');
+		}, this);
+		this.addChild(this._backSprite);
+	};
+
+	Scene_HelpSystemInfo.prototype.createButtons = function () {
+		this._button = new Sprite_Button();
+		this._button.bitmap = ImageManager.loadSystem('ButtonSet_HelpSystemInfo');
+		this._button.setClickHandler(this.buttonEvent.bind());
+		this._button.move(25, Graphics.height - 60);
+		this.addChild(this._button);
+	};
+
+	Scene_HelpSystemInfo.prototype.buttonEvent = function () {
+
 	};
 
 	//-----------------------------------------------------------------------------

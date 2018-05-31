@@ -2,7 +2,7 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Gerenciador de atualizações
+ * @plugindesc v1.03 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
  *
@@ -785,6 +785,16 @@
     };
 
     //-----------------------------------------------------------------------------
+    // SceneManager
+    //
+    SceneManager.updateInputData = function () {
+        if (_sceneUpdateAlrady) {
+            Input.update();
+            TouchInput.update();
+        }
+    };
+
+    //-----------------------------------------------------------------------------
     // Scene_Base
     //
     const Scene_Base_start = Scene_Base.prototype.start;
@@ -810,6 +820,7 @@
             this.updateFilesDownloadCache();
             this.updateSoundScene();
         }
+        this.refreshReplayBGM();
     };
 
     Scene_Base.prototype.drawLoadUpdate = function () {
@@ -875,10 +886,37 @@
 
     Scene_Base.prototype.updateSoundScene = function () {
         if (AudioManager._currentBgm) {
-            this._currentReplayBGM = AudioManager.saveBgm();
-            AudioManager.fadeOutBgm(1);
+            if (!this._currentReplayBGM)
+                this._currentReplayBGM = [
+                    AudioManager.saveBgm(),
+                    SceneManager._scene,
+                    60
+                ];
+            AudioManager.fadeOutBgm(.1);
         }
-        if (_sceneUpdateAlrady)
-            AudioManager.replayBgm(this._currentReplayBGM);
+        if (_sceneUpdateAlrady && this._currentReplayBGM && this._currentReplayBGM[0]) {
+            if (SceneManager._scene === this._currentReplayBGM[1]) {
+                AudioManager.replayBgm(this._currentReplayBGM[0]);
+                this._refreshReplayBGM = true;
+            }
+        }
+    };
+
+    Scene_Base.prototype.refreshReplayBGM = function () {
+        if (this._refreshReplayBGM) {
+            if (this._currentReplayBGM) {
+                if (this._currentReplayBGM[2] > 0)
+                    this._currentReplayBGM[2] -= .60;
+                else {
+                    this._refreshReplayBGM = null;
+                    return this._currentReplayBGM = null;
+                }
+                if (SceneManager._scene != this._currentReplayBGM[1])
+                    AudioManager.fadeOutBgm(.1);
+            } else {
+                this._refreshReplayBGM = null;
+                this._currentReplayBGM = null;
+            }
+        }
     };
 })();

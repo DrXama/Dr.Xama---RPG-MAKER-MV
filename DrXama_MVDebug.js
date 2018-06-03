@@ -2,10 +2,10 @@
 // MVDebug
 // By Dr.Xamã
 // GS_MVDebug.js
-// Version: 1.15
+// Version: 1.16
 //===============================================================================
 /*:
- * @plugindesc v1.15 - Grande biblioteca de utilitários que fornece uma grande 
+ * @plugindesc v1.16 - Grande biblioteca de utilitários que fornece uma grande 
  * depuração do sistema.
  *
  * @author Dr.Xamã
@@ -65,7 +65,7 @@
 // IMPORT PLUGIN
 //===============================================================================
 var Imported = Imported || {};
-Imported["GS_debuggEx"] = "1.15";
+Imported["GS_debuggEx"] = "1.16";
 
 var GS = GS || {};
 var MVDebug = {};
@@ -89,6 +89,13 @@ GS.MVD = MVD;
   //-----------------------------------------------------------------------------
   // Global Variables
   //
+
+  /**
+   * @MVDebug {private}
+   * @description Boolean para salvar se o sistema já foi iniciado
+   * @type {boolean}
+   */
+  var initializeSystem = false;
 
   /** 
    * @MVDebug {public}
@@ -403,11 +410,14 @@ GS.MVD = MVD;
   const sceneBoot_initialize = Scene_Boot.prototype.initialize;
   Scene_Boot.prototype.initialize = function () {
     sceneBoot_initialize.call(this);
-    welcomeMessageSystem(Imported["GS_debuggEx"]);
-    createFolderSystem();
-    createFolderDebuggEx();
-    createFolderDebuggExCodeRun();
-    createFolderDebuggExFilesCache();
+    if (!initializeSystem) {
+      initializeSystem = true;
+      welcomeMessageSystem(Imported["GS_debuggEx"]);
+      createFolderSystem();
+      createFolderDebuggEx();
+      createFolderDebuggExCodeRun();
+      createFolderDebuggExFilesCache();
+    }
   };
 
   /**
@@ -1560,7 +1570,7 @@ GS.MVD = MVD;
   //
   MVDebug.latestVersion = Imported["GS_debuggEx"];
   MVDebug.releaseDate = '20/10/2017';
-  MVDebug.updateDate = '06/03/2018';
+  MVDebug.updateDate = '03/06/2018';
   MVDebug.scriptRun = scriptsRun;
   MVDebug.scriptsLoad = scriptsLoad;
   MVDebug.fileScanType = fileScanType;

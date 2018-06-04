@@ -324,7 +324,7 @@
                     createUpdateChangeLog();
                 });
             }).on('error', function (err) {
-                fs.unlink(fileDest);
+                fs.unlinkSync(fileDest);
             });
         }
     };

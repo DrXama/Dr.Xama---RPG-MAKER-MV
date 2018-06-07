@@ -2,41 +2,50 @@
 // MVDebug
 // By Dr.Xamã
 // GS_MVDebug.js
-// Version: 1.15
+// Version: 1.16
 //===============================================================================
 /*:
- * @plugindesc v1.15 - Grande biblioteca de utilitários que fornece uma grande 
+ * @plugindesc v1.16 - Grande biblioteca de utilitários que fornece uma grande 
  * depuração do sistema.
  *
  * @author Dr.Xamã
  *
  * @param GitHub url
  * @desc url para o github do projeto.
- * @default https://github.com/GuilhermeSantos001/MVDebug
+ * @default https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
  * 
  * @param screenWidth
  * @desc Largura da janela do projeto
+ * Padrão: 816
  * @type number
  * @min 816
  * @default 816
  * 
  * @param boxWidth
  * @desc Largura da janela do projeto
+ * Padrão: 816
  * @type number
  * @min 816
  * @default 816
  * 
  * @param screenHeight
  * @desc Altura da janela do projeto
+ * Padrão: 624
  * @type number
  * @min 624
  * @default 624
  * 
  * @param boxHeight
  * @desc Altura da janela do projeto
+ * Padrão: 624
  * @type number
  * @min 624
  * @default 624
+ * 
+ * @param InputkeyMapper
+ * @desc Defina as teclas do teclado
+ * @type struct<InputKeyMapperStruct>[]
+ * @default []
  * 
  * @help
  * ==============================================================================
@@ -50,6 +59,24 @@
  * ==============================================================================
  * Acesse todas as funções e faça sua depuração avançada no sistema.
  * ==============================================================================
+ *    Suporte
+ * ==============================================================================
+ * - InputkeyMapper, para usar as teclas você deve usar os comandos de script.
+ * Comandos de script:
+ * - Input.isPressed(keyName); - Verifica se a tecla está pressionada.
+ * - Input.isLongPressed(keyName); - Verifica se a tecla está muito tempo
+ *                                   pressionada.
+ * - Input.isTriggered(keyName); - Verifica se a tecla foi apertada.
+ * - Input.isRepeated(keyName); - Verifica se a tecla está sendo apertada varias
+ *                                vezes.
+ * 
+ * - ShowStepsXy, exibe o tile(x) e tile(y) do jogador ou evento.
+ * Comandos para ativar o ShowStepsXy:
+ * - shit+alt+f: Exibe/Oculta a janela.
+ * - Abra o console(F8) e use a função: console.setStepsSprite(sprite, index);
+ *                                      - sprite: player ou event
+ *                                      - index: id do evento
+ * ==============================================================================
  *    Mantenha-se atualizado
  * ==============================================================================
  * Recomendo que você verifique regularmente se o MVD está atualizado.
@@ -59,17 +86,19 @@
  *
  * Você pode obter a versão mais recente acessando qualquer um dos seguintes 
  * endereços da Web:
- * - https://github.com/GuilhermeSantos001/MVDebug
+ * - https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
+ * - http://drxama.epizy.com/?page_id=299
+ * - http://www.condadobraveheart.com/forum/index.php?topic=4061.0
  */
 //===============================================================================
 // IMPORT PLUGIN
 //===============================================================================
 var Imported = Imported || {};
-Imported["GS_debuggEx"] = "1.15";
+Imported["GS_debuggEx"] = "1.16";
 
-var GS = GS || {};
-var MVDebug = {};
-var MVD = MVDebug;
+var GS = GS || {},
+  MVDebug = {},
+  MVD = MVDebug;
 
 GS.MVDebug = MVDebug;
 GS.MVD = MVD;
@@ -84,11 +113,18 @@ GS.MVD = MVD;
   // Parameters
   //
   var params = PluginManager.parameters('DrXama_MVDebug');
-  var url_github = String(params['GitHub url']) || 'https://github.com/GuilhermeSantos001/MVDebug';
+  var url_github = String(params['GitHub url']) || 'https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV';
 
   //-----------------------------------------------------------------------------
   // Global Variables
   //
+
+  /**
+   * @MVDebug {private}
+   * @description Boolean para salvar se o sistema já foi iniciado
+   * @type {boolean}
+   */
+  var initializeSystem = false;
 
   /** 
    * @MVDebug {public}
@@ -109,21 +145,65 @@ GS.MVD = MVD;
    * @description Largura da janela do projeto
    * @type {number}
    */
-  const _screenWidth = new Number(params["screenWidth"]);
-  const _boxWidth = new Number(params["boxWidth"]);
+  const _screenWidth = Number(params["screenWidth"] || 816);
+  const _boxWidth = Number(params["boxWidth"] || 816);
 
   /** 
    * @MVDebug {public}
    * @description Altura da janela do projeto
    * @type {number}
    */
-  const _screenHeight = new Number(params["screenHeight"]);
-  const _boxHeight = new Number(params["boxHeight"]);
+  const _screenHeight = Number(params["screenHeight"] || 624);
+  const _boxHeight = Number(params["boxHeight"] || 624);
+
+  /**
+   * @MVDebug {private}
+   * @description As teclas definidas
+   * @type {[]}
+   */
+  const _InputkeyMapper = JSON.parse(params["InputkeyMapper"] || []);
+
+  //-----------------------------------------------------------------------------
+  // Input.keyMapper
+  //
+  /**
+   * A hash table to convert from a virtual key code to a mapped key name.
+   *
+   * @static
+   * @property keyMapper
+   * @type Object
+   */
+  if (_InputkeyMapper instanceof Array) {
+    _InputkeyMapper.push(
+      {
+        'Numero da tecla': 16,
+        'Nome da tecla': 'shift'
+      },
+      {
+        'Numero da tecla': 18,
+        'Nome da tecla': 'alt'
+      },
+      {
+        'Numero da tecla': 70,
+        'Nome da tecla': 'f'
+      });
+    _InputkeyMapper.map(function (key) {
+      if (Input.keyMapper && key) {
+        var keyCode = Number(key['Numero da tecla']),
+          keyValue = String(key['Nome da tecla']);
+        Object.defineProperty(Input.keyMapper, keyCode, {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: keyValue
+        });
+      }
+    });
+  };
 
   //-----------------------------------------------------------------------------
   // PluginManager
   //
-
   /**
    * @description O caminho para a pasta dos plugins.
    */
@@ -184,35 +264,6 @@ GS.MVD = MVD;
   //-------------------------------------------------------------------------------
   // Scene_Map
   //
-
-  /**
-   * A hash table to convert from a virtual key code to a mapped key name.
-   *
-   * @static
-   * @property keyMapper
-   * @type Object
-   */
-  Object.defineProperties(Input.keyMapper, {
-    16: {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: 'shift'
-    },
-    18: {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: 'alt'
-    },
-    70: {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: 'f'
-    }
-  });
-
   Scene_Map._showStepsXy = {
     'sprite': new Sprite(new Bitmap(240, 100)),
     'keyAction': false,
@@ -403,11 +454,14 @@ GS.MVD = MVD;
   const sceneBoot_initialize = Scene_Boot.prototype.initialize;
   Scene_Boot.prototype.initialize = function () {
     sceneBoot_initialize.call(this);
-    welcomeMessageSystem(Imported["GS_debuggEx"]);
-    createFolderSystem();
-    createFolderDebuggEx();
-    createFolderDebuggExCodeRun();
-    createFolderDebuggExFilesCache();
+    if (!initializeSystem) {
+      initializeSystem = true;
+      welcomeMessageSystem(Imported["GS_debuggEx"]);
+      createFolderSystem();
+      createFolderDebuggEx();
+      createFolderDebuggExCodeRun();
+      createFolderDebuggExFilesCache();
+    }
   };
 
   /**
@@ -417,7 +471,7 @@ GS.MVD = MVD;
    */
   function welcomeMessageSystem(systemVersion) {
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-      var args = ['\n %c %c %c \u2730 MVDEBUG ' + systemVersion + ' \u2730 ' + ' %c  %c  \u2726 Dr.Xamã \u2726  %c %c \u2605%c\u2605%c\u2605 \n\n',
+      var args = ['\n %c %c %c \u2730 MVDEBUG ' + systemVersion + ' \u2730 ' + ' %c  %c  \u2726 ' + url_github + ' \u2726  %c %c \u2605%c\u2605%c\u2605 \n\n',
         'background: #448eff; padding:5px 0;',
         'background: #ff4444; padding:5px 0;',
         'color: #fff; background: #ffae00; padding:5px 0;',
@@ -428,9 +482,9 @@ GS.MVD = MVD;
         'color: #ff4444; background: #fff; padding:5px 0;',
         'color: #ffae00; background: #fff; padding:5px 0;'
       ];
-      window.console.log.apply(console, args);
+      console.log.apply(console, args);
     } else if (window.console) {
-      window.console.log('DEBUG ' + systemVersion + ' - Dr.Xamã ');
+      console.log('MVDEBUG ' + systemVersion + ' - ' + url_github);
     }
   }
 
@@ -1560,7 +1614,8 @@ GS.MVD = MVD;
   //
   MVDebug.latestVersion = Imported["GS_debuggEx"];
   MVDebug.releaseDate = '20/10/2017';
-  MVDebug.updateDate = '06/03/2018';
+  MVDebug.updateDate = '04/06/2018';
+  MVDebug.updateCode = '041018rc';
   MVDebug.scriptRun = scriptsRun;
   MVDebug.scriptsLoad = scriptsLoad;
   MVDebug.fileScanType = fileScanType;
@@ -1580,3 +1635,212 @@ GS.MVD = MVD;
 //===============================================================================
 //           ✰ Dr.Xamã ✰ KADOKAWA ✰ Yoji Ojima ✰ Degica ✰
 //===============================================================================
+/*~struct~InputKeyMapperStruct:
+ * @param Numero da tecla
+ * @desc O codigo da tecla
+ * @type select
+ * @default 8
+ * @option backspace
+ * @value 8
+ * @option tab
+ * @value 9
+ * @option enter
+ * @value 13
+ * @option shift
+ * @value 16
+ * @option ctrl
+ * @value 17
+ * @option alt
+ * @value 18
+ * @option pause/break
+ * @value 19
+ * @option caps lock
+ * @value 20
+ * @option escape
+ * @value 27
+ * @option space
+ * @value 32
+ * @option page up
+ * @value 33
+ * @option page down
+ * @value 34
+ * @option end
+ * @value 35
+ * @option home
+ * @value 36
+ * @option left arrow
+ * @value 37
+ * @option up arrow
+ * @value 38
+ * @option right arrow
+ * @value 39
+ * @option down arrow
+ * @value 40
+ * @option insert
+ * @value 45
+ * @option delete
+ * @value 46
+ * @option 0
+ * @value 48
+ * @option 1
+ * @value 49
+ * @option 2
+ * @value 50
+ * @option 3
+ * @value 51
+ * @option 4
+ * @value 52
+ * @option 5
+ * @value 53
+ * @option 6
+ * @value 54
+ * @option 7
+ * @value 55
+ * @option 8
+ * @value 56
+ * @option 9
+ * @value 57
+ * @option a
+ * @value 65
+ * @option b
+ * @value 66
+ * @option c
+ * @value 67
+ * @option d
+ * @value 68
+ * @option e
+ * @value 69
+ * @option f
+ * @value 70
+ * @option g
+ * @value 71
+ * @option h
+ * @value 72
+ * @option i
+ * @value 73
+ * @option j
+ * @value 74
+ * @option k
+ * @value 75
+ * @option l
+ * @value 76
+ * @option m
+ * @value 77
+ * @option n
+ * @value 78
+ * @option o
+ * @value 79
+ * @option p
+ * @value 80
+ * @option q
+ * @value 81
+ * @option r
+ * @value 82
+ * @option s
+ * @value 83
+ * @option t
+ * @value 84
+ * @option u
+ * @value 85
+ * @option v
+ * @value 86
+ * @option w
+ * @value 87
+ * @option x
+ * @value 88
+ * @option y
+ * @value 89
+ * @option z
+ * @value 90
+ * @option left window key
+ * @value 91
+ * @option right window key
+ * @value 92
+ * @option select key
+ * @value 93
+ * @option numpad 0
+ * @value 96
+ * @option numpad 1
+ * @value 97
+ * @option numpad 2
+ * @value 98
+ * @option numpad 3
+ * @value 99
+ * @option numpad 4
+ * @value 100
+ * @option numpad 5
+ * @value 101
+ * @option numpad 6
+ * @value 102
+ * @option numpad 7
+ * @value 103
+ * @option numpad 8
+ * @value 104
+ * @option numpad 9
+ * @value 105
+ * @option multiply
+ * @value 106
+ * @option add
+ * @value 107
+ * @option subtract
+ * @value 109
+ * @option decimal point
+ * @value 110
+ * @option divide
+ * @value 111
+ * @option f1
+ * @value 112
+ * @option f2
+ * @value 113
+ * @option f3
+ * @value 114
+ * @option f4
+ * @value 115
+ * @option f5
+ * @value 116
+ * @option f6
+ * @value 117
+ * @option f7
+ * @value 118
+ * @option f8
+ * @value 119
+ * @option f9
+ * @value 120
+ * @option f10
+ * @value 121
+ * @option f11
+ * @value 122
+ * @option f12
+ * @value 123
+ * @option num lock
+ * @value 144
+ * @option scroll lock
+ * @value 145
+ * @option semi-colon
+ * @value 186
+ * @option equal sign
+ * @value 187
+ * @option comma
+ * @value 188
+ * @option dash
+ * @value 189
+ * @option period
+ * @value 190
+ * @option forward slash
+ * @value 191
+ * @option grave accent
+ * @value 192
+ * @option open bracket
+ * @value 219
+ * @option back slash
+ * @value 220
+ * @option close braket
+ * @value 221
+ * @option single quote
+ * @value 222
+ *
+ * @param Nome da tecla
+ * @desc O identificador da tecla
+ * @type string
+ * @default
+ */

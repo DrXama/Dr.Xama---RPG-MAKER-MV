@@ -2,25 +2,15 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.03 - Gerenciador de atualizações
+ * @plugindesc v2.00 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
- *
+ * 
  * @param Arquivo de atualizações
- * 
- * @param Nome
- * @parent Arquivo de atualizações
- * @desc Nome do arquivo de atualizações
- * - Esse nome é usado para salvar o arquivo
- * @type string
- * @default updateManager
- * 
- * @param URL
- * @parent Arquivo de atualizações
- * @desc Link para o sistema baixar o arquivo e verificar novas atualizações
+ * @desc Url para baixar o arquivo e verificar novas atualizações
  * - Recomendo o raw do github.
  * @type string
- * @default https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/updateManager.json
+ * @default https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/DrXama_updateManager/updateManager.json
  * 
  * @help
  * ================================================================================
@@ -29,825 +19,212 @@
  * Tenha um gerenciamento de atualizações eficiente, agora você pode atualizar seu
  * jogo quando quiser.
  * ================================================================================
- *    Atualizar/Remover os Arquivos
- * ================================================================================
- * O nome dos arquivos são configurados para minúsculo, dessa maneira qualquer
- * arquivo com o mesmo nome, pode ser encontrado pelo sistema. Cuidado com
- * arquivos com o mesmo nome, pois o sistema não difere letras maiúsculas de
- * minúsculas, resolvi deixar assim para evitar problemas onde o jogador pode
- * renomear o arquivo para evitar a Atualização/Remoção do arquivo. O sistema
- * remove qualquer espaço entre as letras do nome do arquivo por segurança.
- * 
- * Exemplo:
- *          - Texto.txt é o mesmo que texto.txt
- *          - Actor_1.png é o mesmo que actor_1.png
- *          - Town1.ogg é o mesmo que town1.ogg
- *          - T E x T O.txt é o mesmo que texto.txt
- * ================================================================================
- *    Remover Pastas
- * ================================================================================
- * A remoção de pastas deve ser feita com muito cuidado, pois a pasta vai ser
- * removida por completo e todo seu conteudo junto. Não tenho responsabilidade por
- * qualquer perda na pasta, se deletar uma pasta, tenha certeza, pois não tem como
- * recuperar os arquivos perdidos, os mesmo não iram para a lixeira, mas são 
- * destruidos, por segurança.
- * 
- * Por exemplo, se temos uma pasta chamada "Textos" todo seu conteudo e a pasta
- * serão destruidos.
- * Exemplo:
- *          - Textos
- *              - Fontes
- *                  - gameFont.ttf
- *                  - gameFont2.ttf
- *              - Fontes2
- *                  - loadFont.ttf
- *                  - loadFont2.ttf
- * ================================================================================
- *    Suporte
- * ================================================================================
- * Algumas linha das funções do script estão detalhadas, dessa forma o suporte é 100%
- * Se você é um programador, fique a vontade para configurar como quiser, caso
- * não saiba programação, não altere nada, crie um topico de duvida na 4Tabern:
- * http://4tabern.com/ e no fórum Condado Braveheart
- * Perfil: http://www.condadobraveheart.com/forum/index.php?action=profile;u=1870
- * ================================================================================
  *    Atualização
  * ================================================================================
  * Para atualizar esse plugin vá no github do Dr.Xamã
- * https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
+ * http://drxama.epizy.com/?page_id=299
  */
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
     // Parâmetros
     //
-    const params = PluginManager.parameters('DrXama_updateManager');
-    const updateFileName = String(params['Nome']);
-    const updateFileURL = String(params['URL']);
+    const params = PluginManager.parameters('DrXama_updateManager'),
+        updateFile = String(params['Arquivo de atualizações']),
+        fs = require('fs');
 
     //-----------------------------------------------------------------------------
-    // Variaveis globais
-    //
-    // Armazena os arquivos que estão sendo baixados
-    var _filesDownloadCache = [],
-        _sceneUpdateAlrady = null;
-    // Adiciona o arquivo ao cache de download
-    const _filesDownloadCache_add = function (nome, downloadNome, pasta) {
-        _filesDownloadCache.push({
-            "nome": nome,
-            "downloadNome": downloadNome,
-            "pasta": pasta
-        });
-    };
-    // Retira o arquivo do cache de download
-    const _filesDownloadCache_remove = function (nome) {
-        var index = 0;
-        _filesDownloadCache.forEach(function (file) {
-            if (file["nome"] == nome) {
-                return index = _filesDownloadCache.indexOf(file);
-            }
-        });
-        _filesDownloadCache.splice(index, 1);
-    };
-    // Move o arquivo para o caminho de destino
-    const _filesDownloadCache_move = function (nome) {
-        // Importa o metodo File System do Node
-        var fs = require('fs');
-        // Cria o caminho para a pasta de updates
-        var folderDest = localPath('system/updates');
-        // Cria o caminho para a pasta de download
-        var folderDestDownload = `${folderDest}/download`;
-        var index = 0;
-        _filesDownloadCache.forEach(function (file) {
-            if (file["nome"] == nome) {
-                return index = _filesDownloadCache.indexOf(file);
-            }
-        });
-        // Recupera o nome do arquivo na pasta de download
-        var fileDownloadName = _filesDownloadCache[index]["downloadNome"];
-        // Cria o caminho para o arquivo associado a pasta de downloads
-        var fileDest = `${folderDestDownload}\\${fileDownloadName}`;
-        var fileDestFolder = localPath(_filesDownloadCache[index]["pasta"])
-        var fileDestNew = `${fileDestFolder}\\${fileDownloadName}`;
-        // Verifica se o arquivo ainda está na pasta download
-        if (fs.existsSync(fileDest)) {
-            // Copia e cola o arquivo no caminho do arquivo
-            var file = fs.createReadStream(fileDest).pipe(fs.createWriteStream(fileDestNew));
-            file.on('finish', function () {
-                file.close();
-                // Remove o arquivo do cache de download
-                _filesDownloadCache_remove(_filesDownloadCache[index]["nome"]);
-                // Verifica se o caminho do arquivo existe
-                if (localPathExists('system/updates/download')) {
-                    // Remove o arquivo
-                    localPathRemove('system/updates/download', fileDownloadName);
-                }
-            });
-        } else {
-            // Remove o arquivo do cache de download
-            _filesDownloadCache_remove(_filesDownloadCache[index]["nome"]);
-            // Configura o download do arquivo para não completo
-            StorageManager.updateManager_setFileDownloadNotComplete(_filesDownloadCache[index]["nome"]);
-        }
-    };
-
-    //-----------------------------------------------------------------------------
-    // Funções
+    // Variaveis Globais
     //
 
-    // Verifica se a string é igual a outra string
-    function stringIsString(string, string2) {
-        // Deixa a string em minusculo e retira os espaços
-        string = string.toLowerCase().replace(/\s{1,}/g, '');
-        // Deixa a string em minusculo e retira os espaços
-        string2 = string2.toLowerCase().replace(/\s{1,}/g, '');
-        // Verifica se a string contem a outra string
-        if (string.contains(string2)) {
-            return true;
-        }
-        return false;
-    };
+    /**
+     * @description Verifica se a scene foi reiniciada
+     */
+    var scene_system_reload = null;
 
-    // Retorna o caminho local para o arquivo/pasta
-    function localPath(p) {
-        // Retira uma parte da string
-        if (p.substring(0, 1) === '/') p = p.substring(1);
-        // Importa o modulo PATH do Node
-        var path = require('path');
-        // Cria a base para o caminho local
-        var base = path.dirname(process.mainModule.filename);
-        // Retorna a base do caminho associado ao caminho
-        return path.join(base, p);
-    };
-
-    // Verifica se o caminho local existe
-    function localPathExists(p) {
-        var fs = require('fs');
-        var i = 0;
-        var length = p.length;
-        var path = false;
-        var paths = [];
-        var pathString = '';
-        for (; i < length; i++) {
-            let letter = String(p[i]);
-            if (letter != '/') {
-                pathString += letter;
-            }
-            if (letter == '/' || i == length - 1) {
-                paths.push(pathString);
-                var pathsJoin = paths.join("/");
-                if (fs.existsSync(localPath(pathsJoin))) {
-                    path = true;
+    /**
+     * @description Salva as funções para o progresso da janela
+     */
+    var windowProgress = (function () {
+        return {
+            files: 0,
+            progress: false,
+            add() {
+                this.files++;
+            },
+            remove() {
+                this.files--;
+            },
+            update() {
+                if (!this.progress) {
+                    this.progress = true;
+                    require('nw.gui').Window.get().setProgressBar(1.5);
                 } else {
-                    path = false;
-                }
-                pathString = '';
-            }
-        }
-        return path;
-    };
-
-    // Cria o caminho local
-    function localPathCreate(p) {
-        var fs = require('fs');
-        var i = 0;
-        var length = p.length;
-        var paths = [];
-        var pathString = '';
-        for (; i < length; i++) {
-            let letter = String(p[i]);
-            if (letter != '/') {
-                pathString += letter;
-            }
-            if (letter == '/' || i == length - 1) {
-                paths.push(pathString);
-                var pathsJoin = paths.join("/");
-                if (!fs.existsSync(localPath(pathsJoin))) {
-                    fs.mkdirSync(localPath(pathsJoin));
-                }
-                pathString = '';
-            }
-        }
-    };
-
-    // Deleta varias pastas/arquivos dentro de uma pasta e por fim a pasta
-    function localPathRemoveEx(path) {
-        if (!localPathExists(path)) return;
-        var fs = require('fs');
-        var folderPath = localPath(path);
-        if (fs.lstatSync(folderPath).isDirectory()) {
-            fs.readdirSync(folderPath).forEach(function (dirOrFile) {
-                var dirOrFilePath = folderPath + "/" + dirOrFile;
-                if (fs.lstatSync(dirOrFilePath).isDirectory()) {
-                    var dirPath = path + "/" + dirOrFile;
-                    localPathRemoveEx(dirPath);
-                } else {
-                    fs.unlinkSync(dirOrFilePath);
-                }
-            });
-            try {
-                fs.rmdirSync(folderPath);
-            } catch (error) {
-                localPathRemoveEx(path);
-            }
-        }
-    };
-
-    // Deleta a pasta/arquivo
-    function localPathRemove(folder, file) {
-        if (!localPathExists(folder)) return;
-        var fs = require('fs');
-        var pathFolder = localPath(folder);
-        var folderFiles = fs.readdirSync(pathFolder);
-        if (folderFiles.length > 0 && typeof file === 'string') {
-            folderFiles.forEach(function (fileDir) {
-                if (stringIsString(fileDir, file)) {
-                    var fileName = file.toLowerCase().replace(/\s{1,}/g, '');
-                    var oldPath = `${pathFolder}\\${fileDir}`;
-                    var newPath = `${pathFolder}\\${fileName}`;
-                    fs.renameSync(oldPath, newPath);
-                    fs.unlinkSync(newPath);
-                }
-            });
-        } else {
-            localPathRemoveEx(folder);
-        }
-    };
-
-    // Cria a pasta do sistema
-    function createSystemFolders() {
-        var fs = require('fs');
-        var path = require('path');
-        var path_folderSystem = localPath('system');
-        var path_folderUpdates = localPath('system/updates');
-        if (!fs.existsSync(path_folderSystem)) {
-            fs.mkdirSync(path_folderSystem);
-        }
-        if (!fs.existsSync(path_folderUpdates)) {
-            fs.mkdirSync(path_folderUpdates);
-        }
-    };
-
-    // Deleta a pasta dos downloads
-    function deleteDownloadFolder() {
-        var fs = require('fs');
-        var path = require('path');
-        var path_folderUpdatesDownload = localPath('system/updates/download');
-        if (fs.existsSync(path_folderUpdatesDownload)) {
-            fs.rmdirSync(path_folderUpdatesDownload);
-        }
-    };
-
-    // Baixa o arquivo para verificar atualizações
-    function downloadUpdateFile() {
-        var fs = require('fs');
-        var http = null;
-        var fileUrl = updateFileURL;
-        var folderDest = localPath('system/updates');
-        var fileDest = `${folderDest}\\${updateFileName}.json`;
-        if (fileUrl.substring(0, 5).match(/https/)) {
-            http = require('https');
-        } else {
-            http = require('http');
-        }
-        if (fs.existsSync(folderDest)) {
-            if (!fs.existsSync(fileDest)) {
-                fs.writeFileSync(fileDest, '', { encoding: 'utf8' });
-            }
-            var file = fs.createWriteStream(fileDest);
-            var request = http.get(fileUrl, function (response) {
-                response.pipe(file);
-                file.on('finish', function () {
-                    file.close();
-                    deleteUpdateFiles();
-                    downloadUpdateFiles();
-                    createUpdateChangeLog();
-                });
-            }).on('error', function (err) {
-                fs.unlinkSync(fileDest);
-            });
-        }
-    };
-
-    // Verifica a exclusão de arquivos/pastas
-    function deleteUpdateFiles() {
-        // Importa o metodo File System do Node
-        var fs = require('fs');
-        // Cria o caminho para a pasta de updates
-        var folderDest = localPath('system/updates');
-        // Cria o caminho para o arquivo de atualizações
-        var fileDest = `${folderDest}\\${updateFileName}.json`;
-        // Verifica se existe o arquivo de atualizações
-        if (fs.existsSync(fileDest)) {
-            // Carrega o arquivo de atualizações
-            var fileUpdate = (function () {
-                var data = fs.readFileSync(fileDest, { encoding: 'utf8' });
-                var dataParse = JSON.parse(data) || {};
-                return dataParse;
-            })();
-            // Verifica se existe o arquivo de save das atualizações
-            if (StorageManager.updateManager_exists()) {
-                // Carrega o arquivo de save das atualizações
-                StorageManager.updateManager_load();
-                let versao = fileUpdate["Status"]["versão"];
-                let nome = fileUpdate["Status"]["nome"];
-                // Verifica se o arquivo de save da atualização tem a mesma
-                // versão da atualização atual
-                if (StorageManager.updateManager_versionIsVersion(versao)) {
-                    // Remove os arquivos armazenados
-                    removeFilesSave();
-                    // Remove as pastas armazenadas
-                    removeFoldersSave();
-                    return console.info(`A remoção dos arquivos/pastas da atualização: ${nome} já estão armazenados`);
-                }
-            }
-            // Remove os arquivos
-            removeFiles();
-            // Remove as pastas
-            removeFolders();
-            // Remove os arquivos
-            function removeFiles() {
-                // Verifica se os Arquivos para remoção tem um valor valido
-                if (fileUpdate["Remover"] && fileUpdate["Remover"] instanceof Array === true) {
-                    // Verifica se a quantia de Arquivos para remoção é maior que 0
-                    if (fileUpdate["Remover"].length > 0) {
-                        fileUpdate["Remover"].forEach(function (file) {
-                            // Armazena o caminho para o arquivo
-                            var pathFolder = file["pasta"];
-                            // Armazena o nome do arquivo
-                            var pathFile = `${file["nome"]}.${file["tipo"]}`;
-                            // Verifica se o caminho do arquivo existe
-                            if (localPathExists(pathFolder)) {
-                                // Remove o arquivo
-                                localPathRemove(pathFolder, pathFile);
-                                // Cria as variaveis de save do arquivo de remoção
-                                var nome = file["nome"],
-                                    tipo = file["tipo"],
-                                    pasta = file["pasta"];
-                                // Salva o arquivo de remoção
-                                StorageManager.updateManager_setFileRemove(nome, tipo, pasta);
-                            }
-                        });
-                    }
-                }
-            }
-            // Remove os arquivos armazenados
-            function removeFilesSave() {
-                // Verifica se os Arquivos de save para remoção tem um valor valido
-                if (StorageManager.updateManager_storage["Remover"] && StorageManager.updateManager_storage["Remover"] instanceof Array === true) {
-                    // Verifica se a quantia de Arquivos de save para remoção é maior que 0
-                    if (StorageManager.updateManager_storage["Remover"].length > 0) {
-                        StorageManager.updateManager_storage["Remover"].forEach(function (file) {
-                            // Armazena o caminho para o arquivo
-                            var pathFolder = file["pasta"];
-                            // Armazena o nome do arquivo
-                            var pathFile = `${file["nome"]}.${file["tipo"]}`;
-                            // Verifica se o caminho do arquivo existe
-                            if (localPathExists(pathFolder)) {
-                                // Remove o arquivo
-                                localPathRemove(pathFolder, pathFile);
-                            }
-                        });
-                    }
-                }
-            }
-            // Remove as pastas
-            function removeFolders() {
-                // Verifica se os Pastas para remoção tem um valor valido
-                if (fileUpdate["Remover_Pastas"] && fileUpdate["Remover_Pastas"] instanceof Array === true) {
-                    // Verifica se as Pastas para remoção é maior que 0
-                    if (fileUpdate["Remover_Pastas"].length > 0) {
-                        fileUpdate["Remover_Pastas"].forEach(function (file) {
-                            // Armazena o caminho para a pasta raiz
-                            var pathFolder = file["pasta"];
-                            // Armazena o caminho para a pasta associado a pasta raiz
-                            var folderName = `${pathFolder}/${file["nome"]}`;
-                            // Verifica se o caminho para a pasta raiz existe
-                            if (localPathExists(pathFolder)) {
-                                // Remove a pasta
-                                localPathRemove(folderName);
-                                // Variaveis de save da pasta
-                                var nome = file["nome"],
-                                    pasta = file["pasta"];
-                                // Salva a pasta de remoção
-                                StorageManager.updateManager_setFolderRemove(nome, pasta);
-                            }
-                        });
-                    }
-                }
-            }
-            // Remove as pastas armazenadas
-            function removeFoldersSave() {
-                // Verifica se os Pastas de save para remoção tem um valor valido
-                if (StorageManager.updateManager_storage["Remover_Pastas"] && StorageManager.updateManager_storage["Remover_Pastas"] instanceof Array === true) {
-                    // Verifica se as Pastas de save para remoção é maior que 0
-                    if (StorageManager.updateManager_storage["Remover_Pastas"].length > 0) {
-                        StorageManager.updateManager_storage["Remover_Pastas"].forEach(function (file) {
-                            // Armazena o caminho para a pasta raiz
-                            var pathFolder = file["pasta"];
-                            // Armazena o caminho para a pasta associado a pasta raiz
-                            var folderName = `${pathFolder}/${file["nome"]}`;
-                            // Verifica se o caminho para a pasta raiz existe
-                            if (localPathExists(pathFolder)) {
-                                // Remove a pasta
-                                localPathRemove(folderName);
-                            }
-                        });
+                    if (this.files <= 0) {
+                        this.progress = false;
+                        require('nw.gui').Window.get().setProgressBar(0);
                     }
                 }
             }
         }
-    };
+    })();
 
-    // Baixa os arquivos da atualização
-    function downloadUpdateFiles() {
-        // Importa o metodo File System do Node
-        var fs = require('fs');
-        // Cria o caminho para a pasta de updates
-        var folderDest = localPath('system/updates');
-        // Cria o caminho para a pasta de download
-        var folderDestDownload = `${folderDest}/download`;
-        // Cria o caminho para o arquivo de atualizações
-        var fileDest = `${folderDest}\\${updateFileName}.json`;
-        // Cria a variavel http do modulo http do Node
-        var http = null;
-        // Verifica se o arquivo de atualizações existe
-        if (fs.existsSync(fileDest)) {
-            // Carrega o arquivo de atualizações
-            var fileUpdate = (function () {
-                var data = fs.readFileSync(fileDest, { encoding: 'utf8' });
-                var dataParse = JSON.parse(data) || {};
-                return dataParse;
-            })();
-            // Verifica se existe o arquivo de save das atualizações
-            if (StorageManager.updateManager_exists()) {
-                // Carrega o arquivo de save das atualizações
-                StorageManager.updateManager_load();
-                let versao = fileUpdate["Status"]["versão"];
-                let nome = fileUpdate["Status"]["nome"];
-                // Verifica se o arquivo de save da atualização tem a mesma
-                // versão da atualização atual para baixar
-                if (!StorageManager.updateManager_versionIsVersion(versao)) {
-                    // Configura a versão do arquivo de save da atualização
-                    // para a versão atual da atualização
-                    StorageManager.updateManager_setVersion(versao);
-                }
-                if (StorageManager.updateManager_storage["Arquivos"].length > 0) {
-                    // Faz/Verifica os downloads
-                    verifyDownloadFiles();
-                    return console.info(`Os arquivos da atualização: ${nome} já estão armazenados`);
-                }
-            }
-            // Verifica se a pasta de downloads existe
-            if (!fs.existsSync(folderDestDownload)) {
-                // Cria a pasta de downloads
-                fs.mkdirSync(folderDestDownload);
-            }
-            // Faz os downloads
-            downloadFiles();
-            // Faz os downloads
-            function downloadFiles() {
-                // Verifica se os Arquivos da atualização tem um valor valido
-                if (fileUpdate["Arquivos"] && fileUpdate["Arquivos"] instanceof Array === true) {
-                    // Verifica se a quantia de arquivos da atualização é maior que 0
-                    if (fileUpdate["Arquivos"].length > 0) {
-                        fileUpdate["Arquivos"].forEach(function (file) {
-                            // Cria o caminho para o arquivo
-                            var pathFile = `${file["nome"]}.${file["tipo"]}`;
-                            // Cria o caminho do arquivo associado a pasta downloads
-                            var pathFileDest = `${folderDestDownload}\\${pathFile}`;
-                            // Cria o link do arquivo
-                            var fileUrl = file["link"];
-                            // Verifica se o link do arquivo exige o metodo HTTPS ou HTTP do Node
-                            if (fileUrl.substring(0, 5).match(/https/)) {
-                                http = require('https');
-                            } else {
-                                http = require('http');
-                            }
-                            // Verifica se já existe o arquivo
-                            if (fs.existsSync(pathFileDest)) {
-                                // Remove o arquivo
-                                fs.unlinkSync(pathFileDest)
-                            }
-                            // Cria o arquivo para baixar
-                            fs.writeFileSync(pathFileDest, '');
-                            // Define as variaveis de save do arquivo da atualização
-                            var fileName = file["nome"],
-                                fileVersao = file["versão"],
-                                fileTipo = file["tipo"],
-                                filePasta = file["pasta"],
-                                fileLink = file["link"];
-                            // Salva o arquivo da atualização
-                            StorageManager.updateManager_setFile(fileName, fileVersao, fileTipo, filePasta, fileLink);
-                            // Salva o download do arquivo no cache
-                            var downloadNome = `${file["nome"]}.${file["tipo"]}`;
-                            // Cria um arquivo que pode ter sua data alterada depois de sua criação
-                            var file = fs.createWriteStream(pathFileDest);
-                            _filesDownloadCache_add(fileName, downloadNome, filePasta);
-                            // Cria o download do arquivo
-                            var request = http.get(fileUrl, function (response) {
-                                // Altera a data do arquivo
-                                response.pipe(file);
-                                // Verifica se o arquivo está completo
-                                file.on('finish', function () {
-                                    // Fecha o arquivo
-                                    file.close();
-                                    // Move o arquivo para o caminho de destino
-                                    _filesDownloadCache_move(fileName);
-                                    // Configura o download do arquivo para completo
-                                    StorageManager.updateManager_setFileDownloadComplete(fileName);
-                                    // Verifica se o arquivo deu erro
-                                }).on('error', function (err) {
-                                    // Fecha a conexão de download
-                                    response.destroy();
-                                });
-                                // Verifica se a conexão deu erro
-                            }).on('error', function (err) {
-                                // Remove o arquivo
-                                fs.unlinkSync(pathFileDest);
-                            });
-                        });
-                    }
-                }
-            }
-            // Faz/Verifica os downloads
-            function verifyDownloadFiles() {
-                // Verifica se os Arquivos de save da atualização tem um valor valido
-                if (StorageManager.updateManager_storage["Arquivos"] && StorageManager.updateManager_storage["Arquivos"] instanceof Array === true) {
-                    // Verifica se a quantia de arquivos de save da atualização é maior que 0
-                    if (StorageManager.updateManager_storage["Arquivos"].length > 0) {
-                        StorageManager.updateManager_storage["Arquivos"].forEach(function (file) {
-                            // Variavel que armazena o status de download do arquivo
-                            var fileDownload = file["download"];
-                            // Verifica se o status de download não está completo
-                            if (!fileDownload) {
-                                // Cria o caminho do arquivo
-                                var pathFile = `${file["nome"]}.${file["tipo"]}`;
-                                // Cria o caminho do arquivo associado a pasta download
-                                var pathFileDest = `${folderDestDownload}\\${pathFile}`;
-                                // Cria o link do arquivo
-                                var fileUrl = file["link"];
-                                // Verifica se o link do arquivo exige o metodo HTTPS ou HTTP do Node
-                                if (fileUrl.substring(0, 5).match(/https/)) {
-                                    http = require('https');
-                                } else {
-                                    http = require('http');
-                                }
-                                // Verifica se já existe o arquivo
-                                if (fs.existsSync(pathFileDest)) {
-                                    // Remove o arquivo
-                                    fs.unlinkSync(pathFileDest)
-                                }
-                                // Cria o arquivo para baixar
-                                fs.writeFileSync(pathFileDest, '');
-                                // Armazena o nome do arquivo
-                                var fileName = file["nome"];
-                                var filePasta = file["pasta"];
-                                // Salva o download do arquivo no cache
-                                var downloadNome = `${file["nome"]}.${file["tipo"]}`;
-                                // Cria um arquivo que pode ter sua data alterada depois de sua criação
-                                var file = fs.createWriteStream(pathFileDest);
-                                _filesDownloadCache_add(fileName, downloadNome, filePasta);
-                                // Cria o download do arquivo
-                                var request = http.get(fileUrl, function (response) {
-                                    // Altera a data do arquivo
-                                    response.pipe(file);
-                                    // Verifica se o arquivo está completo
-                                    file.on('finish', function () {
-                                        // Fecha o arquivo
-                                        file.close();
-                                        // Move o arquivo para o caminho de destino
-                                        _filesDownloadCache_move(fileName);
-                                        // Configura o download do arquivo para completo
-                                        StorageManager.updateManager_setFileDownloadComplete(fileName);
-                                        // Verifica se o arquivo deu erro
-                                    }).on('error', function (err) {
-                                        // Fecha a conexão de download
-                                        response.destroy();
-                                    });
-                                    // Verifica se a conexão deu erro
-                                }).on('error', function (err) {
-                                    // Remove o arquivo
-                                    fs.unlinkSync(pathFileDest);
-                                });
-                            }
-                        });
-                    }
-                }
+    /**
+     * @description Salva a janela do progresso de download
+     */
+    var windowDownloadProgress = (function () {
+        return {
+            fileName: null,
+            progressText: null,
+            progressMax: 0,
+            progress: 0,
+            progressBar: 0,
+            resetProgress() {
+                this.fileName = null;
+                this.progressText = null;
+                this.progress = 0;
+                this.progressBar = 0;
+            },
+            setTextBar(text) {
+                this.progressText = text;
+            },
+            getTextBar() {
+                return this.progressText ? this.progressText : '0 KB / 0 KB';
+            },
+            setTextFile(text) {
+                this.fileName = text;
+            },
+            getTextFile() {
+                return this.fileName ? this.fileName : '???';
+            },
+            setProgressMax(max) {
+                this.progressMax = Math.floor(max);
+            },
+            setProgress(value) {
+                if (this.progress < Math.floor(value))
+                    this.progress = Math.floor(value);
+            },
+            setProgressBar(value) {
+                value = Math.floor(value * this.progressMax / 100);
+                if (this.progressBar < value)
+                    this.progressBar = value;
+            },
+            getProgress() {
+                return this.progress > this.progressMax ? this.progressMax : this.progress;
+            },
+            getProgressBar() {
+                return this.progressBar > this.progressMax ? this.progressMax : this.progressBar;
             }
         }
-    };
-
-    // Remove o arquivo da atualização
-    function deleteDownloadUpdateFile() {
-        // Importa o metodo File System do Node
-        var fs = require('fs');
-        // Cria o caminho para a pasta de updates
-        var folderDest = localPath('system/updates');
-        // Cria o caminho para a pasta de download
-        var folderDestDownload = `${folderDest}/download`;
-        // Cria o caminho para o arquivo de atualizações
-        var fileDest = `${folderDest}\\${updateFileName}.json`;
-        if (fs.existsSync(fileDest)) {
-            fs.unlinkSync(fileDest);
-        }
-    };
-
-    // Cria o arquivo de mudanças o famoso LOG
-    function createUpdateChangeLog() {
-        // Importa o metodo File System do Node
-        var fs = require('fs');
-        // Cria o caminho para a pasta de updates
-        var folderDest = localPath('system/updates');
-        // Cria o caminho para o arquivo de atualizações
-        var fileDest = `${folderDest}\\${updateFileName}.json`;
-        // Carrega o arquivo de atualizações
-        var fileUpdate = (function () {
-            var data = fs.readFileSync(fileDest, { encoding: 'utf8' });
-            var dataParse = JSON.parse(data) || {};
-            return dataParse;
-        })();
-        // Cria o caminho para o arquivo de atualizações
-        var fileDest = `${folderDest}\\log_${fileUpdate["Status"]["versão"]}.txt`;
-        var fileData = 'GERENCIADOR DE ATUALIZAÇÕES POR DR.XAMÃ\r\n';
-        fileData += `\r\nLOG DE DESENVOLVIMENTO\r\n\r\nATUALIZAÇÂO: ${fileUpdate["Status"]["nome"]}\r\n\r\nVERSÂO: ${fileUpdate["Status"]["versão"]}\r\n\r\nDESCRIÇÂO: ${fileUpdate["Status"]["descrição"]}\r\n\r\nMUDANÇAS:`;
-        fileUpdate["Status"]["mudanças"].forEach(function (string) {
-            fileData += `\r\n- ${string}`;
-        });
-        var file = fs.writeFileSync(fileDest, fileData.trim());
-    };
+    })();
 
     //-----------------------------------------------------------------------------
-    // StorageManager
+    // Scene_Boot
     //
-    StorageManager.updateManager_storage = {
-        "Arquivos": Array(),
-        "Remover": Array(),
-        "Remover_Pastas": Array(),
-        "Versão": String()
-    };
-
-    StorageManager.updateManager_setFolderRemove = function (nome, pasta) {
-        StorageManager.updateManager_storage["Remover_Pastas"].push({
-            "nome": nome,
-            "pasta": pasta
-        });
-        this.updateManager_save();
-    };
-
-    StorageManager.updateManager_setFileRemove = function (nome, tipo, pasta) {
-        StorageManager.updateManager_storage["Remover"].push({
-            "nome": nome,
-            "tipo": tipo,
-            "pasta": pasta
-        });
-        this.updateManager_save();
-    };
-
-    StorageManager.updateManager_setVersion = function (versao) {
-        StorageManager.updateManager_storage["Versão"] = versao;
-    };
-
-    StorageManager.updateManager_versionIsVersion = function (versao) {
-        return StorageManager.updateManager_storage["Versão"] != versao;
-    };
-
-    StorageManager.updateManager_setFile = function (nome, versao, tipo, pasta, link) {
-        StorageManager.updateManager_storage["Arquivos"].push({
-            "nome": nome,
-            "versão": versao,
-            "tipo": tipo,
-            "pasta": pasta,
-            "link": link,
-            "download": false
-        });
-        this.updateManager_save();
-    };
-
-    StorageManager.updateManager_setFileDownloadComplete = function (nome) {
-        StorageManager.updateManager_storage["Arquivos"].forEach(function (file) {
-            if (file["nome"] == nome) {
-                file["download"] = true;
-            }
-        });
-        this.updateManager_save();
-    };
-
-    StorageManager.updateManager_setFileDownloadNotComplete = function (nome) {
-        StorageManager.updateManager_storage["Arquivos"].forEach(function (file) {
-            if (file["nome"] == nome) {
-                file["download"] = false;
-            }
-        });
-        this.updateManager_save();
-    };
-
-    StorageManager.updateManager_save = function () {
-        this.updateManager_saveToLocalFile();
-    };
-
-    StorageManager.updateManager_load = function () {
-        this.updateManager_loadFromLocalFile();
-    };
-
-    StorageManager.updateManager_exists = function () {
-        return this.updateManager_localFileExists();
-    };
-
-    StorageManager.updateManager_localFileExists = function () {
-        var fs = require('fs');
-        var dirPath = this.localFileDirectoryPath();
-        var filePath = `${dirPath}updateManager.rpgsave`;
-        return fs.existsSync(filePath);
-    };
-
-    StorageManager.updateManager_saveToLocalFile = function () {
-        var data = LZString.compressToBase64(JSON.stringify(StorageManager.updateManager_storage));
-        var fs = require('fs');
-        var dirPath = this.localFileDirectoryPath();
-        var filePath = `${dirPath}updateManager.rpgsave`;
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath);
-        }
-        fs.writeFileSync(filePath, data);
-    };
-
-    StorageManager.updateManager_loadFromLocalFile = function () {
-        var data = null;
-        var fs = require('fs');
-        var dirPath = this.localFileDirectoryPath();
-        var filePath = `${dirPath}updateManager.rpgsave`;
-        if (fs.existsSync(filePath)) {
-            data = fs.readFileSync(filePath, { encoding: 'utf8' });
-        }
-        if (!data) return;
-        StorageManager.updateManager_storage = JSON.parse(LZString.decompressFromBase64(data));
-    };
-
-    //-----------------------------------------------------------------------------
-    // SceneManager
-    //
-    SceneManager.updateInputData = function () {
-        if (_sceneUpdateAlrady) {
-            Input.update();
-            TouchInput.update();
-        }
-    };
-
-    //-----------------------------------------------------------------------------
-    // Scene_Base
-    //
-    const Scene_Base_start = Scene_Base.prototype.start;
-    Scene_Base.prototype.start = function () {
-        Scene_Base_start.call(this);
-        if (!_sceneUpdateAlrady) {
-            createSystemFolders();
-            downloadUpdateFile();
+    const __scene_boot_start = Scene_Boot.prototype.start;
+    Scene_Boot.prototype.start = function () {
+        if (!roster_downloadsComplete) {
+            initializeSystem();
             this.drawLoadUpdate();
+        } else {
+            __scene_boot_start.call(this);
         }
     };
 
-    Scene_Base.prototype.clearUpdateDownload = function () {
-        deleteDownloadFolder();
-        deleteDownloadUpdateFile();
+    Scene_Boot.prototype.updateDownloadComplete = function () {
+        this._updateDownloadComplete = true;
     };
 
-    const Scene_Base_update = Scene_Base.prototype.update;
-    Scene_Base.prototype.update = function () {
-        Scene_Base_update.call(this);
-        if (!_sceneUpdateAlrady) {
+    const Scene_Boot_update = Scene_Boot.prototype.update;
+    Scene_Boot.prototype.update = function () {
+        Scene_Boot_update.call(this);
+        if (!scene_system_reload) {
+            this.updateProgressBar();
             this.updateLoadUpdate();
-            this.updateFilesDownloadCache();
-            this.updateSoundScene();
+            updateDownloadToRoster();
         }
-        this.refreshReplayBGM();
     };
 
-    Scene_Base.prototype.drawLoadUpdate = function () {
-        this._loadUpdateSprite = [new Sprite(), new Sprite()];
+    Scene_Boot.prototype.drawLoadUpdate = function () {
+        this._loadUpdateSprite = [
+            new Sprite(),
+            new Sprite(),
+            new Sprite(),
+            new Sprite(),
+            new Sprite(),
+            new Sprite()
+        ];
+        // Sprite 1
         this._loadUpdateSprite[0].bitmap = new Bitmap(Graphics.width, Graphics.height);
         this._loadUpdateSprite[0].bitmap.fillAll('black');
-        this._loadUpdateSprite[1].bitmap = ImageManager.loadSystem('Loading');
+        // Sprite 2
+        this._loadUpdateSprite[1].bitmap = ImageManager.loadSystem('Downloading');
         this._loadUpdateSprite[1].x = Graphics.width / 2;
         this._loadUpdateSprite[1].y = Graphics.height / 2;
         this._loadUpdateSprite[1].anchor.x = 0.5;
         this._loadUpdateSprite[1].anchor.y = 0.5;
+        // Sprite 3
+        this._loadUpdateSprite[2].bitmap = new Bitmap(Graphics.width - 20, 20);
+        this._loadUpdateSprite[2].bitmap.fillAll('#d9d9d9');
+        this._loadUpdateSprite[2].x = Graphics.width / 2;
+        this._loadUpdateSprite[2].y = Graphics.height - 20;
+        this._loadUpdateSprite[2].anchor.x = 0.5;
+        this._loadUpdateSprite[2].anchor.y = 0.5;
+        // Sprite 4
+        this._loadUpdateSprite[3].bitmap = new Bitmap(Graphics.width - 20, 20);
+        this._loadUpdateSprite[3].bitmap.fillRect(0, 0, 800, 20, '#66ff33');
+        this._loadUpdateSprite[3].x = Graphics.width / 2;
+        this._loadUpdateSprite[3].y = Graphics.height - 20;
+        this._loadUpdateSprite[3].anchor.x = 0.5;
+        this._loadUpdateSprite[3].anchor.y = 0.5;
+        windowDownloadProgress.setProgressMax(800);
+        // Sprite 5
+        this._loadUpdateSprite[4].bitmap = new Bitmap(Graphics.width - 20, 80);
+        this._loadUpdateSprite[4].bitmap.fontSize = 24;
+        this._loadUpdateSprite[4].bitmap.drawText(windowDownloadProgress.getTextFile(), 0, 20, Graphics.width - 20, 0, 'center');
+        this._loadUpdateSprite[4].x = Graphics.width / 2;
+        this._loadUpdateSprite[4].y = Graphics.height - 50;
+        this._loadUpdateSprite[4].anchor.x = 0.5;
+        this._loadUpdateSprite[4].anchor.y = 0.5;
+        // Sprite 6
+        this._loadUpdateSprite[5].bitmap = new Bitmap(Graphics.width - 20, 80);
+        this._loadUpdateSprite[5].bitmap.fontSize = 18;
+        this._loadUpdateSprite[5].bitmap.drawText(windowDownloadProgress.getTextBar(), 0, 20, Graphics.width - 20, 0, 'center');
+        this._loadUpdateSprite[5].x = Graphics.width / 2;
+        this._loadUpdateSprite[5].y = Graphics.height - 25;
+        this._loadUpdateSprite[5].anchor.x = 0.5;
+        this._loadUpdateSprite[5].anchor.y = 0.5;
         this.addChild(this._loadUpdateSprite[0]);
         this.addChild(this._loadUpdateSprite[1]);
+        this.addChild(this._loadUpdateSprite[2]);
+        this.addChild(this._loadUpdateSprite[3]);
+        this.addChild(this._loadUpdateSprite[4]);
+        this.addChild(this._loadUpdateSprite[5]);
     };
 
-    Scene_Base.prototype.updateLoadUpdate = function () {
-        if (this._loadUpdateSpriteHideIsOn) {
-            if (this._loadUpdateSprite[1].opacity > 0) {
-                this._loadUpdateSprite[1].opacity -= 4;
-            } else {
-                if (this._loadUpdateSprite[0].opacity > 0) {
-                    this._loadUpdateSprite[0].opacity -= 4;
+    Scene_Boot.prototype.updateProgressBar = function () {
+        this._loadUpdateSprite[3].bitmap.clear();
+        this._loadUpdateSprite[4].bitmap.clear();
+        this._loadUpdateSprite[5].bitmap.clear();
+        this._loadUpdateSprite[3].bitmap.fillRect(0, 0, windowDownloadProgress.getProgressBar(), 20, '#66ff33');
+        this._loadUpdateSprite[4].bitmap.drawText(windowDownloadProgress.getTextFile(), 0, 20, Graphics.width - 20, 0, 'center');
+        this._loadUpdateSprite[5].bitmap.drawText(windowDownloadProgress.getTextBar(), 0, 20, Graphics.width - 20, 0, 'center');
+    };
+
+    Scene_Boot.prototype.updateLoadUpdate = function () {
+        if (this._updateDownloadComplete) {
+            var fadeOut = false;
+            this._loadUpdateSprite.map(function (sprite) {
+                if (sprite.opacity > 0) {
+                    fadeOut = false
+                    sprite.opacity -= 4;
                 }
-            }
-            if (this._loadUpdateSprite[0].opacity <= 0 && this._loadUpdateSprite[1].opacity <= 0) {
-                this.clearUpdateDownload();
-                _sceneUpdateAlrady = true;
+                else
+                    fadeOut = true;
+            });
+            if (fadeOut) {
+                scene_system_reload = true;
+                SceneManager.goto(Scene_Boot);
             }
             return;
         }
@@ -871,52 +248,343 @@
         }
     };
 
-    Scene_Base.prototype.updateFilesDownloadCache = function () {
-        if (this._filesDownloadCacheDelay === undefined) {
-            this._filesDownloadCacheDelay = 120;
+    //-----------------------------------------------------------------------------
+    // Roster(Lista) de downloads
+    // 
+    var roster_data = (function () {
+        var folderRoster = String('system/update/save'),
+            fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
+            fileData = {};
+        if (fs.existsSync(localPath(fileRoster)))
+            fileData = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(localPath(fileRoster), { encoding: 'utf8' })));
+        return fileData;
+    })(),
+        roster_initialized = null,
+        roster_updateData = null,
+        roster_downloadsComplete = null;
+
+    /**
+     * @description Adiciona o arquivo a lista de downloads
+     * @param {String} fileUrl Link do arquivo
+     * @param {String} fileName Nome do arquivo
+     * @param {String} fileType Tipo do arquivo
+     * @param {String} fileVersion Versão do arquivo
+     * @param {String} filePath Caminho do arquivo
+     */
+    function addDownloadToRoster(fileUrl, fileName, fileType, fileVersion, filePath) {
+        var folderRoster = String('system/update/save'),
+            fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
+            fileData = roster_data;
+        if (!localPathExists(folderRoster))
+            localPathCreate(folderRoster);
+        if (fs.existsSync(localPath(fileRoster))) {
+            if (!fileData[fileName])
+                fileData[fileName] = {};
+            if (fileData[fileName]['url'] === undefined)
+                fileData[fileName]['url'] = fileUrl;
+            if (fileData[fileName]['name'] === undefined)
+                fileData[fileName]['name'] = fileName;
+            if (fileData[fileName]['type'] === undefined)
+                fileData[fileName]['type'] = fileType;
+            if (fileData[fileName]['version'] === undefined ||
+                fileData[fileName]['version'] != fileVersion)
+                fileData[fileName]['version'] = fileVersion;
+            if (fileData[fileName]['path'] === undefined ||
+                fileData[fileName]['path'] != filePath)
+                fileData[fileName]['path'] = filePath;
+            if (fileData[fileName]['download'] === undefined)
+                fileData[fileName]['download'] = false;
+        } else {
+            fileData[fileName] = {
+                url: fileUrl,
+                name: fileName,
+                type: fileType,
+                version: fileVersion,
+                path: filePath,
+                download: false
+            };
         }
-        if (_filesDownloadCache.length <= 0) {
-            if (this._filesDownloadCacheDelay > 0) {
-                this._filesDownloadCacheDelay -= 0.60;
-            } else {
-                this._loadUpdateSpriteHideIsOn = true;
-            }
-        } else { this._filesDownloadCacheDelay = undefined; }
+        fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
     };
 
-    Scene_Base.prototype.updateSoundScene = function () {
-        if (AudioManager._currentBgm) {
-            if (!this._currentReplayBGM)
-                this._currentReplayBGM = [
-                    AudioManager.saveBgm(),
-                    SceneManager._scene,
-                    60
-                ];
-            AudioManager.fadeOutBgm(.1);
-        }
-        if (_sceneUpdateAlrady && this._currentReplayBGM && this._currentReplayBGM[0]) {
-            if (SceneManager._scene === this._currentReplayBGM[1]) {
-                AudioManager.replayBgm(this._currentReplayBGM[0]);
-                this._refreshReplayBGM = true;
+    /**
+     * @description Completa o download da lista de downloads
+     * @param {String} fileName Nome do arquivo
+     * @param {String} filePath Caminho do arquivo
+     * @param {String} fileVersion Versão do arquivo
+     */
+    function completeDownloadToRoster(fileName, filePath, fileVersion) {
+        var folderRoster = String('system/update/save'),
+            fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
+            fileData = roster_data;
+        if (fs.existsSync(localPath(fileRoster))) {
+            if (fileData[fileName]) {
+                fileData[fileName]['version'] = fileVersion;
+                fileData[fileName]['download'] = true;
             }
-        }
-    };
-
-    Scene_Base.prototype.refreshReplayBGM = function () {
-        if (this._refreshReplayBGM) {
-            if (this._currentReplayBGM) {
-                if (this._currentReplayBGM[2] > 0)
-                    this._currentReplayBGM[2] -= .60;
-                else {
-                    this._refreshReplayBGM = null;
-                    return this._currentReplayBGM = null;
+            // Move o arquivo para a pasta destino
+            if (typeof filePath == 'string' && filePath.length > 0) {
+                var downloadFolder = String('system/update/download');
+                if (fs.existsSync(localPath(downloadFolder))) {
+                    if (!localPathExists(filePath))
+                        localPathCreate(filePath);
+                    var name = fileData[fileName]['name'],
+                        type = fileData[fileName]['type'],
+                        src = localPath(`${downloadFolder}\\${name}.${type}`),
+                        dest = localPath(`${filePath}\\${name}.${type}`);
+                    if (fs.existsSync(src)) {
+                        var file = fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+                        file.on('finish', function () {
+                            file.close();
+                            if (fs.existsSync(src))
+                                fs.unlinkSync(src);
+                        });
+                    }
                 }
-                if (SceneManager._scene != this._currentReplayBGM[1])
-                    AudioManager.fadeOutBgm(.1);
-            } else {
-                this._refreshReplayBGM = null;
-                this._currentReplayBGM = null;
             }
+            fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
+            roster_initialized = null;
+        }
+    };
+
+    /**
+     * @description Atualiza a lista de downloads
+     */
+    function updateDownloadToRoster() {
+        var folderRoster = String('system/update/save'),
+            fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
+            fileData = roster_data,
+            fileUpdatePath = String('system/update/download'),
+            fileUpdate = `${fileUpdatePath}\\updateManager.json`;
+        if (fs.existsSync(localPath(fileRoster))) {
+            if (!roster_initialized) {
+                // Arquivo de atualizações
+                if (fs.existsSync(localPath(fileUpdate))) {
+                    if (fileData['updateManager'] && !fileData['updateManager']['download'])
+                        return;
+                    else {
+                        fileData['updateManager'] = null;
+                        fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
+                    }
+                    try {
+                        roster_updateData = JSON.parse(fs.readFileSync(localPath(fileUpdate), { encoding: 'utf8' }));
+                    } catch (error) {
+                        return;
+                    }
+                    if (roster_updateData['Arquivos'] instanceof Array &&
+                        roster_updateData['Arquivos'].length > 0) {
+                        roster_updateData['Arquivos'].map(function (file) {
+                            let url = file['link'],
+                                nome = file['nome'],
+                                type = file['tipo'],
+                                path = file['pasta'],
+                                version = file['versão'];
+                            if (fileData[nome] === undefined) fileData[nome] = {};
+                            if (fileData[nome]['version'] != version || !fs.existsSync(localPath(`${path}\\${nome}.${type}`))) {
+                                addDownloadToRoster(url, nome, type, version, path);
+                            }
+                        });
+                    }
+                    if (fs.existsSync(localPath(fileUpdate)))
+                        fs.unlinkSync(localPath(fileUpdate));
+                    return;
+                }
+                roster_downloadsComplete = false;
+                var keys = Object.keys(fileData),
+                    i = 0,
+                    length = keys.length;
+                for (; i < length; i++) {
+                    let key = keys[i];
+                    if (fileData[key] && !fileData[key]['download']) {
+                        let url = fileData[key]['url'],
+                            name = fileData[key]['name'],
+                            type = fileData[key]['type'],
+                            version = fileData[key]['version'],
+                            path = fileData[key]['path'];
+                        roster_initialized = true;
+                        return downloadFile(url, name, type, version, path);
+                    } else {
+                        if (i != 'updateManager') {
+                            if (fileData[key] && fileData[key]['download']) {
+                                roster_downloadsComplete = true;
+                            } else {
+                                roster_downloadsComplete = false;
+                            }
+                        }
+                    }
+                };
+                if (roster_downloadsComplete)
+                    completeAllDownloads();
+            }
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Funções
+    //
+
+    /**
+     * @description Inicia o sistema
+     */
+    function initializeSystem() {
+        downloadUpdateFile();
+    };
+
+    /**
+     * @description Chamada quando todos os downloads estão completos
+     */
+    function completeAllDownloads() {
+        if (SceneManager._scene instanceof Scene_Boot)
+            SceneManager._scene.updateDownloadComplete();
+    };
+
+    /**
+     * @description Baixa o arquivo de atualização
+     */
+    function downloadUpdateFile() {
+        return addDownloadToRoster(updateFile, 'updateManager', 'json');
+    };
+
+    /**
+     * @description Retorna o caminho local para o arquivo/pasta
+     */
+    function localPath(p) {
+        // Retira uma parte da string
+        if (p.substring(0, 1) === '/') p = p.substring(1);
+        // Importa o modulo PATH do Node
+        var path = require('path');
+        // Cria a base para o caminho local
+        var base = path.dirname(process.mainModule.filename);
+        // Retorna a base do caminho associado ao caminho
+        return path.join(base, p);
+    };
+
+    /**
+     * @description Verifica se o caminho local existe
+     */
+    function localPathExists(p) {
+        var fs = require('fs'),
+            i = 0,
+            length = p.length,
+            path = false,
+            paths = [],
+            pathString = '';
+        for (; i < length; i++) {
+            let letter = String(p[i]);
+            if (letter != '/') {
+                pathString += letter;
+            }
+            if (letter == '/' || i == length - 1) {
+                paths.push(pathString);
+                var pathsJoin = paths.join("/");
+                if (fs.existsSync(localPath(pathsJoin))) {
+                    path = true;
+                } else {
+                    path = false;
+                }
+                pathString = '';
+            }
+        }
+        return path;
+    };
+
+    /**
+     * @description Cria o caminho local
+     */
+    function localPathCreate(p) {
+        var fs = require('fs'),
+            i = 0,
+            length = p.length,
+            paths = [],
+            pathString = '';
+        for (; i < length; i++) {
+            let letter = String(p[i]);
+            if (letter != '/') {
+                pathString += letter;
+            }
+            if (letter == '/' || i == length - 1) {
+                paths.push(pathString);
+                var pathsJoin = paths.join("/");
+                if (!fs.existsSync(localPath(pathsJoin))) {
+                    fs.mkdirSync(localPath(pathsJoin));
+                }
+                pathString = '';
+            }
+        }
+    };
+
+    /**
+     * @description Faz a formatação dos bytes
+     */
+    function formatBytes(bytes) {
+        if (bytes == 0) return '0 Bytes';
+        var k = 1024,
+            dm = 2,
+            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+
+    /**
+     * @description Retorna o valor mais a quantidade de 0 indicada
+     */
+    function padZero(value, length) {
+        var s = String(value);
+        while (s.length < Number(length)) {
+            s += '0';
+        }
+        return Number(s);
+    };
+
+    /**
+     * @description Faz o download do arquivo
+     * @param {String} fileUrl Link do arquivo
+     * @param {String} fileName Nome do arquivo
+     * @param {String} fileType Tipo do arquivo
+     * @param {String} fileVersion Versão do arquivo
+     * @param {String} filePath Caminho do arquivo
+     */
+    function downloadFile(fileUrl, fileName, fileType, fileVersion, filePath) {
+        var http = null,
+            fileUrl = String(fileUrl),
+            folderDest = String('system/update/download');
+        if (!localPathExists(folderDest))
+            localPathCreate(folderDest);
+        folderDest = localPath(folderDest);
+        var fileDest = `${folderDest}\\${String(fileName)}.${String(fileType).toLowerCase()}`;
+        if (fileUrl.substring(0, 5).match(/https/)) {
+            http = require('https');
+        } else {
+            http = require('http');
+        }
+        if (fs.existsSync(folderDest)) {
+            if (!fs.existsSync(fileDest))
+                fs.writeFileSync(fileDest, '', { encoding: 'utf8' });
+            var file = fs.createWriteStream(fileDest);
+            var request = http.get(fileUrl, function (res) {
+                res.pipe(file);
+                windowProgress.add();
+                windowProgress.update();
+                res.on('data', function (data) {
+                    var menor = formatBytes(res.socket.bytesRead),
+                        maior = formatBytes(res.headers['content-length']),
+                        total = padZero(res.headers['content-length'], 2),
+                        corrent = res.socket.bytesRead,
+                        porcent = corrent / total * 100;
+                    windowDownloadProgress.setTextFile(`${fileName}(${windowDownloadProgress.getProgress()}%)`);
+                    windowDownloadProgress.setTextBar(`${menor} / ${maior}`);
+                    windowDownloadProgress.setProgress(porcent);
+                    windowDownloadProgress.setProgressBar(porcent);
+                }).on('end', function () {
+                    console.log(fileName);
+                    completeDownloadToRoster(fileName, filePath, fileVersion);
+                    windowProgress.remove();
+                    windowProgress.update();
+                    windowDownloadProgress.resetProgress();
+                });
+            }).on('error', function (err) {
+                fs.unlinkSync(fileDest);
+            });
         }
     };
 })();

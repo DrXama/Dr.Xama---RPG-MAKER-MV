@@ -272,6 +272,8 @@
      * @param {String} filePath Caminho do arquivo
      */
     function addDownloadToRoster(fileUrl, fileName, fileType, fileVersion, filePath) {
+        if (!fileVersion) fileVersion = String('1.00');
+        if (!filePath || typeof filePath === 'string' && filePath.length <= 0) filePath = String('system/update/download');
         var folderRoster = String('system/update/save'),
             fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
             fileData = roster_data;
@@ -292,6 +294,8 @@
             if (fileData[fileName]['path'] === undefined ||
                 fileData[fileName]['path'] != filePath)
                 fileData[fileName]['path'] = filePath;
+            if (fileData[fileName]['size'] === undefined)
+                fileData[fileName]['size'] = null;
             if (fileData[fileName]['download'] === undefined)
                 fileData[fileName]['download'] = false;
         } else {
@@ -301,6 +305,7 @@
                 type: fileType,
                 version: fileVersion,
                 path: filePath,
+                size: null,
                 download: false
             };
         }
@@ -312,14 +317,16 @@
      * @param {String} fileName Nome do arquivo
      * @param {String} filePath Caminho do arquivo
      * @param {String} fileVersion Versão do arquivo
+     * @param {String} fileSize Tamanho do arquivo
      */
-    function completeDownloadToRoster(fileName, filePath, fileVersion) {
+    function completeDownloadToRoster(fileName, filePath, fileVersion, fileSize) {
         var folderRoster = String('system/update/save'),
             fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
             fileData = roster_data;
         if (fs.existsSync(localPath(fileRoster))) {
             if (fileData[fileName]) {
                 fileData[fileName]['version'] = fileVersion;
+                fileData[fileName]['size'] = fileSize;
                 fileData[fileName]['download'] = true;
             }
             // Move o arquivo para a pasta destino
@@ -332,7 +339,7 @@
                         type = fileData[fileName]['type'],
                         src = localPath(`${downloadFolder}\\${name}.${type}`),
                         dest = localPath(`${filePath}\\${name}.${type}`);
-                    if (fs.existsSync(src)) {
+                    if (fs.existsSync(src) && src != dest) {
                         var file = fs.createReadStream(src).pipe(fs.createWriteStream(dest));
                         file.on('finish', function () {
                             file.close();
@@ -380,8 +387,12 @@
                                 path = file['pasta'],
                                 version = file['versão'];
                             if (fileData[nome] === undefined) fileData[nome] = {};
-                            if (fileData[nome]['version'] != version || !fs.existsSync(localPath(`${path}\\${nome}.${type}`))) {
+                            if (!fileData[nome]['download'] || fileData[nome]['version'] != version || !fs.existsSync(localPath(`${path}\\${nome}.${type}`))) {
                                 addDownloadToRoster(url, nome, type, version, path);
+                                if (fileData[nome]['download']) {
+                                    fileData[nome]['download'] = false;
+                                    fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
+                                }
                             }
                         });
                     }
@@ -546,8 +557,11 @@
      */
     function downloadFile(fileUrl, fileName, fileType, fileVersion, filePath) {
         var http = null,
+            folderRoster = String('system/update/save'),
+            fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
             fileUrl = String(fileUrl),
-            folderDest = String('system/update/download');
+            folderDest = String('system/update/download'),
+            fileData = roster_data;
         if (!localPathExists(folderDest))
             localPathCreate(folderDest);
         folderDest = localPath(folderDest);
@@ -560,31 +574,47 @@
         if (fs.existsSync(folderDest)) {
             if (!fs.existsSync(fileDest))
                 fs.writeFileSync(fileDest, '', { encoding: 'utf8' });
-            var file = fs.createWriteStream(fileDest);
-            var request = http.get(fileUrl, function (res) {
-                res.pipe(file);
-                windowProgress.add();
-                windowProgress.update();
-                res.on('data', function (data) {
-                    var menor = formatBytes(res.socket.bytesRead),
-                        maior = formatBytes(res.headers['content-length']),
-                        total = padZero(res.headers['content-length'], 2),
-                        corrent = res.socket.bytesRead,
-                        porcent = corrent / total * 100;
-                    windowDownloadProgress.setTextFile(`${fileName}(${windowDownloadProgress.getProgress()}%)`);
-                    windowDownloadProgress.setTextBar(`${menor} / ${maior}`);
-                    windowDownloadProgress.setProgress(porcent);
-                    windowDownloadProgress.setProgressBar(porcent);
-                }).on('end', function () {
-                    console.log(fileName);
-                    completeDownloadToRoster(fileName, filePath, fileVersion);
-                    windowProgress.remove();
+            //--------------------------------------------------------------------------------
+            // Verifica se o arquivo já existe na pasta de download e se ele está completo. 
+            //--------------------------------------------------------------------------------
+            var fileSize = formatBytes(0);
+            if (fileName != 'updateManager' && fs.existsSync(localPath(fileRoster)) && fs.existsSync(fileDest)) {
+                fileSize = formatBytes(fs.statSync(fileDest).size);
+                if (fileSize == fileData[fileName]['size'] &&
+                    fileData[fileName]['version'] === fileVersion) {
+                    if (!fileData[fileName]['download']) {
+                        fileData[fileName]['download'] = true;
+                        fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
+                    }
+                    return roster_initialized = null;
+                }
+            }
+            var file = fs.createWriteStream(fileDest),
+                request = http.get(fileUrl, function (res) {
+                    res.pipe(file);
+                    windowProgress.add();
                     windowProgress.update();
-                    windowDownloadProgress.resetProgress();
+                    res.on('data', function (data) {
+                        var menor = formatBytes(res.socket.bytesRead),
+                            maior = formatBytes(res.headers['content-length']),
+                            total = padZero(res.headers['content-length'], 2),
+                            corrent = res.socket.bytesRead,
+                            porcent = corrent / total * 100;
+                        fileSize = maior;
+                        windowDownloadProgress.setTextFile(`${fileName}(${windowDownloadProgress.getProgress()}%)`);
+                        windowDownloadProgress.setTextBar(`${menor} / ${maior}`);
+                        windowDownloadProgress.setProgress(porcent);
+                        windowDownloadProgress.setProgressBar(porcent);
+                    }).on('end', function () {
+                        console.log(fileName);
+                        completeDownloadToRoster(fileName, filePath, fileVersion, fileSize);
+                        windowProgress.remove();
+                        windowProgress.update();
+                        windowDownloadProgress.resetProgress();
+                    });
+                }).on('error', function (err) {
+                    fs.unlinkSync(fileDest);
                 });
-            }).on('error', function (err) {
-                fs.unlinkSync(fileDest);
-            });
         }
     };
 })();

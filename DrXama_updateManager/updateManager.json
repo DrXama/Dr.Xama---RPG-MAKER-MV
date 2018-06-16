@@ -28,6 +28,12 @@
             "pasta": "system/updates"
         }
     ],
+    "Remover_Arquivo_e_Pasta": [
+        {
+            "nome": "Texto",
+            "pasta": "system/updates/textos"
+        }
+    ],
     "Status": {
         "nome": "Atualização 2018",
         "versão": "1.00",

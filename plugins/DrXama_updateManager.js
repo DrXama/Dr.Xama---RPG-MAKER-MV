@@ -19,6 +19,40 @@
  * Tenha um gerenciamento de atualizações eficiente, agora você pode atualizar seu
  * jogo quando quiser.
  * ================================================================================
+ *    Atualizar/Remover os Arquivos
+ * ================================================================================
+ * O nome dos arquivos são configurados para minúsculo, dessa maneira qualquer
+ * arquivo com o mesmo nome, pode ser encontrado pelo sistema. Cuidado com
+ * arquivos com o mesmo nome, pois o sistema não difere letras maiúsculas de
+ * minúsculas, resolvi deixar assim para evitar problemas onde o jogador pode
+ * renomear o arquivo para evitar a Atualização/Remoção do arquivo. O sistema
+ * remove qualquer espaço entre as letras do nome do arquivo por segurança.
+ * 
+ * Exemplo:
+ *          - Texto.txt é o mesmo que texto.txt
+ *          - Actor_1.png é o mesmo que actor_1.png
+ *          - Town1.ogg é o mesmo que town1.ogg
+ *          - T E x T O.txt é o mesmo que texto.txt
+ * ================================================================================
+ *    Remover Pastas
+ * ================================================================================
+ * A remoção de pastas deve ser feita com muito cuidado, pois a pasta vai ser
+ * removida por completo e todo seu conteudo junto. Não tenho responsabilidade por
+ * qualquer perda na pasta, se deletar uma pasta, tenha certeza, pois não tem como
+ * recuperar os arquivos perdidos, os mesmo não iram para a lixeira, mas são 
+ * destruidos, por segurança.
+ * 
+ * Por exemplo, se temos uma pasta chamada "Textos" todo seu conteudo e a pasta
+ * serão destruidos.
+ * Exemplo:
+ *          - Textos
+ *              - Fontes
+ *                  - gameFont.ttf
+ *                  - gameFont2.ttf
+ *              - Fontes2
+ *                  - loadFont.ttf
+ *                  - loadFont2.ttf
+ * ================================================================================
  *    Atualização
  * ================================================================================
  * Para atualizar esse plugin vá no github do Dr.Xamã
@@ -135,12 +169,22 @@
         this._updateDownloadComplete = true;
     };
 
+    Scene_Boot.prototype.updateDownloadCompleteStatus = function () {
+        this._updateDownloadCompleteStatus = true;
+    };
+
+    Scene_Boot.prototype.updateDownloadRestoreStatus = function () {
+        this._updateDownloadRestoreStatus = true;
+    };
+
     const Scene_Boot_update = Scene_Boot.prototype.update;
     Scene_Boot.prototype.update = function () {
         Scene_Boot_update.call(this);
         if (!scene_system_reload) {
             this.updateProgressBar();
             this.updateLoadUpdate();
+            this.updateCompleteUpdate();
+            this.updateRestoreUpdate();
             updateDownloadToRoster();
         }
     };
@@ -223,8 +267,16 @@
                     fadeOut = true;
             });
             if (fadeOut) {
-                scene_system_reload = true;
-                SceneManager.goto(Scene_Boot);
+                if (!this._updateDownloadCompleteStatus && !this._updateDownloadRestoreStatus) {
+                    scene_system_reload = true;
+                    SceneManager.goto(Scene_Boot);
+                }
+                if (this._updateDownloadCompleteStatus) {
+                    this._completeDownloadStatusSpriteOpacity = true;
+                }
+                if (this._updateDownloadRestoreStatus) {
+                    this._restoreDownloadStatusSpriteOpacity = true;
+                }
             }
             return;
         }
@@ -248,6 +300,285 @@
         }
     };
 
+    Scene_Boot.prototype.drawCompleteUpdate = function () {
+        if (!this._completeUpdateStatusSprite) {
+            this._completeUpdateStatusSprite = [
+                new Sprite(new Bitmap(Graphics.width, Graphics.height)),
+                new Sprite(new Bitmap(Graphics.width - 10, Graphics.height - 170)),
+                new Sprite(new Bitmap(Graphics.width - 10, Graphics.height - 170)),
+                new Sprite_Button(),
+                new Sprite_Button(),
+                new Sprite_Button()
+            ];
+            this._completeUpdateStatusSprite[0].bitmap.outlineWidth = 2;
+            this._completeUpdateStatusSprite[0].bitmap.fontSize = 32;
+            this._completeUpdateStatusSprite[0].bitmap.drawText(roster_downloadsCompleteData['nome'], 0, 45, Graphics.width - 20, 0, 'center');
+            this._completeUpdateStatusSprite[0].bitmap.fontSize = 14;
+            this._completeUpdateStatusSprite[0].bitmap.drawText(roster_downloadsCompleteData['descrição'], 0, 85, Graphics.width - 20, 0, 'center');
+            this._completeUpdateStatusSprite[0].bitmap.fontSize = 12;
+            this._completeUpdateStatusSprite[0].bitmap.drawText(`Versão: ${roster_downloadsCompleteData['versão']}`, 0, 110, Graphics.width - 20, 0, 'center');
+            this._completeUpdateStatusSprite[0].bitmap.fontSize = 32;
+            this._completeUpdateStatusSprite[0].bitmap.drawText(`Mudanças: ${roster_downloadsCompleteData['mudanças'].length}`, 0, 145, Graphics.width - 20, 0, 'center');
+            this._completeUpdateStatusSprite[0].opacity = 0;
+            this._completeUpdateStatusSprite[1].bitmap.fontSize = 18;
+            this._completeUpdateStatusSprite[1].move(5, 165);
+            this._completeUpdateStatusSprite[1].opacity = 0;
+            this._completeUpdateStatusSprite[2].bitmap.fontSize = 16;
+            this._completeUpdateStatusSprite[2].move(5, 165);
+            this._completeUpdateStatusSprite[2].opacity = 0;
+            this._completeUpdateStatusSprite[3].bitmap = new Bitmap(25, 25);
+            this._completeUpdateStatusSprite[3].move((Graphics.width / 2) - 45, Graphics.height - 45);
+            this._completeUpdateStatusSprite[3].bitmap.drawCircle(25 / 2, 25 / 2, 10, 'white');
+            this._completeUpdateStatusSprite[3].setClickHandler(RETURN_PAGE.bind(this));
+            this._completeUpdateStatusSprite[3].opacity = 0;
+            this._completeUpdateStatusSprite[4].bitmap = new Bitmap(25, 25);
+            this._completeUpdateStatusSprite[4].move((Graphics.width / 2) + 15, Graphics.height - 45);
+            this._completeUpdateStatusSprite[4].bitmap.drawCircle(25 / 2, 25 / 2, 10, 'white');
+            this._completeUpdateStatusSprite[4].setClickHandler(NEXT_PAGE.bind(this));
+            this._completeUpdateStatusSprite[4].opacity = 0;
+            this._completeUpdateStatusSprite[5].bitmap = new Bitmap(25, 25);
+            this._completeUpdateStatusSprite[5].bitmap.fontSize = 18;
+            this._completeUpdateStatusSprite[5].move(Graphics.width - 40, 15);
+            this._completeUpdateStatusSprite[5].bitmap.drawText(`X`, 8, 13, Graphics.width - 20, 0, 'left');
+            this._completeUpdateStatusSprite[5].setClickHandler(EXIST_STATUS.bind(this));
+            this._completeUpdateStatusSprite[5].opacity = 0;
+            var line = 1,
+                pagesData = {},
+                pages = 1,
+                page = 1,
+                pagesLimit = 12;
+            function LIST(pageset) {
+                roster_downloadsCompleteData['mudanças'].map(function (text) {
+                    if (pageset) {
+                        if (pagesData[pageset]) {
+                            pagesData[pageset].map(function (element, i) {
+                                let y = 25,
+                                    add = 30,
+                                    text = element['text'],
+                                    width = element['width'],
+                                    lineheight = element['lineheight'],
+                                    align = element['align'];
+                                if (i > 0)
+                                    y += add * i;
+                                this._completeUpdateStatusSprite[1].bitmap.drawText(text, 0, y, width, lineheight, align);
+                            }, this);
+                        }
+                    } else {
+                        if (!pagesData[page])
+                            pagesData[page] = [];
+                        if (pagesData[page].length < pagesLimit) {
+                            pagesData[page].push({
+                                text: `(${line++}) ${text}`,
+                                width: Graphics.width - 20,
+                                lineheight: 0,
+                                align: 'center'
+                            });
+                        }
+                        else {
+                            pages++;
+                            page++;
+                        }
+                    }
+                }, this);
+                if (!pageset)
+                    page = 1;
+            }
+            function RETURN_PAGE() {
+                if (page > 1) {
+                    page--;
+                    this._completeUpdateStatusSprite[1].bitmap.clear();
+                    this._completeUpdateStatusSprite[1].bitmap.fillAll('black');
+                    this._completeUpdateStatusSprite[2].bitmap.clear();
+                    this._completeUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+                    LIST.call(this, page);
+                }
+            }
+            function NEXT_PAGE() {
+                if (page < pages) {
+                    page++;
+                    this._completeUpdateStatusSprite[1].bitmap.clear();
+                    this._completeUpdateStatusSprite[1].bitmap.fillAll('black');
+                    this._completeUpdateStatusSprite[2].bitmap.clear();
+                    this._completeUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+                    LIST.call(this, page);
+                }
+            }
+            function EXIST_STATUS() {
+                if (!this._updateDownloadRestoreStatus) {
+                    scene_system_reload = true;
+                    SceneManager.goto(Scene_Boot);
+                } else {
+                    this._updateDownloadCompleteStatus = false;
+                }
+            };
+            LIST.call(this);
+            LIST.call(this, 1);
+            this._completeUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+            this.addChild(this._completeUpdateStatusSprite[0]);
+            this.addChild(this._completeUpdateStatusSprite[1]);
+            this.addChild(this._completeUpdateStatusSprite[2]);
+            this.addChild(this._completeUpdateStatusSprite[3]);
+            this.addChild(this._completeUpdateStatusSprite[4]);
+            this.addChild(this._completeUpdateStatusSprite[5]);
+        }
+    };
+
+    Scene_Boot.prototype.updateCompleteUpdate = function () {
+        if (this._updateDownloadCompleteStatus && this._completeDownloadStatusSpriteOpacity) {
+            this.drawCompleteUpdate();
+            if (this._completeUpdateStatusSprite[0].opacity < 255)
+                this._completeUpdateStatusSprite[0].opacity += 4;
+            if (this._completeUpdateStatusSprite[1].opacity < 255)
+                this._completeUpdateStatusSprite[1].opacity += 4;
+            if (this._completeUpdateStatusSprite[2].opacity < 255)
+                this._completeUpdateStatusSprite[2].opacity += 4;
+            if (this._completeUpdateStatusSprite[3].opacity < 255)
+                this._completeUpdateStatusSprite[3].opacity += 4;
+            if (this._completeUpdateStatusSprite[4].opacity < 255)
+                this._completeUpdateStatusSprite[4].opacity += 4;
+            if (this._completeUpdateStatusSprite[5].opacity < 255)
+                this._completeUpdateStatusSprite[5].opacity += 4;
+        }
+    };
+
+    Scene_Boot.prototype.drawRestoreUpdate = function () {
+        if (!this._restoreUpdateStatusSprite) {
+            this._restoreUpdateStatusSprite = [
+                new Sprite(new Bitmap(Graphics.width, Graphics.height)),
+                new Sprite(new Bitmap(Graphics.width - 10, Graphics.height - 170)),
+                new Sprite(new Bitmap(Graphics.width - 10, Graphics.height - 170)),
+                new Sprite_Button(),
+                new Sprite_Button(),
+                new Sprite_Button()
+            ];
+            this._restoreUpdateStatusSprite[0].bitmap.outlineWidth = 2;
+            this._restoreUpdateStatusSprite[0].bitmap.fontSize = 32;
+            this._restoreUpdateStatusSprite[0].bitmap.drawText('Arquivos Restaurados', 0, 45, Graphics.width - 20, 0, 'center');
+            this._restoreUpdateStatusSprite[0].bitmap.fontSize = 14;
+            this._restoreUpdateStatusSprite[0].bitmap.drawText('Alguns arquivos estavam faltando e foram baixados novamente.', 0, 85, Graphics.width - 20, 0, 'center');
+            this._restoreUpdateStatusSprite[0].bitmap.fontSize = 12;
+            this._restoreUpdateStatusSprite[0].bitmap.drawText(`Versão atual: ${roster_downloadsCompleteData['versão']}`, 0, 110, Graphics.width - 20, 0, 'center');
+            this._restoreUpdateStatusSprite[0].bitmap.fontSize = 32;
+            this._restoreUpdateStatusSprite[0].bitmap.drawText(`Arquivos: ${roster_downloadsRestore.length}`, 0, 145, Graphics.width - 20, 0, 'center');
+            this._restoreUpdateStatusSprite[0].opacity = 0;
+            this._restoreUpdateStatusSprite[1].bitmap.fontSize = 18;
+            this._restoreUpdateStatusSprite[1].move(5, 165);
+            this._restoreUpdateStatusSprite[1].opacity = 0;
+            this._restoreUpdateStatusSprite[2].bitmap.fontSize = 16;
+            this._restoreUpdateStatusSprite[2].move(5, 165);
+            this._restoreUpdateStatusSprite[2].opacity = 0;
+            this._restoreUpdateStatusSprite[3].bitmap = new Bitmap(25, 25);
+            this._restoreUpdateStatusSprite[3].move((Graphics.width / 2) - 45, Graphics.height - 45);
+            this._restoreUpdateStatusSprite[3].bitmap.drawCircle(25 / 2, 25 / 2, 10, 'white');
+            this._restoreUpdateStatusSprite[3].setClickHandler(RETURN_PAGE.bind(this));
+            this._restoreUpdateStatusSprite[3].opacity = 0;
+            this._restoreUpdateStatusSprite[4].bitmap = new Bitmap(25, 25);
+            this._restoreUpdateStatusSprite[4].move((Graphics.width / 2) + 15, Graphics.height - 45);
+            this._restoreUpdateStatusSprite[4].bitmap.drawCircle(25 / 2, 25 / 2, 10, 'white');
+            this._restoreUpdateStatusSprite[4].setClickHandler(NEXT_PAGE.bind(this));
+            this._restoreUpdateStatusSprite[4].opacity = 0;
+            this._restoreUpdateStatusSprite[5].bitmap = new Bitmap(25, 25);
+            this._restoreUpdateStatusSprite[5].bitmap.fontSize = 18;
+            this._restoreUpdateStatusSprite[5].move(Graphics.width - 40, 15);
+            this._restoreUpdateStatusSprite[5].bitmap.drawText(`X`, 8, 13, Graphics.width - 20, 0, 'left');
+            this._restoreUpdateStatusSprite[5].setClickHandler(EXIST_STATUS.bind(this));
+            this._restoreUpdateStatusSprite[5].opacity = 0;
+            var line = 1,
+                pagesData = {},
+                pages = 1,
+                page = 1,
+                pagesLimit = 12;
+            function LIST(pageset) {
+                roster_downloadsRestore.map(function (text) {
+                    if (pageset) {
+                        if (pagesData[pageset]) {
+                            pagesData[pageset].map(function (element, i) {
+                                let y = 25,
+                                    add = 30,
+                                    text = element['text'],
+                                    width = element['width'],
+                                    lineheight = element['lineheight'],
+                                    align = element['align'];
+                                if (i > 0)
+                                    y += add * i;
+                                this._restoreUpdateStatusSprite[1].bitmap.drawText(text, 0, y, width, lineheight, align);
+                            }, this);
+                        }
+                    } else {
+                        if (!pagesData[page])
+                            pagesData[page] = [];
+                        if (pagesData[page].length < pagesLimit) {
+                            pagesData[page].push({
+                                text: `(${line++}) ${text}`,
+                                width: Graphics.width - 20,
+                                lineheight: 0,
+                                align: 'center'
+                            });
+                        }
+                        else {
+                            pages++;
+                            page++;
+                        }
+                    }
+                }, this);
+                if (!pageset)
+                    page = 1;
+            }
+            function RETURN_PAGE() {
+                if (page > 1) {
+                    page--;
+                    this._restoreUpdateStatusSprite[1].bitmap.clear();
+                    this._restoreUpdateStatusSprite[1].bitmap.fillAll('black');
+                    this._restoreUpdateStatusSprite[2].bitmap.clear();
+                    this._restoreUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+                    LIST.call(this, page);
+                }
+            }
+            function NEXT_PAGE() {
+                if (page < pages) {
+                    page++;
+                    this._restoreUpdateStatusSprite[1].bitmap.clear();
+                    this._restoreUpdateStatusSprite[1].bitmap.fillAll('black');
+                    this._restoreUpdateStatusSprite[2].bitmap.clear();
+                    this._restoreUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+                    LIST.call(this, page);
+                }
+            }
+            function EXIST_STATUS() {
+                scene_system_reload = true;
+                SceneManager.goto(Scene_Boot);
+            };
+            LIST.call(this);
+            LIST.call(this, 1);
+            this._restoreUpdateStatusSprite[2].bitmap.drawText(`${page}/${pages}`, 0, Graphics.height - 235, Graphics.width - 20, 0, 'center');
+            this.addChild(this._restoreUpdateStatusSprite[0]);
+            this.addChild(this._restoreUpdateStatusSprite[1]);
+            this.addChild(this._restoreUpdateStatusSprite[2]);
+            this.addChild(this._restoreUpdateStatusSprite[3]);
+            this.addChild(this._restoreUpdateStatusSprite[4]);
+            this.addChild(this._restoreUpdateStatusSprite[5]);
+        }
+    };
+
+    Scene_Boot.prototype.updateRestoreUpdate = function () {
+        if (this._updateDownloadCompleteStatus) return;
+        if (this._updateDownloadRestoreStatus && this._restoreDownloadStatusSpriteOpacity) {
+            this.drawRestoreUpdate();
+            if (this._restoreUpdateStatusSprite[0].opacity < 255)
+                this._restoreUpdateStatusSprite[0].opacity += 4;
+            if (this._restoreUpdateStatusSprite[1].opacity < 255)
+                this._restoreUpdateStatusSprite[1].opacity += 4;
+            if (this._restoreUpdateStatusSprite[2].opacity < 255)
+                this._restoreUpdateStatusSprite[2].opacity += 4;
+            if (this._restoreUpdateStatusSprite[3].opacity < 255)
+                this._restoreUpdateStatusSprite[3].opacity += 4;
+            if (this._restoreUpdateStatusSprite[4].opacity < 255)
+                this._restoreUpdateStatusSprite[4].opacity += 4;
+            if (this._restoreUpdateStatusSprite[5].opacity < 255)
+                this._restoreUpdateStatusSprite[5].opacity += 4;
+        }
+    };
+
     //-----------------------------------------------------------------------------
     // Roster(Lista) de downloads
     // 
@@ -261,7 +592,10 @@
     })(),
         roster_initialized = null,
         roster_updateData = null,
-        roster_downloadsComplete = null;
+        roster_downloadsComplete = null,
+        roster_downloadsCompleteData = null,
+        roster_downloadsFiles = 0,
+        roster_downloadsRestore = [];
 
     /**
      * @description Adiciona o arquivo a lista de downloads
@@ -282,21 +616,16 @@
         if (fs.existsSync(localPath(fileRoster))) {
             if (!fileData[fileName])
                 fileData[fileName] = {};
-            if (fileData[fileName]['url'] === undefined)
-                fileData[fileName]['url'] = fileUrl;
-            if (fileData[fileName]['name'] === undefined)
-                fileData[fileName]['name'] = fileName;
-            if (fileData[fileName]['type'] === undefined)
-                fileData[fileName]['type'] = fileType;
-            if (fileData[fileName]['version'] === undefined ||
-                fileData[fileName]['version'] != fileVersion)
-                fileData[fileName]['version'] = fileVersion;
-            if (fileData[fileName]['path'] === undefined ||
-                fileData[fileName]['path'] != filePath)
-                fileData[fileName]['path'] = filePath;
+            fileData[fileName]['url'] = fileUrl;
+            fileData[fileName]['name'] = fileName;
+            fileData[fileName]['type'] = fileType;
+            fileData[fileName]['version'] = fileVersion;
+            fileData[fileName]['path'] = filePath;
             if (fileData[fileName]['size'] === undefined)
                 fileData[fileName]['size'] = null;
-            if (fileData[fileName]['download'] === undefined)
+            if (fileData[fileName]['restore'] === undefined)
+                fileData[fileName]['restore'] = false;
+            if (fileName === 'updateManager' || fileData[fileName]['download'] === undefined)
                 fileData[fileName]['download'] = false;
         } else {
             fileData[fileName] = {
@@ -306,6 +635,7 @@
                 version: fileVersion,
                 path: filePath,
                 size: null,
+                restore: false,
                 download: false
             };
         }
@@ -318,8 +648,9 @@
      * @param {String} filePath Caminho do arquivo
      * @param {String} fileVersion Versão do arquivo
      * @param {String} fileSize Tamanho do arquivo
+     * @param {Boolean} fileRestore Verifica se o arquivo está sendo restaurado
      */
-    function completeDownloadToRoster(fileName, filePath, fileVersion, fileSize) {
+    function completeDownloadToRoster(fileName, filePath, fileVersion, fileSize, fileRestore) {
         var folderRoster = String('system/update/save'),
             fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
             fileData = roster_data;
@@ -328,6 +659,10 @@
                 fileData[fileName]['version'] = fileVersion;
                 fileData[fileName]['size'] = fileSize;
                 fileData[fileName]['download'] = true;
+                if (fileName != 'updateManager' && !fileRestore)
+                    roster_downloadsFiles++;
+                else if (fileName != 'updateManager' && fileRestore)
+                    roster_downloadsRestore.push(`${fileData[fileName]['path']}/${fileData[fileName]['name']}.${fileData[fileName]['type']}`);
             }
             // Move o arquivo para a pasta destino
             if (typeof filePath == 'string' && filePath.length > 0) {
@@ -367,15 +702,14 @@
             if (!roster_initialized) {
                 // Arquivo de atualizações
                 if (fs.existsSync(localPath(fileUpdate))) {
-                    if (fileData['updateManager'] && !fileData['updateManager']['download'])
-                        return;
-                    else {
-                        fileData['updateManager'] = null;
-                        fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
+                    if (fileData['updateManager'] && fileData['updateManager']['download']) {
+                        try {
+                            roster_updateData = JSON.parse(fs.readFileSync(localPath(fileUpdate), { encoding: 'utf8' }));
+                        } catch (error) {
+                            return;
+                        }
                     }
-                    try {
-                        roster_updateData = JSON.parse(fs.readFileSync(localPath(fileUpdate), { encoding: 'utf8' }));
-                    } catch (error) {
+                    else {
                         return;
                     }
                     if (roster_updateData['Arquivos'] instanceof Array &&
@@ -391,14 +725,36 @@
                                 addDownloadToRoster(url, nome, type, version, path);
                                 if (fileData[nome]['download']) {
                                     fileData[nome]['download'] = false;
+                                    fileData[nome]['restore'] = true;
                                     fs.writeFileSync(localPath(fileRoster), LZString.compressToBase64(JSON.stringify(fileData)), { encoding: 'utf8' });
                                 }
                             }
                         });
                     }
+                    if (roster_updateData['Remover_Arquivos'] instanceof Array &&
+                        roster_updateData['Remover_Arquivos'].length > 0) {
+                        roster_updateData['Remover_Arquivos'].map(function (file) {
+                            let nome = file['nome'],
+                                type = file['tipo'],
+                                path = file['pasta'];
+                            if (localPathExists(path))
+                                localPathRemoveFile(path, nome, type);
+                        });
+                    }
+                    if (roster_updateData['Remover_Pastas'] instanceof Array &&
+                        roster_updateData['Remover_Pastas'].length > 0) {
+                        roster_updateData['Remover_Pastas'].map(function (folder) {
+                            let nome = folder['nome'],
+                                path = folder['pasta'];
+                            if (localPathExists(path))
+                                localPathRemoveEx(`${path}\\${nome}`);
+                        });
+                    }
+                    if (roster_updateData['Status']) {
+                        roster_downloadsCompleteData = Object.create(roster_updateData['Status']);
+                    }
                     if (fs.existsSync(localPath(fileUpdate)))
                         fs.unlinkSync(localPath(fileUpdate));
-                    return;
                 }
                 roster_downloadsComplete = false;
                 var keys = Object.keys(fileData),
@@ -411,11 +767,12 @@
                             name = fileData[key]['name'],
                             type = fileData[key]['type'],
                             version = fileData[key]['version'],
-                            path = fileData[key]['path'];
+                            path = fileData[key]['path'],
+                            restore = fileData[key]['restore'];
                         roster_initialized = true;
-                        return downloadFile(url, name, type, version, path);
+                        return downloadFile(url, name, type, version, path, restore);
                     } else {
-                        if (i != 'updateManager') {
+                        if (key != 'updateManager') {
                             if (fileData[key] && fileData[key]['download']) {
                                 roster_downloadsComplete = true;
                             } else {
@@ -445,8 +802,15 @@
      * @description Chamada quando todos os downloads estão completos
      */
     function completeAllDownloads() {
-        if (SceneManager._scene instanceof Scene_Boot)
+        if (SceneManager._scene instanceof Scene_Boot) {
+            if (roster_downloadsFiles > 0) {
+                SceneManager._scene.updateDownloadCompleteStatus();
+            } else if (roster_downloadsRestore instanceof Array &&
+                roster_downloadsRestore.length > 0) {
+                SceneManager._scene.updateDownloadRestoreStatus();
+            }
             SceneManager._scene.updateDownloadComplete();
+        }
     };
 
     /**
@@ -454,6 +818,21 @@
      */
     function downloadUpdateFile() {
         return addDownloadToRoster(updateFile, 'updateManager', 'json');
+    };
+
+    /**
+     * @description Verifica se a string é igual a outra string
+     */
+    function stringIsString(string, string2) {
+        // Deixa a string em minusculo e retira os espaços
+        string = string.toLowerCase().replace(/\s{1,}/g, '');
+        // Deixa a string em minusculo e retira os espaços
+        string2 = string2.toLowerCase().replace(/\s{1,}/g, '');
+        // Verifica se a string contem a outra string
+        if (string.contains(string2)) {
+            return true;
+        }
+        return false;
     };
 
     /**
@@ -525,6 +904,68 @@
     };
 
     /**
+     * @description Deleta varias pastas/arquivos dentro de uma pasta e por fim a pasta
+     */
+    function localPathRemoveEx(path) {
+        if (!localPathExists(path)) return;
+        var fs = require('fs');
+        var folderPath = localPath(path);
+        if (fs.lstatSync(folderPath).isDirectory()) {
+            fs.readdirSync(folderPath).forEach(function (dirOrFile) {
+                var dirOrFilePath = folderPath + "/" + dirOrFile;
+                if (fs.lstatSync(dirOrFilePath).isDirectory()) {
+                    var dirPath = path + "/" + dirOrFile;
+                    localPathRemoveEx(dirPath);
+                } else {
+                    fs.unlinkSync(dirOrFilePath);
+                }
+            });
+            try {
+                fs.rmdirSync(folderPath);
+            } catch (error) {
+                localPathRemoveEx(path);
+            }
+        }
+    };
+
+    /**
+     * @description Deleta o arquivo da pasta
+     */
+    function localPathRemoveFile(filePath, fileName, fileType) {
+        if (!localPathExists(filePath)) return;
+        var fs = require('fs');
+        var folderPath = localPath(filePath);
+        if (fs.lstatSync(folderPath).isDirectory()) {
+            fs.readdirSync(folderPath).forEach(function (_fileName) {
+                var _filePath = folderPath + "/" + _fileName,
+                    _fileType = (function () {
+                        var i = 0,
+                            length = _filePath.length,
+                            stringStart = false,
+                            type = '';
+                        for (; i < length; i++) {
+                            let letter = _filePath[i];
+                            if (letter === '.') {
+                                stringStart = true;
+                                continue;
+                            }
+                            if (stringStart)
+                                type += letter;
+                        }
+                        return type.replace(/\s{1,}/g, '').toLowerCase();
+                    })();
+                if (fs.lstatSync(_filePath).isFile()) {
+                    if (_fileName.replace(/\s{1,}/g, '').toLowerCase()
+                        .includes(String(fileName).replace(/\s{1,}/g, '').toLowerCase(), 0) &&
+                        _fileType === String(fileType).replace(/\s{1,}/g, '').toLowerCase()) {
+                        fs.unlinkSync(_filePath);
+                    }
+                }
+            });
+        }
+    };
+
+    /**
      * @description Faz a formatação dos bytes
      */
     function formatBytes(bytes) {
@@ -554,8 +995,9 @@
      * @param {String} fileType Tipo do arquivo
      * @param {String} fileVersion Versão do arquivo
      * @param {String} filePath Caminho do arquivo
+     * @param {Boolean} fileRestore Verifica se o arquivo está sendo restaurado
      */
-    function downloadFile(fileUrl, fileName, fileType, fileVersion, filePath) {
+    function downloadFile(fileUrl, fileName, fileType, fileVersion, filePath, fileRestore) {
         var http = null,
             folderRoster = String('system/update/save'),
             fileRoster = `${folderRoster}\\downloadroster.drxamasave`,
@@ -606,8 +1048,7 @@
                         windowDownloadProgress.setProgress(porcent);
                         windowDownloadProgress.setProgressBar(porcent);
                     }).on('end', function () {
-                        console.log(fileName);
-                        completeDownloadToRoster(fileName, filePath, fileVersion, fileSize);
+                        completeDownloadToRoster(fileName, filePath, fileVersion, fileSize, fileRestore);
                         windowProgress.remove();
                         windowProgress.update();
                         windowDownloadProgress.resetProgress();

@@ -2,7 +2,7 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.00 - Gerenciador de atualizações
+ * @plugindesc v2.01 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
  * 
@@ -700,17 +700,22 @@
             fileUpdate = `${fileUpdatePath}\\updateManager.json`;
         if (fs.existsSync(localPath(fileRoster))) {
             if (!roster_initialized) {
+                /** @description Deleta o arquivo de atualização */
+                function deleteFileUpdate() {
+                    if (fs.existsSync(localPath(fileUpdate)))
+                        fs.unlinkSync(localPath(fileUpdate));
+                }
                 // Arquivo de atualizações
                 if (fs.existsSync(localPath(fileUpdate))) {
                     if (fileData['updateManager'] && fileData['updateManager']['download']) {
                         try {
                             roster_updateData = JSON.parse(fs.readFileSync(localPath(fileUpdate), { encoding: 'utf8' }));
                         } catch (error) {
-                            return;
+                            return deleteFileUpdate();
                         }
                     }
                     else {
-                        return;
+                        return deleteFileUpdate();
                     }
                     if (roster_updateData['Arquivos'] instanceof Array &&
                         roster_updateData['Arquivos'].length > 0) {
@@ -753,8 +758,7 @@
                     if (roster_updateData['Status']) {
                         roster_downloadsCompleteData = Object.create(roster_updateData['Status']);
                     }
-                    if (fs.existsSync(localPath(fileUpdate)))
-                        fs.unlinkSync(localPath(fileUpdate));
+                    deleteFileUpdate();
                 }
                 roster_downloadsComplete = false;
                 var keys = Object.keys(fileData),

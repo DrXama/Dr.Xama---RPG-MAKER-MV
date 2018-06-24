@@ -104,7 +104,7 @@
         if (!localPathExists(path))
             localPathCreate(path);
         if (!fs.existsSync(file)) {
-            fs.writeFileSync(file, JSON.stringify({
+            fs.writeFileSync(file, LZString.compressToBase64(JSON.stringify({
                 'inputId': { // Indentificador de cada jogador no teclado
                     'player_1': null, // valor padrão é null
                     'player_2': 0,
@@ -124,63 +124,79 @@
                     1: 'cancel',    // Botão B
                     2: 'tab',       // Botão X
                     3: 'escape',    // Botão Y
-                    4: 'shift',     // Botão LB 1
-                    5: 'control',   // Botão RB 1
-                    6: 'pageup',    // Botão LB 2
-                    7: 'pagedown',  // Botão RB 2
-                    8: 'debug',     // Select
-                    9: 'menu',      // Start
-                    10: 'shift',    // Clique do analogico esquerdo
-                    11: '',         // Clique do analogico direito
-                    12: 'up',       // D-pad up
-                    13: 'down',     // D-pad down
-                    14: 'left',     // D-pad left
-                    15: 'right',    // D-pad right
+                    4: 'shift',     // Botão LB
+                    5: 'pageup',    // Botão RB
+                    6: 'control',   // Botão LT
+                    7: 'pagedown',  // Botão RT
+                    8: 'debug',     // Botão SELECT
+                    9: 'menu',      // Botão START
+                    10: 'shift',    // Botão do meio do analogico esquerdo
+                    11: 'menuMultiplayerLocal', // Botão do meio do analogico direito
+                    12: 'up',       // Botão D-pad(Seta) para cima
+                    13: 'down',     // Botão D-pad(Seta) para baixo
+                    14: 'left',     // Botão D-pad(Seta) para esquerda
+                    15: 'right',    // Botão D-pad(Seta) para direita
+                    16: 'up',       // Botão Analogico esquerdo para cima
+                    17: 'down',     // Botão Analogico esquerdo para baixo
+                    18: 'left',     // Botão Analogico esquerdo para esquerda
+                    19: 'right',    // Botão Analogico esquerdo para direita
+                    20: 'up',       // Botão Analogico direito para cima
+                    21: 'down',     // Botão Analogico direito para baixo
+                    22: 'left',     // Botão Analogico direito para esquerda
+                    23: 'right',    // Botão Analogico direito para direita
                 }
-            }, null, 2));
+            })));
         }
-        file = JSON.parse(fs.readFileSync(file, { encoding: 'utf8' }) || {});
+        file = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(file, { encoding: 'utf8' })) || {});
         // DEFAULT VALUES
         if (file.inputId instanceof Object === false) {
             file.inputId = {
-                'player_1': null,
+                'player_1': null, // valor padrão é null
                 'player_2': 0,
                 'player_3': 1,
                 'player_4': 2
             }
         }
         if (file.inputOwner instanceof String === false) {
-            file.inputOwner = 'player_1';
+            file.inputOwner = 'player_1'; // Defina quem controla o teclado
         }
         if (file.inputMenuCall instanceof Number === false) {
-            file.inputMenuCall = 112;
+            file.inputMenuCall = 112; // Defina a tecla que chama o menu, padrão é F1
         }
         if (file.gamepadOrder instanceof Object === false) {
             file.gamepadOrder = {
-                0: 'player_1',
-                1: 'player_2',
-                2: 'player_3',
-                3: 'player_4'
+                0: 'player_1', // Controle 1
+                1: 'player_2', // Controle 2
+                2: 'player_3', // Controle 3
+                3: 'player_4' // Controle 4
             }
         }
         if (file.gamepadButtons instanceof Object === false) {
             file.gamepadButtons = {
-                0: 'ok',
-                1: 'cancel',
-                2: 'tab',
-                3: 'escape',
-                4: 'shift',
-                5: 'control',
-                6: 'pageup',
-                7: 'pagedown',
-                8: 'debug',
-                9: 'menu',
-                10: 'shift',
-                11: '',
-                12: 'up',
-                13: 'down',
-                14: 'left',
-                15: 'right',
+                0: 'ok',        // Botão A
+                1: 'cancel',    // Botão B
+                2: 'tab',       // Botão X
+                3: 'escape',    // Botão Y
+                4: 'shift',     // Botão LB
+                5: 'pageup',    // Botão RB
+                6: 'control',   // Botão LT
+                7: 'pagedown',  // Botão RT
+                8: 'debug',     // Botão SELECT
+                9: 'menu',      // Botão START
+                10: 'shift',    // Botão do meio do analogico esquerdo
+                11: 'menuMultiplayerLocal', // Botão do meio do analogico direito
+                12: 'up',       // Botão D-pad(Seta) para cima
+                13: 'down',     // Botão D-pad(Seta) para baixo
+                14: 'left',     // Botão D-pad(Seta) para esquerda
+                15: 'right',    // Botão D-pad(Seta) para direita
+                16: 'up',       // Botão Analogico esquerdo para cima
+                17: 'down',     // Botão Analogico esquerdo para baixo
+                18: 'left',     // Botão Analogico esquerdo para esquerda
+                19: 'right',    // Botão Analogico esquerdo para direita
+                20: 'up',       // Botão Analogico direito para cima
+                21: 'down',     // Botão Analogico direito para baixo
+                22: 'left',     // Botão Analogico direito para esquerda
+                23: 'right',    // Botão Analogico direito para direita
             }
         }
         // DEFINE VALUES
@@ -191,15 +207,19 @@
         Input.gamepadMapper = file.gamepadButtons;
     };
 
-    Input._fileSettings_gamepadButtonsUpdate = function () {
+    Input._fileSettingsUpdate = function () {
         var fs = require('fs'),
             path = 'system/multiplayerLocal/save',
             file = localPath(`${path}\\settings.drxamasave`),
             data = null;
         if (!fs.existsSync(file)) return;
-        data = JSON.parse(fs.readFileSync(file, { encoding: 'utf8' }) || {});
+        data = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(file, { encoding: 'utf8' })) || {});
+        // DEFINE VALUES
+        data.inputId = Input._inputId;
+        data.inputOwner = Input._inputOwner;
+        data.gamepadOrder = Input._gamepadOrder;
         data.gamepadButtons = Input.gamepadMapper;
-        fs.writeFileSync(file, JSON.stringify(data, null, 2));
+        fs.writeFileSync(file, LZString.compressToBase64(JSON.stringify(data)));
     };
 
     Input._onKeyDown = function (event) {
@@ -268,22 +288,38 @@
         var buttons = gamepad.buttons;
         var axes = gamepad.axes;
         var threshold = 0.5;
-        newState[12] = false;
-        newState[13] = false;
-        newState[14] = false;
-        newState[15] = false;
+        // Analogico Esquerdo
+        newState[16] = false;
+        newState[17] = false;
+        newState[18] = false;
+        newState[19] = false;
+        // Analogico Direito
+        newState[20] = false;
+        newState[21] = false;
+        newState[22] = false;
+        newState[23] = false;
         for (var i = 0; i < buttons.length; i++) {
             newState[i] = buttons[i].pressed;
         }
         if (axes[1] < -threshold) {
-            newState[12] = true;    // up
+            newState[16] = true;    // Analogico Esquerdo (P. Cima)
         } else if (axes[1] > threshold) {
-            newState[13] = true;    // down
+            newState[17] = true;    // Analogico Esquerdo (P. Baixo)
         }
         if (axes[0] < -threshold) {
-            newState[14] = true;    // left
+            newState[18] = true;    // Analogico Esquerdo (P. Esquerda)
         } else if (axes[0] > threshold) {
-            newState[15] = true;    // right
+            newState[19] = true;    // Analogico Esquerdo (P. Direita)
+        }
+        if (axes[3] < -threshold) {
+            newState[20] = true;    // Analogico Direito (P. Cima)
+        } else if (axes[3] > threshold) {
+            newState[21] = true;    // Analogico Direito (P. Baixo)
+        }
+        if (axes[2] < -threshold) {
+            newState[22] = true;    // Analogico Direito (P. Esquerda)
+        } else if (axes[2] > threshold) {
+            newState[23] = true;    // Analogico Direito (P. Direita)
         }
         for (var j = 0; j < newState.length; j++) {
             if (newState[j] !== lastState[j]) {
@@ -499,28 +535,28 @@
         this.drawText('Controle', 39, 17, this.windowWidth(), 'left');
         this.contents.fontSize = fontSize;
         this.drawText('1', 70, 68, this.windowWidth(), 'left');
-        this.drawText('Jogador 1', 162, 62, this.windowWidth(), 'left');
+        this.drawText(this.commandGamepad(Input._gamepadOrder[0]), 162, 62, this.windowWidth(), 'left');
         // CONTROLE 2
         this.drawIMG('selectGamepad', 1, 5, 162);
         this.contents.fontSize = 18;
         this.drawText('Controle', 39, 174, this.windowWidth(), 'left');
         this.contents.fontSize = fontSize;
         this.drawText('2', 70, 225, this.windowWidth(), 'left');
-        this.drawText('Jogador 2', 162, 222, this.windowWidth(), 'left');
+        this.drawText(this.commandGamepad(Input._gamepadOrder[1]), 162, 222, this.windowWidth(), 'left');
         // CONTROLE 3
         this.drawIMG('selectGamepad', 2, this.windowWidth() - 192, 5);
         this.contents.fontSize = 18;
         this.drawText('Controle', -87, 17, this.windowWidth(), 'right');
         this.contents.fontSize = fontSize;
         this.drawText('3', -112, 68, this.windowWidth(), 'right');
-        this.drawText('Jogador 3', -206, 62, this.windowWidth(), 'right');
+        this.drawText(this.commandGamepad(Input._gamepadOrder[2]), -206, 62, this.windowWidth(), 'right');
         // CONTROLE 4
         this.drawIMG('selectGamepad', 3, this.windowWidth() - 192, 162);
         this.contents.fontSize = 18;
         this.drawText('Controle', -87, 174, this.windowWidth(), 'right');
         this.contents.fontSize = fontSize;
         this.drawText('4', -112, 225, this.windowWidth(), 'right');
-        this.drawText('Jogador 4', -206, 222, this.windowWidth(), 'right');
+        this.drawText(this.commandGamepad(Input._gamepadOrder[3]), -206, 222, this.windowWidth(), 'right');
         // Divisor Vertical
         this.changePaintOpacity(false);
         this.contents.fillRect(this.windowWidth() / 2 - this.standardPadding(), 5, 1, 312, 'white');
@@ -530,6 +566,19 @@
         this.contents.fillRect(5, 335, this.windowWidth() - (this.standardPadding() * 2 + this.textPadding() * 2), 1, 'white');
         this.changePaintOpacity(true);
         this.createWindowOptions();
+    };
+
+    Window_selectGamePadMultiplayerLocal.prototype.commandGamepad = function (gamepadIndex) {
+        switch (String(gamepadIndex).toLowerCase()) {
+            case 'player_1':
+                return 'JOGADOR 1';
+            case 'player_2':
+                return 'JOGADOR 2';
+            case 'player_3':
+                return 'JOGADOR 3';
+            case 'player_4':
+                return 'JOGADOR 4';
+        };
     };
 
     Window_selectGamePadMultiplayerLocal.prototype.drawIMG = function (file, index, x, y, width, height) {
@@ -572,6 +621,7 @@
         this.setBackgroundType(3);
         this.setHandlerMainCommands();
         this.createWindowButtonsChange();
+        this.createWindowSetGamepad();
     };
 
     Window_selectGamePadMultiplayerLocal_Options.prototype.windowWidth = function () {
@@ -620,6 +670,7 @@
 
     Window_selectGamePadMultiplayerLocal_Options.prototype.setHandlerMainCommands = function () {
         this.setHandler('buttonsChange', this.showWindowButtonsChange.bind(this));
+        this.setHandler('setGamepad', this.showWindowSetGamepad.bind(this));
     };
 
     Window_selectGamePadMultiplayerLocal_Options.prototype.createWindowButtonsChange = function () {
@@ -636,6 +687,26 @@
 
     Window_selectGamePadMultiplayerLocal_Options.prototype.hideWindowButtonsChange = function () {
         this._windowButtonsChange.hide();
+        this.parent.refresh();
+        this.parent.show();
+        this.activate();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options.prototype.createWindowSetGamepad = function () {
+        this._windowSetGamepad = new Window_selectGamePadMultiplayerLocal_Options_setGamepad();
+        this._windowSetGamepad.setHandler('cancel', this.hideWindowSetGamepad.bind(this));
+        SceneManager._scene.addChild(this._windowSetGamepad);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options.prototype.showWindowSetGamepad = function () {
+        this._windowSetGamepad.show();
+        this._windowSetGamepad.refresh();
+        this.parent.hide();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options.prototype.hideWindowSetGamepad = function () {
+        this._windowSetGamepad.hide();
+        this.parent.refresh();
         this.parent.show();
         this.activate();
     };
@@ -663,10 +734,15 @@
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.refresh = function () {
-        Window_Command.prototype.refresh.call(this, 0, 0);
+        Window_Command.prototype.refresh.call(this);
         this.activate();
         this.drawHelpText();
         this.createWindowSetValue();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.update = function () {
+        Window_Command.prototype.update.call(this);
+        this.updateHelpText();
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.windowWidth = function () {
@@ -691,10 +767,58 @@
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.addMainCommands = function () {
+        var textMenuSpecial = String(Input.gamepadMapper[11]).toLocaleLowerCase() === 'menumultiplayerlocal' ? 'MENU ESPECIAL' : String(Input.gamepadMapper[11]).toUpperCase();
         this.addCommand(`Botão A - VALOR(${String(Input.gamepadMapper[0]).toUpperCase()})`, 'button_A');
         this.addCommand(`Botão B - VALOR(${String(Input.gamepadMapper[1]).toUpperCase()})`, 'button_B');
         this.addCommand(`Botão X - VALOR(${String(Input.gamepadMapper[2]).toUpperCase()})`, 'button_X');
         this.addCommand(`Botão Y - VALOR(${String(Input.gamepadMapper[3]).toUpperCase()})`, 'button_Y');
+        this.addCommand(`Botão LB - VALOR(${String(Input.gamepadMapper[4]).toUpperCase()})`, 'button_LB');
+        this.addCommand(`Botão LT - VALOR(${String(Input.gamepadMapper[6]).toUpperCase()})`, 'button_LT');
+        this.addCommand(`Botão RB - VALOR(${String(Input.gamepadMapper[5]).toUpperCase()})`, 'button_RB');
+        this.addCommand(`Botão RT - VALOR(${String(Input.gamepadMapper[7]).toUpperCase()})`, 'button_RT');
+        this.addCommand(`Botão SELECT - VALOR(${String(Input.gamepadMapper[8]).toUpperCase()})`, 'button_SELECT');
+        this.addCommand(`Botão START - VALOR(${String(Input.gamepadMapper[9]).toUpperCase()})`, 'button_START');
+        this.addCommand(`A. Esquerdo Clique - VALOR(${String(Input.gamepadMapper[10]).toUpperCase()})`, 'button_ANALOGICO_ESQUERDO_CLIQUE');
+        this.addCommand(`A. Direito Clique - VALOR(${textMenuSpecial})`, 'button_ANALOGICO_DIREITO_CLIQUE');
+        this.addCommand(`D-pad Cima - VALOR(${String(Input.gamepadMapper[12]).toUpperCase()})`, 'button_DPAD_CIMA');
+        this.addCommand(`D-pad Baixo - VALOR(${String(Input.gamepadMapper[13]).toUpperCase()})`, 'button_DPAD_BAIXO');
+        this.addCommand(`D-pad Esquerda - VALOR(${String(Input.gamepadMapper[14]).toUpperCase()})`, 'button_DPAD_ESQUERDA');
+        this.addCommand(`D-pad Direita - VALOR(${String(Input.gamepadMapper[15]).toUpperCase()})`, 'button_DPAD_DIREITA');
+        this.addCommand(`A. Esquerdo Cima - VALOR(${String(Input.gamepadMapper[16]).toUpperCase()})`, 'button_ANALOGICO_ESQUERDO_CIMA');
+        this.addCommand(`A. Esquerdo Baixo - VALOR(${String(Input.gamepadMapper[17]).toUpperCase()})`, 'button_ANALOGICO_ESQUERDO_BAIXO');
+        this.addCommand(`A. Esquerdo Esquerda - VALOR(${String(Input.gamepadMapper[18]).toUpperCase()})`, 'button_ANALOGICO_ESQUERDO_ESQUERDA');
+        this.addCommand(`A. Esquerdo Direita - VALOR(${String(Input.gamepadMapper[19]).toUpperCase()})`, 'button_ANALOGICO_ESQUERDO_DIREITA');
+        this.addCommand(`A. Direito Cima - VALOR(${String(Input.gamepadMapper[20]).toUpperCase()})`, 'button_ANALOGICO_DIREITO_CIMA');
+        this.addCommand(`A. Direito Baixo - VALOR(${String(Input.gamepadMapper[21]).toUpperCase()})`, 'button_ANALOGICO_DIREITO_BAIXO');
+        this.addCommand(`A. Direito Esquerda - VALOR(${String(Input.gamepadMapper[22]).toUpperCase()})`, 'button_ANALOGICO_DIREITO_ESQUERDA');
+        this.addCommand(`A. Direito Direita - VALOR(${String(Input.gamepadMapper[23]).toUpperCase()})`, 'button_ANALOGICO_DIREITO_DIREITA');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.setHandlerMainCommands = function () {
+        this.setHandler('button_A', this.showWindowSetValue.bind(this, 0));
+        this.setHandler('button_B', this.showWindowSetValue.bind(this, 1));
+        this.setHandler('button_X', this.showWindowSetValue.bind(this, 2));
+        this.setHandler('button_Y', this.showWindowSetValue.bind(this, 3));
+        this.setHandler('button_LB', this.showWindowSetValue.bind(this, 4));
+        this.setHandler('button_LT', this.showWindowSetValue.bind(this, 6));
+        this.setHandler('button_RB', this.showWindowSetValue.bind(this, 5));
+        this.setHandler('button_RT', this.showWindowSetValue.bind(this, 7));
+        this.setHandler('button_SELECT', this.showWindowSetValue.bind(this, 8));
+        this.setHandler('button_START', this.showWindowSetValue.bind(this, 9));
+        this.setHandler('button_ANALOGICO_ESQUERDO_CLIQUE', this.showWindowSetValue.bind(this, 10));
+        this.setHandler('button_ANALOGICO_DIREITO_CLIQUE', this.showWindowSetValue.bind(this, 11));
+        this.setHandler('button_DPAD_CIMA', this.showWindowSetValue.bind(this, 12));
+        this.setHandler('button_DPAD_BAIXO', this.showWindowSetValue.bind(this, 13));
+        this.setHandler('button_DPAD_ESQUERDA', this.showWindowSetValue.bind(this, 14));
+        this.setHandler('button_DPAD_DIREITA', this.showWindowSetValue.bind(this, 15));
+        this.setHandler('button_ANALOGICO_ESQUERDO_CIMA', this.showWindowSetValue.bind(this, 16));
+        this.setHandler('button_ANALOGICO_ESQUERDO_BAIXO', this.showWindowSetValue.bind(this, 17));
+        this.setHandler('button_ANALOGICO_ESQUERDO_ESQUERDA', this.showWindowSetValue.bind(this, 18));
+        this.setHandler('button_ANALOGICO_ESQUERDO_DIREITA', this.showWindowSetValue.bind(this, 19));
+        this.setHandler('button_ANALOGICO_DIREITO_CIMA', this.showWindowSetValue.bind(this, 20));
+        this.setHandler('button_ANALOGICO_DIREITO_BAIXO', this.showWindowSetValue.bind(this, 21));
+        this.setHandler('button_ANALOGICO_DIREITO_ESQUERDA', this.showWindowSetValue.bind(this, 22));
+        this.setHandler('button_ANALOGICO_DIREITO_DIREITA', this.showWindowSetValue.bind(this, 23));
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.drawItem = function (index) {
@@ -727,11 +851,46 @@
         this.drawText(this.commandName(index), rect.x + 162, rect.y + (rect.height / 2) - 20, rect.width, align);
     };
 
-    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.drawHelpText = function () {
-        this.drawText('Escolha um botão e aperte(OK) para trocar seu valor,', 5,
-            this.windowHeight() - 100 - (this.standardPadding() * 2 + this.textPadding() * 2), this.contentsWidth(), 'left');
-        this.drawText('tome cuidado com botões com o mesmo valor.', 5,
-            this.windowHeight() - 60 - (this.standardPadding() * 2 + this.textPadding() * 2), this.contentsWidth(), 'left');
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.drawHelpText = function (text_1, text_2) {
+        if (text_1 === undefined) text_1 = 0;
+        if (text_2 === undefined) text_2 = 1;
+        if (!this._textsToHelp) {
+            this._textsToHelp = [
+                'Escolha um botão e aperte(OK) para trocar seu valor,',
+                'tome cuidado com botões com o mesmo valor.',
+                'Alguns botões não podem ter os valores retirados, para',
+                'retirar o valor você precisa atribuir o valor a outro botão.'
+            ]
+        }
+        var width = this.contentsWidth(),
+            height = this.contentsHeight(),
+            x = 5,
+            y1 = this.windowHeight() - 100 - (this.standardPadding() * 2 + this.textPadding() * 2),
+            y2 = this.windowHeight() - 60 - (this.standardPadding() * 2 + this.textPadding() * 2);
+        this.contents.clearRect(x, y1, width, height);
+        this.drawText(this._textsToHelp[text_1], x, y1, width, 'left');
+        this.drawText(this._textsToHelp[text_2], x, y2, width, 'left');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.updateHelpText = function () {
+        if (!this._textHelp_times) {
+            this._textHelp_times = [180, 180];
+            this._textHelp_change = false;
+        }
+        if (this._textHelp_times[0] > 0) {
+            this._textHelp_times[0] -= .60;
+        } else {
+            if (!this._textHelp_change) {
+                this._textHelp_change = true;
+                this.drawHelpText(2, 3);
+            }
+            if (this._textHelp_times[1] > 0) {
+                this._textHelp_times[1] -= .60;
+            } else {
+                this.drawHelpText(0, 1);
+                this._textHelp_times = null;
+            }
+        }
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.createWindowSetValue = function () {
@@ -739,13 +898,6 @@
             this._windowSetValue = new Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue();
         }
         this.addChild(this._windowSetValue);
-    };
-
-    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.setHandlerMainCommands = function () {
-        this.setHandler('button_A', this.showWindowSetValue.bind(this, 0));
-        this.setHandler('button_B', this.showWindowSetValue.bind(this, 1));
-        this.setHandler('button_X', this.showWindowSetValue.bind(this, 2));
-        this.setHandler('button_Y', this.showWindowSetValue.bind(this, 3));
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.showWindowSetValue = function (buttonId) {
@@ -802,6 +954,8 @@
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.addMainCommands = function () {
         this.addCommand('OK', '_ok');
         this.addCommand('CANCEL', '_cancel');
+        this.addCommand('MENU', '_menu');
+        this.addCommand('M. ESPECIAL', '_menuEspecial');
         this.addCommand('TAB', '_tab');
         this.addCommand('SHIFT', '_shift');
         this.addCommand('CONTROL', '_control');
@@ -827,6 +981,8 @@
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.setHandlerMainCommands = function () {
         this.setHandler('_ok', this.setButtonValue.bind(this, 'ok'));
         this.setHandler('_cancel', this.setButtonValue.bind(this, 'cancel'));
+        this.setHandler('_menu', this.setButtonValue.bind(this, 'menu'));
+        this.setHandler('_menuEspecial', this.setButtonValue.bind(this, 'menuMultiplayerLocal'));
         this.setHandler('_tab', this.setButtonValue.bind(this, 'tab'));
         this.setHandler('_shift', this.setButtonValue.bind(this, 'shift'));
         this.setHandler('_control', this.setButtonValue.bind(this, 'control'));
@@ -843,24 +999,247 @@
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.setButtonValue = function (value) {
         if (this._buttonId != null && this._winParent != null) {
-            if (Input.gamepadMapper[this._buttonId] != 'ok')
-                Input.gamepadMapper[this._buttonId] = value;
-            var buttonOk = false;
-            for (var i in Input.gamepadMapper) {
-                if (this._buttonId != i && Input.gamepadMapper[i] == 'ok')
-                    buttonOk = true;
-            }
-            if (!buttonOk) {
+            var buttonsEssentials = ['ok', 'cancel', 'menu', 'menuMultiplayerLocal'];
+            if (buttonsEssentials.filter(function (button) {
+                return Input.gamepadMapper[this._buttonId] === button;
+            }, this).length > 0 && !this.buttonAlradyExist(buttonsEssentials, [this._buttonId, Input.gamepadMapper[this._buttonId]])) {
                 SoundManager.playBuzzer();
-                return this.activate();
+                this.activate();
+                return;
             }
-            Input._fileSettings_gamepadButtonsUpdate();
-            this._winParent.refresh();
-            this.hide();
+            Input.gamepadMapper[this._buttonId] = value;
+            Input._fileSettingsUpdate();
+            this.closeWin();
         }
     };
 
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.buttonAlradyExist = function (values, exclude) {
+        var buttons = [];
+        Object.keys(Input.gamepadMapper).filter(function (key) {
+            if (exclude[0] != key)
+                if (values.indexOf(Input.gamepadMapper[key]) != -1)
+                    buttons.push(Input.gamepadMapper[key]);
+        });
+        return buttons.length >= 0 && buttons.indexOf(exclude[1]) != -1;
+    };
+
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.closeWin = function () {
+        if (this._winParent) this._winParent.refresh();
+        this.hide();
+    };
+
+    //-----------------------------------------------------------------------------
+    // Window_selectGamePadMultiplayerLocal_Options_setGamepad
+    //
+    function Window_selectGamePadMultiplayerLocal_Options_setGamepad() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype = Object.create(Window_Command.prototype);
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.constructor = Window_selectGamePadMultiplayerLocal_Options_setGamepad;
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.initialize = function (x, y) {
+        Window_Command.prototype.initialize.call(this, 0, 0);
+        this.deactivate();
+        this.hide();
+        this.loadImages();
+        this.setHandlerMainCommands();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.loadImages = function () {
+        ImageManager.reserveMultiplayerLocalIMG('selectGamepad');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.refresh = function () {
+        Window_Command.prototype.refresh.call(this);
+        this.activate();
+        this.createWindowSetValue();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.windowWidth = function () {
+        return Graphics.boxWidth;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.windowHeight = function () {
+        return Graphics.boxHeight;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / 4);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.addMainCommands = function () {
+        this.addCommand('Controle 1', 'gamepad_1');
+        this.addCommand('Controle 2', 'gamepad_2');
+        this.addCommand('Controle 3', 'gamepad_3');
+        this.addCommand('Controle 4', 'gamepad_4');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.setHandlerMainCommands = function () {
+        this.setHandler('gamepad_1', this.showWindowSetGamepad.bind(this, 0));
+        this.setHandler('gamepad_2', this.showWindowSetGamepad.bind(this, 1));
+        this.setHandler('gamepad_3', this.showWindowSetGamepad.bind(this, 2));
+        this.setHandler('gamepad_4', this.showWindowSetGamepad.bind(this, 3));
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.drawItem = function (index) {
+        this.drawItemImage(index);
+        this.drawItemText(index);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.drawItemImage = function (index) {
+        var rect = this.itemRect(index),
+            fontSize = this.contents.fontSize;
+        this.drawIMG('selectGamepad', index, rect.x + 12, rect.y + 5);
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 18;
+        this.drawText('Controle', rect.x + 43, rect.y + 16, rect.width, 'left');
+        this.contents.fontSize = fontSize;
+        this.drawText(`${index + 1}`, rect.x + 74, rect.y + 66, rect.width, 'left');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.drawItemText = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = this.itemTextAlign();
+        this.resetFontSettings();
+        this.changeTextColor(this.systemColor());
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.contents.fontSize = 26;
+        this.drawText(`${this.commandGamepad(Input._gamepadOrder[index])} - Aperte('OK') para trocar o jogador`, rect.x + 160, rect.y + 60, rect.width, align);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.commandGamepad = function (gamepadIndex) {
+        switch (String(gamepadIndex).toLowerCase()) {
+            case 'player_1':
+                return 'JOGADOR 1';
+            case 'player_2':
+                return 'JOGADOR 2';
+            case 'player_3':
+                return 'JOGADOR 3';
+            case 'player_4':
+                return 'JOGADOR 4';
+        };
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.drawIMG = function (file, index, x, y, width, height) {
+        width = width || 144;
+        height = height || 144;
+        var bitmap = ImageManager.loadMultiplayerLocalIMG(file);
+        var pw = 144;
+        var ph = 144;
+        var sw = Math.min(width, pw);
+        var sh = Math.min(height, ph);
+        var dx = Math.floor(x + Math.max(width - pw, 0) / 2);
+        var dy = Math.floor(y + Math.max(height - ph, 0) / 2);
+        var sx = index % 4 * pw + (pw - sw) / 2;
+        var sy = Math.floor(index / 4) * ph + (ph - sh) / 2;
+        this.contents.blt(bitmap, sx, sy, sw, sh, dx, dy, 140, 140);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.createWindowSetValue = function () {
+        if (!this._windowSetGamepad) {
+            this._windowSetGamepad = new Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad();
+        }
+        this.addChild(this._windowSetGamepad);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.showWindowSetGamepad = function (gamepadId) {
+        this._windowSetGamepad.show();
+        this._windowSetGamepad.activate();
+        this._windowSetGamepad._gamepadId = gamepadId;
+        this._windowSetGamepad._winParent = this;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad
+    //
+
+    function Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype = Object.create(Window_Command.prototype);
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.constructor = Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad;
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.initialize = function () {
+        var x = Graphics.boxWidth / 4,
+            y = Graphics.boxHeight / 4;
+        Window_Command.prototype.initialize.call(this, x, y);
+        this.deactivate();
+        this.hide();
+        this.setHandlerMainCommands();
+        this._gamepadId = null;
+        this._winParent = null;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.windowWidth = function () {
+        return 420;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.windowHeight = function () {
+        return 280;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.standardBackOpacity = function () {
+        return 100;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.numVisibleRows = function () {
+        return 1;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.itemHeight = function () {
+        return this.windowHeight() - this.standardPadding() * 2;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.addMainCommands = function () {
+        this.addCommand('JOGADOR 1', 'player_1');
+        this.addCommand('JOGADOR 2', 'player_2');
+        this.addCommand('JOGADOR 3', 'player_3');
+        this.addCommand('JOGADOR 4', 'player_4');
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 132;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 4) + (rect.y + this.standardPadding() * 2), rect.width, align);
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.setHandlerMainCommands = function () {
+        this.setHandler('player_1', this.setGamepad.bind(this, 'player_1'));
+        this.setHandler('player_2', this.setGamepad.bind(this, 'player_2'));
+        this.setHandler('player_3', this.setGamepad.bind(this, 'player_3'));
+        this.setHandler('player_4', this.setGamepad.bind(this, 'player_4'));
+        this.setHandler('cancel', this.closeWin.bind(this));
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.setGamepad = function (player) {
+        if (this._gamepadId != null && this._winParent != null) {
+            for (var i in Input._gamepadOrder) {
+                if (Input._gamepadOrder[i] === player) {
+                    Input._gamepadOrder[i] = Input._gamepadOrder[this._gamepadId];
+                    break;
+                }
+            };
+            Input._gamepadOrder[this._gamepadId] = player;
+            Input._fileSettingsUpdate();
+            this.closeWin();
+        }
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.closeWin = function () {
         if (this._winParent) this._winParent.refresh();
         this.hide();
     };

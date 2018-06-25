@@ -144,6 +144,58 @@
                     21: 'down',     // Botão Analogico direito para baixo
                     22: 'left',     // Botão Analogico direito para esquerda
                     23: 'right',    // Botão Analogico direito para direita
+                },
+                'keyboardKeys': {
+                    9: 'tab',
+                    13: 'ok',
+                    16: 'shift',
+                    17: 'control',
+                    18: 'control',
+                    27: 'escape',
+                    32: 'ok',
+                    33: 'pageup',
+                    34: 'pagedown',
+                    37: 'left',
+                    38: 'up',
+                    39: 'right',
+                    40: 'down',
+                    45: 'escape',
+                    81: 'pageup',
+                    87: 'pagedown',
+                    88: 'escape',
+                    90: 'ok',
+                    96: 'escape',
+                    98: 'down',
+                    100: 'left',
+                    102: 'right',
+                    104: 'up',
+                    120: 'debug',
+                    65: 'A',
+                    66: 'B',
+                    67: 'C',
+                    68: 'D',
+                    69: 'E',
+                    70: 'F',
+                    71: 'G',
+                    72: 'H',
+                    73: 'I',
+                    74: 'J',
+                    75: 'K',
+                    76: 'L',
+                    77: 'M',
+                    78: 'N',
+                    79: 'O',
+                    80: 'P',
+                    81: 'Q',
+                    82: 'R',
+                    83: 'S',
+                    84: 'T',
+                    85: 'U',
+                    86: 'V',
+                    87: 'W',
+                    88: 'X',
+                    89: 'Y',
+                    90: 'Z'
                 }
             })));
         }
@@ -199,12 +251,67 @@
                 23: 'right',    // Botão Analogico direito para direita
             }
         }
+        if (file.keyboardKeys instanceof Object === false) {
+            file.keyboardKeys = {
+                9: 'tab',
+                13: 'ok',
+                16: 'shift',
+                17: 'control',
+                18: 'control',
+                27: 'escape',
+                32: 'ok',
+                33: 'pageup',
+                34: 'pagedown',
+                37: 'left',
+                38: 'up',
+                39: 'right',
+                40: 'down',
+                45: 'escape',
+                81: 'pageup',
+                87: 'pagedown',
+                88: 'escape',
+                90: 'ok',
+                96: 'escape',
+                98: 'down',
+                100: 'left',
+                102: 'right',
+                104: 'up',
+                120: 'debug',
+                65: 'A',
+                66: 'B',
+                67: 'C',
+                68: 'D',
+                69: 'E',
+                70: 'F',
+                71: 'G',
+                72: 'H',
+                73: 'I',
+                74: 'J',
+                75: 'K',
+                76: 'L',
+                77: 'M',
+                78: 'N',
+                79: 'O',
+                80: 'P',
+                81: 'Q',
+                82: 'R',
+                83: 'S',
+                84: 'T',
+                85: 'U',
+                86: 'V',
+                87: 'W',
+                88: 'X',
+                89: 'Y',
+                90: 'Z'
+            }
+        }
         // DEFINE VALUES
         this._inputId = file.inputId;
         this._inputOwner = file.inputOwner;
-        Input.keyMapper[file.inputMenuCall] = 'menuMultiplayerLocal';
         this._gamepadOrder = file.gamepadOrder;
         Input.gamepadMapper = file.gamepadButtons;
+        Input.keyMapper = file.keyboardKeys;
+        Input.keyMapper[file.inputMenuCall] = 'menuMultiplayerLocal';
     };
 
     Input._fileSettingsUpdate = function () {
@@ -388,6 +495,7 @@
         this.createWindowLayer();
         this.createMenuWindow();
         this.createSelectGamepadWindow();
+        this.createKeyboardSettingsWindow();
     };
 
     Scene_menuMultiplayerLocal.prototype.createBackground = function () {
@@ -399,12 +507,18 @@
     Scene_menuMultiplayerLocal.prototype.createMenuWindow = function () {
         this._menuWindow = new Window_menuMultiplayerLocal();
         this._menuWindow.setHandler('gamepadConfig', this.showSelectGamepad.bind(this));
+        this._menuWindow.setHandler('keyboardConfig', this.showKeyboardSettings.bind(this));
         this.addWindow(this._menuWindow);
     };
 
     Scene_menuMultiplayerLocal.prototype.createSelectGamepadWindow = function () {
         this._selectGamepadWindow = new Window_selectGamePadMultiplayerLocal();
         this.addWindow(this._selectGamepadWindow);
+    };
+
+    Scene_menuMultiplayerLocal.prototype.createKeyboardSettingsWindow = function () {
+        this._keyboardSettingsWindow = new Window_keyboardSettings(this._menuWindow.standardPadding() * 2, this._menuWindow.itemHeight() * 2 + this._menuWindow.standardPadding() * 4);
+        this._menuWindow.addChild(this._keyboardSettingsWindow);
     };
 
     Scene_menuMultiplayerLocal.prototype.showSelectGamepad = function () {
@@ -417,6 +531,17 @@
         this._selectGamepadWindow.hide();
         this._menuWindow.activate();
         this._menuWindow.show();
+    };
+
+    Scene_menuMultiplayerLocal.prototype.showKeyboardSettings = function () {
+        this._keyboardSettingsWindow.show();
+        this._keyboardSettingsWindow.activate();
+    };
+
+    Scene_menuMultiplayerLocal.prototype.hideKeyboardSettings = function () {
+        this._keyboardSettingsWindow.deactivate();
+        this._keyboardSettingsWindow.hide();
+        this._menuWindow.activate();
     };
 
     //-----------------------------------------------------------------------------
@@ -509,6 +634,7 @@
 
     Window_selectGamePadMultiplayerLocal.prototype.initialize = function () {
         Window_Base.prototype.initialize.call(this, 0, 0, this.windowWidth(), this.windowHeight());
+        this.deactivate();
         this.hide();
         this.loadImages();
     };
@@ -603,6 +729,7 @@
             this.addChild(this._windowOptions);
         } else {
             this._windowOptions.activate();
+            this._windowOptions.show();
         }
     };
 
@@ -618,6 +745,8 @@
 
     Window_selectGamePadMultiplayerLocal_Options.prototype.initialize = function () {
         Window_Command.prototype.initialize.call(this, 25, 368);
+        this.deactivate();
+        this.hide();
         this.setBackgroundType(3);
         this.setHandlerMainCommands();
         this.createWindowButtonsChange();
@@ -1243,6 +1372,163 @@
         if (this._winParent) this._winParent.refresh();
         this.hide();
     };
+
+    //-----------------------------------------------------------------------------
+    // Window_keyboardSettings
+    //
+    function Window_keyboardSettings() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_keyboardSettings.prototype = Object.create(Window_Command.prototype);
+    Window_keyboardSettings.prototype.constructor = Window_keyboardSettings;
+
+    Window_keyboardSettings.prototype.initialize = function (x, y) {
+        Window_Command.prototype.initialize.call(this, x, y);
+        this.deactivate();
+        this.hide();
+        this.setHandlerMainCommands();
+        this.createWindowSetKeyBoard();
+    };
+
+    Window_keyboardSettings.prototype.windowWidth = function () {
+        return Graphics.boxWidth - this.standardPadding() * 4;
+    };
+
+    Window_keyboardSettings.prototype.windowHeight = function () {
+        return 192;
+    };
+
+    Window_keyboardSettings.prototype.numVisibleRows = function () {
+        return 1;
+    };
+
+    Window_keyboardSettings.prototype.standardBackOpacity = function () {
+        return 100;
+    };
+
+    Window_keyboardSettings.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / this.numVisibleRows());
+    };
+
+    Window_keyboardSettings.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_keyboardSettings.prototype.addMainCommands = function () {
+        this.addCommand('Atribuir Teclado', 'setKeyboard');
+        this.addCommand('Definir Teclas', 'setKeys');
+    };
+
+    Window_keyboardSettings.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 64;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 4) + (rect.y + this.standardPadding()), rect.width, align);
+    };
+
+    Window_keyboardSettings.prototype.setHandlerMainCommands = function () {
+        this.setHandler('setKeyboard', this.showWindowSetKeyBoard.bind(this));
+        this.setHandler('cancel', SceneManager._scene.hideKeyboardSettings.bind(SceneManager._scene));
+    };
+
+    Window_keyboardSettings.prototype.createWindowSetKeyBoard = function () {
+        this._windowSetKeyBoard = new Window_keyboardSettings_setKeyBoard();
+        this._windowSetKeyBoard.setHandler('cancel', this.hideWindowSetKeyBoard.bind(this));
+        SceneManager._scene.addChild(this._windowSetKeyBoard);
+    };
+
+    Window_keyboardSettings.prototype.showWindowSetKeyBoard = function () {
+        SceneManager._scene._menuWindow.hide();
+        this._windowSetKeyBoard.activate();
+        this._windowSetKeyBoard.show();
+    };
+
+    Window_keyboardSettings.prototype.hideWindowSetKeyBoard = function () {
+        this._windowSetKeyBoard.deactivate();
+        this._windowSetKeyBoard.hide();
+        SceneManager._scene._menuWindow.show();
+        this.activate();
+    };
+
+    //-----------------------------------------------------------------------------
+    // Window_keyboardSettings_setKeyBoard
+    //
+    function Window_keyboardSettings_setKeyBoard() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_keyboardSettings_setKeyBoard.prototype = Object.create(Window_Command.prototype);
+    Window_keyboardSettings_setKeyBoard.prototype.constructor = Window_keyboardSettings_setKeyBoard;
+
+    Window_keyboardSettings_setKeyBoard.prototype.initialize = function () {
+        Window_Command.prototype.initialize.call(this, 0, 0);
+        this.deactivate();
+        this.hide();
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.windowWidth = function () {
+        return Graphics.boxWidth;
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.windowHeight = function () {
+        return Graphics.boxHeight;
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.numVisibleRows = function () {
+        return 4;
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / this.numVisibleRows());
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.addMainCommands = function () {
+        this.addCommand(`TECLA A VALOR(${Input.keyMapper[65]})`, '_key_A');
+        this.addCommand(`TECLA B VALOR(${Input.keyMapper[66]})`, '_key_B');
+        this.addCommand(`TECLA C VALOR(${Input.keyMapper[67]})`, '_key_C');
+        this.addCommand(`TECLA D VALOR(${Input.keyMapper[68]})`, '_key_D');
+        this.addCommand(`TECLA E VALOR(${Input.keyMapper[69]})`, '_key_E');
+        this.addCommand(`TECLA F VALOR(${Input.keyMapper[70]})`, '_key_F');
+        this.addCommand(`TECLA G VALOR(${Input.keyMapper[71]})`, '_key_G');
+        this.addCommand(`TECLA H VALOR(${Input.keyMapper[72]})`, '_key_H');
+        this.addCommand(`TECLA I VALOR(${Input.keyMapper[73]})`, '_key_I');
+        this.addCommand(`TECLA J VALOR(${Input.keyMapper[74]})`, '_key_J');
+        this.addCommand(`TECLA K VALOR(${Input.keyMapper[75]})`, '_key_K');
+        this.addCommand(`TECLA L VALOR(${Input.keyMapper[76]})`, '_key_L');
+        this.addCommand(`TECLA M VALOR(${Input.keyMapper[77]})`, '_key_M');
+        this.addCommand(`TECLA N VALOR(${Input.keyMapper[78]})`, '_key_N');
+        this.addCommand(`TECLA O VALOR(${Input.keyMapper[79]})`, '_key_O');
+        this.addCommand(`TECLA P VALOR(${Input.keyMapper[80]})`, '_key_P');
+        this.addCommand(`TECLA Q VALOR(${Input.keyMapper[81]})`, '_key_Q');
+        this.addCommand(`TECLA R VALOR(${Input.keyMapper[82]})`, '_key_R');
+        this.addCommand(`TECLA S VALOR(${Input.keyMapper[83]})`, '_key_S');
+        this.addCommand(`TECLA T VALOR(${Input.keyMapper[84]})`, '_key_T');
+        this.addCommand(`TECLA U VALOR(${Input.keyMapper[85]})`, '_key_U');
+        this.addCommand(`TECLA V VALOR(${Input.keyMapper[86]})`, '_key_V');
+        this.addCommand(`TECLA W VALOR(${Input.keyMapper[87]})`, '_key_W');
+        this.addCommand(`TECLA X VALOR(${Input.keyMapper[88]})`, '_key_X');
+        this.addCommand(`TECLA Y VALOR(${Input.keyMapper[89]})`, '_key_Y');
+        this.addCommand(`TECLA Z VALOR(${Input.keyMapper[90]})`, '_key_Z');
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 42;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 4) + (rect.y + this.standardPadding()), rect.width, align);
+    };
+
     // ----------------------------------------------------------------------------
     // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ MENU GERAL ↑ ↑ ↑ ↑
     // ----------------------------------------------------------------------------    

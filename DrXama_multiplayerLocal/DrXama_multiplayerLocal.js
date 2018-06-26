@@ -83,6 +83,11 @@
     };
 
     // ----------------------------------------------------------------------------
+    // CONFIGURAÇÃO DO TECLADO E CONTROLE
+    // Esse menu é essencial para configurar o teclado e o controle
+    //
+
+    // ----------------------------------------------------------------------------
     // Input
     //
     const __input__initialize = Input.initialize;
@@ -146,56 +151,128 @@
                     23: 'right',    // Botão Analogico direito para direita
                 },
                 'keyboardKeys': {
-                    9: 'tab',
-                    13: 'ok',
-                    16: 'shift',
-                    17: 'control',
-                    18: 'control',
-                    27: 'escape',
-                    32: 'ok',
-                    33: 'pageup',
-                    34: 'pagedown',
-                    37: 'left',
-                    38: 'up',
-                    39: 'right',
-                    40: 'down',
-                    45: 'escape',
-                    81: 'pageup',
-                    87: 'pagedown',
-                    88: 'escape',
-                    90: 'ok',
-                    96: 'escape',
-                    98: 'down',
-                    100: 'left',
-                    102: 'right',
-                    104: 'up',
-                    120: 'debug',
-                    65: 'A',
-                    66: 'B',
-                    67: 'C',
-                    68: 'D',
-                    69: 'E',
-                    70: 'F',
-                    71: 'G',
-                    72: 'H',
-                    73: 'I',
-                    74: 'J',
-                    75: 'K',
-                    76: 'L',
-                    77: 'M',
-                    78: 'N',
-                    79: 'O',
-                    80: 'P',
-                    81: 'Q',
-                    82: 'R',
-                    83: 'S',
-                    84: 'T',
-                    85: 'U',
-                    86: 'V',
-                    87: 'W',
-                    88: 'X',
-                    89: 'Y',
-                    90: 'Z'
+                    // Padrão do MV
+                    9: 'tab', // TECLA TAB
+                    13: 'ok', // TECLA ENTER
+                    16: 'shift', // TECLA SHIFT OU Shift-Left/Shift-Right
+                    17: 'control', // TECLA CTRL OU Control-Left/Control-Right
+                    18: 'control', // TECLA ALT OU Alt-Left/Alt-Right
+                    27: 'escape', // TECLA ESC OU Escape
+                    32: 'ok', // TECLA ESPAÇO
+                    33: 'pageup', // TECLA PAGE-UP
+                    34: 'pagedown', // TECLA PAGE-DOWN
+                    37: 'left', // TECLA SETA PARA ESQUERDA
+                    38: 'up', // TECLA SETA PARA CIMA
+                    39: 'right', // TECLA SETA PARA DIREITA
+                    40: 'down', // TECLA SETA PARA BAIXO
+                    45: 'escape', // TECLA INSERT
+                    81: 'pageup', // TECLA Q
+                    87: 'pagedown', // TECLA W
+                    88: 'escape', // TECLA X
+                    90: 'ok', // TECLA Z
+                    96: 'escape', // TECLA NUMERICA 0
+                    98: 'down', // TECLA NUMERICA 2
+                    100: 'left', // TECLA NUMERICA 4
+                    102: 'right', // TECLA NUMERICA 6
+                    104: 'up', // TECLA NUMERICA 8
+                    120: 'debug', // TECLA F9
+                    // A B C D...
+                    65: 'A', // TECLA A
+                    66: 'B', // TECLA B
+                    67: 'C', // TECLA C
+                    68: 'D', // TECLA D
+                    69: 'E', // TECLA E
+                    70: 'F', // TECLA F
+                    71: 'G', // TECLA G
+                    72: 'H', // TECLA H
+                    73: 'I', // TECLA I
+                    74: 'J', // TECLA J
+                    75: 'K', // TECLA K
+                    76: 'L', // TECLA L
+                    77: 'M', // TECLA M
+                    78: 'N', // TECLA N
+                    79: 'O', // TECLA O
+                    80: 'P', // TECLA P
+                    81: 'pageup', // TECLA Q
+                    82: 'R', // TECLA R
+                    83: 'S', // TECLA S
+                    84: 'T', // TECLA T
+                    85: 'U', // TECLA U
+                    86: 'V', // TECLA V
+                    87: 'pagedown', // TECLA W
+                    88: 'escape', // TECLA X
+                    89: 'Y', // TECLA Y
+                    90: 'ok', // TECLA Z
+                    // ESPECIAL
+                    9: 'tab', // TECLA TAB
+                    13: 'ok', // TECLA ENTER
+                    16: 'shift', // TECLA SHIFT OU Shift-Left/Shift-Right
+                    17: 'control', // TECLA CTRL OU Control-Left/Control-Right
+                    18: 'control', // TECLA ALT OU Alt-Left/Alt-Right
+                    19: 'pause/break', // TECLA Pause/Break
+                    20: 'caps-lock', // TECLA Caps Lock
+                    27: 'escape', // TECLA ESC OU Escape
+                    32: 'ok', // TECLA ESPAÇO
+                    33: 'pageup', // TECLA PAGE-UP
+                    34: 'pagedown', // TECLA PAGE-DOWN
+                    35: 'end', // TECLA END
+                    36: 'home', // TECLA HOME
+                    37: 'left', // TECLA SETA PARA ESQUERDA
+                    38: 'up', // TECLA SETA PARA CIMA
+                    39: 'right', // TECLA SETA PARA DIREITA
+                    40: 'down', // TECLA SETA PARA BAIXO
+                    45: 'escape', // TECLA INSERT
+                    46: 'delete', // TECLA DELETE
+                    48: '0', // TECLA 0
+                    49: '1', // TECLA 1
+                    50: '2', // TECLA 2
+                    51: '3', // TECLA 3
+                    52: '4', // TECLA 4
+                    53: '5', // TECLA 5
+                    54: '6', // TECLA 6
+                    55: '7', // TECLA 7
+                    56: '8', // TECLA 8
+                    57: '9', // TECLA 9
+                    96: 'escape', // TECLA NUMERICA 0
+                    97: '1', // TECLA NUMERICA 1
+                    98: 'down', // TECLA NUMERICA 2
+                    99: '3', // TECLA NUMERICA 3
+                    100: 'left', // TECLA NUMERICA 4
+                    101: '5', // TECLA NUMERICA 5
+                    102: 'right', // TECLA NUMERICA 6
+                    103: '7', // TECLA NUMERICA 7
+                    104: 'up', // TECLA NUMERICA 8
+                    105: '9', // TECLA NUMERICA 9
+                    106: '*', // TECLA * ou Multiplicação
+                    107: '+', // TECLA + ou Adição
+                    109: '-', // TECLA - ou Subtração
+                    110: '.', // TECLA . ou Ponto Decimal
+                    111: '/', // TECLA / ou Divisão
+                    112: 'f1', // TECLA F1
+                    113: 'f2', // TECLA F2
+                    114: 'f3', // TECLA F3
+                    115: 'f4', // TECLA F4
+                    116: 'f5', // TECLA F5
+                    117: 'f6', // TECLA F6
+                    118: 'f7', // TECLA F7
+                    119: 'f8', // TECLA F8
+                    120: 'debug', // TECLA F9
+                    121: 'f10', // TECLA F10
+                    122: 'f11', // TECLA F11
+                    123: 'f12', // TECLA F12
+                    144: 'num-lock', // TECLA num lock
+                    145: 'scroll-lock', // TECLA scroll lock
+                    186: 'semi-colon', // TECLA PONTO E VIRGURLA OU semi-colon
+                    187: 'equal-sign', // TECLA IGUAL(=) OU equal sign
+                    188: 'comma', // TECLA VIRGULA OU comma
+                    189: 'dash', // TECLA TRAÇO OU dash
+                    190: 'period', // TECLA PONTO OU period
+                    191: 'forward-slash', // TECLA BARRA(/) OU forward slash
+                    192: 'grave-accent', // TECLA Acento Grave(`) OU grave accent
+                    219: 'open-bracket', // TECLA COLCHETES ABERTO([) OU open bracket
+                    220: 'back-slash', // TECLA BARRA(\) OU back slash
+                    221: 'close-braket', // TECLA COLCHETES FECHADO(]) OU close braket
+                    222: 'single-quote', // TECLA ASPAS SIMPLES DO LADO DO 1 OU single quote
                 }
             })));
         }
@@ -253,56 +330,128 @@
         }
         if (file.keyboardKeys instanceof Object === false) {
             file.keyboardKeys = {
-                9: 'tab',
-                13: 'ok',
-                16: 'shift',
-                17: 'control',
-                18: 'control',
-                27: 'escape',
-                32: 'ok',
-                33: 'pageup',
-                34: 'pagedown',
-                37: 'left',
-                38: 'up',
-                39: 'right',
-                40: 'down',
-                45: 'escape',
-                81: 'pageup',
-                87: 'pagedown',
-                88: 'escape',
-                90: 'ok',
-                96: 'escape',
-                98: 'down',
-                100: 'left',
-                102: 'right',
-                104: 'up',
-                120: 'debug',
-                65: 'A',
-                66: 'B',
-                67: 'C',
-                68: 'D',
-                69: 'E',
-                70: 'F',
-                71: 'G',
-                72: 'H',
-                73: 'I',
-                74: 'J',
-                75: 'K',
-                76: 'L',
-                77: 'M',
-                78: 'N',
-                79: 'O',
-                80: 'P',
-                81: 'Q',
-                82: 'R',
-                83: 'S',
-                84: 'T',
-                85: 'U',
-                86: 'V',
-                87: 'W',
-                88: 'X',
-                89: 'Y',
-                90: 'Z'
+                // Padrão do MV
+                9: 'tab', // TECLA TAB
+                13: 'ok', // TECLA ENTER
+                16: 'shift', // TECLA SHIFT OU Shift-Left/Shift-Right
+                17: 'control', // TECLA CTRL OU Control-Left/Control-Right
+                18: 'control', // TECLA ALT OU Alt-Left/Alt-Right
+                27: 'escape', // TECLA ESC OU Escape
+                32: 'ok', // TECLA ESPAÇO
+                33: 'pageup', // TECLA PAGE-UP
+                34: 'pagedown', // TECLA PAGE-DOWN
+                37: 'left', // TECLA SETA PARA ESQUERDA
+                38: 'up', // TECLA SETA PARA CIMA
+                39: 'right', // TECLA SETA PARA DIREITA
+                40: 'down', // TECLA SETA PARA BAIXO
+                45: 'escape', // TECLA INSERT
+                81: 'pageup', // TECLA Q
+                87: 'pagedown', // TECLA W
+                88: 'escape', // TECLA X
+                90: 'ok', // TECLA Z
+                96: 'escape', // TECLA NUMERICA 0
+                98: 'down', // TECLA NUMERICA 2
+                100: 'left', // TECLA NUMERICA 4
+                102: 'right', // TECLA NUMERICA 6
+                104: 'up', // TECLA NUMERICA 8
+                120: 'debug', // TECLA F9
+                // A B C D...
+                65: 'A', // TECLA A
+                66: 'B', // TECLA B
+                67: 'C', // TECLA C
+                68: 'D', // TECLA D
+                69: 'E', // TECLA E
+                70: 'F', // TECLA F
+                71: 'G', // TECLA G
+                72: 'H', // TECLA H
+                73: 'I', // TECLA I
+                74: 'J', // TECLA J
+                75: 'K', // TECLA K
+                76: 'L', // TECLA L
+                77: 'M', // TECLA M
+                78: 'N', // TECLA N
+                79: 'O', // TECLA O
+                80: 'P', // TECLA P
+                81: 'pageup', // TECLA Q
+                82: 'R', // TECLA R
+                83: 'S', // TECLA S
+                84: 'T', // TECLA T
+                85: 'U', // TECLA U
+                86: 'V', // TECLA V
+                87: 'pagedown', // TECLA W
+                88: 'escape', // TECLA X
+                89: 'Y', // TECLA Y
+                90: 'ok', // TECLA Z
+                // ESPECIAL
+                9: 'tab', // TECLA TAB
+                13: 'ok', // TECLA ENTER
+                16: 'shift', // TECLA SHIFT OU Shift-Left/Shift-Right
+                17: 'control', // TECLA CTRL OU Control-Left/Control-Right
+                18: 'control', // TECLA ALT OU Alt-Left/Alt-Right
+                19: 'pause/break', // TECLA Pause/Break
+                20: 'caps-lock', // TECLA Caps Lock
+                27: 'escape', // TECLA ESC OU Escape
+                32: 'ok', // TECLA ESPAÇO
+                33: 'pageup', // TECLA PAGE-UP
+                34: 'pagedown', // TECLA PAGE-DOWN
+                35: 'end', // TECLA END
+                36: 'home', // TECLA HOME
+                37: 'left', // TECLA SETA PARA ESQUERDA
+                38: 'up', // TECLA SETA PARA CIMA
+                39: 'right', // TECLA SETA PARA DIREITA
+                40: 'down', // TECLA SETA PARA BAIXO
+                45: 'escape', // TECLA INSERT
+                46: 'delete', // TECLA DELETE
+                48: '0', // TECLA 0
+                49: '1', // TECLA 1
+                50: '2', // TECLA 2
+                51: '3', // TECLA 3
+                52: '4', // TECLA 4
+                53: '5', // TECLA 5
+                54: '6', // TECLA 6
+                55: '7', // TECLA 7
+                56: '8', // TECLA 8
+                57: '9', // TECLA 9
+                96: 'escape', // TECLA NUMERICA 0
+                97: '1', // TECLA NUMERICA 1
+                98: 'down', // TECLA NUMERICA 2
+                99: '3', // TECLA NUMERICA 3
+                100: 'left', // TECLA NUMERICA 4
+                101: '5', // TECLA NUMERICA 5
+                102: 'right', // TECLA NUMERICA 6
+                103: '7', // TECLA NUMERICA 7
+                104: 'up', // TECLA NUMERICA 8
+                105: '9', // TECLA NUMERICA 9
+                106: '*', // TECLA * ou Multiplicação
+                107: '+', // TECLA + ou Adição
+                109: '-', // TECLA - ou Subtração
+                110: '.', // TECLA . ou Ponto Decimal
+                111: '/', // TECLA / ou Divisão
+                112: 'f1', // TECLA F1
+                113: 'f2', // TECLA F2
+                114: 'f3', // TECLA F3
+                115: 'f4', // TECLA F4
+                116: 'f5', // TECLA F5
+                117: 'f6', // TECLA F6
+                118: 'f7', // TECLA F7
+                119: 'f8', // TECLA F8
+                120: 'debug', // TECLA F9
+                121: 'f10', // TECLA F10
+                122: 'f11', // TECLA F11
+                123: 'f12', // TECLA F12
+                144: 'num-lock', // TECLA num lock
+                145: 'scroll-lock', // TECLA scroll lock
+                186: 'semi-colon', // TECLA PONTO E VIRGURLA OU semi-colon
+                187: 'equal-sign', // TECLA IGUAL(=) OU equal sign
+                188: 'comma', // TECLA VIRGULA OU comma
+                189: 'dash', // TECLA TRAÇO OU dash
+                190: 'period', // TECLA PONTO OU period
+                191: 'forward-slash', // TECLA BARRA(/) OU forward slash
+                192: 'grave-accent', // TECLA Acento Grave(`) OU grave accent
+                219: 'open-bracket', // TECLA COLCHETES ABERTO([) OU open bracket
+                220: 'back-slash', // TECLA BARRA(\) OU back slash
+                221: 'close-braket', // TECLA COLCHETES FECHADO(]) OU close braket
+                222: 'single-quote', // TECLA ASPAS SIMPLES DO LADO DO 1 OU single quote                
             }
         }
         // DEFINE VALUES
@@ -441,10 +590,18 @@
         }
         this._gamepadStates[gamepad.index] = newState;
     };
+    // ----------------------------------------------------------------------------
+    // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ CONFIGURAÇÃO DO TECLADO E CONTROLE ↑ ↑ ↑ ↑
+    // ----------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------
+    // MENU GERAL
+    // Esse menu é essencial para configurar o sistema
+    //
 
     //-----------------------------------------------------------------------------
     // Scene_Map
-    //  
+    //
     const __scene__map__update = Scene_Map.prototype.update;
     Scene_Map.prototype.update = function () {
         __scene__map__update.call(this);
@@ -455,7 +612,7 @@
 
     //-----------------------------------------------------------------------------
     // ImageManager
-    //    
+    //
     ImageManager.reserveMultiplayerLocalIMG = function (filename, hue, reservationId) {
         return this.reserveBitmap('system/multiplayerLocal/img/', filename, hue, true, reservationId);
     };
@@ -463,11 +620,6 @@
     ImageManager.loadMultiplayerLocalIMG = function (filename, hue) {
         return this.loadBitmap('system/multiplayerLocal/img/', filename, hue, true);
     };
-
-    // ----------------------------------------------------------------------------
-    // MENU GERAL
-    // Esse menu é essencial para configurar o sistema
-    //
 
     //-----------------------------------------------------------------------------
     // Scene_menuMultiplayerLocalMultiplayerLocal
@@ -1417,8 +1569,8 @@
     };
 
     Window_keyboardSettings.prototype.addMainCommands = function () {
-        this.addCommand('Atribuir Teclado', 'setKeyboard');
         this.addCommand('Definir Teclas', 'setKeys');
+        this.addCommand('Atribuir Teclado', 'setKeyboard');
     };
 
     Window_keyboardSettings.prototype.drawItem = function (index) {
@@ -1431,7 +1583,7 @@
     };
 
     Window_keyboardSettings.prototype.setHandlerMainCommands = function () {
-        this.setHandler('setKeyboard', this.showWindowSetKeyBoard.bind(this));
+        this.setHandler('setKeys', this.showWindowSetKeyBoard.bind(this));
         this.setHandler('cancel', SceneManager._scene.hideKeyboardSettings.bind(SceneManager._scene));
     };
 
@@ -1468,6 +1620,7 @@
         Window_Command.prototype.initialize.call(this, 0, 0);
         this.deactivate();
         this.hide();
+        this.setHandlerMainCommands();
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.windowWidth = function () {
@@ -1492,32 +1645,104 @@
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.addMainCommands = function () {
-        this.addCommand(`TECLA A VALOR(${Input.keyMapper[65]})`, '_key_A');
-        this.addCommand(`TECLA B VALOR(${Input.keyMapper[66]})`, '_key_B');
-        this.addCommand(`TECLA C VALOR(${Input.keyMapper[67]})`, '_key_C');
-        this.addCommand(`TECLA D VALOR(${Input.keyMapper[68]})`, '_key_D');
-        this.addCommand(`TECLA E VALOR(${Input.keyMapper[69]})`, '_key_E');
-        this.addCommand(`TECLA F VALOR(${Input.keyMapper[70]})`, '_key_F');
-        this.addCommand(`TECLA G VALOR(${Input.keyMapper[71]})`, '_key_G');
-        this.addCommand(`TECLA H VALOR(${Input.keyMapper[72]})`, '_key_H');
-        this.addCommand(`TECLA I VALOR(${Input.keyMapper[73]})`, '_key_I');
-        this.addCommand(`TECLA J VALOR(${Input.keyMapper[74]})`, '_key_J');
-        this.addCommand(`TECLA K VALOR(${Input.keyMapper[75]})`, '_key_K');
-        this.addCommand(`TECLA L VALOR(${Input.keyMapper[76]})`, '_key_L');
-        this.addCommand(`TECLA M VALOR(${Input.keyMapper[77]})`, '_key_M');
-        this.addCommand(`TECLA N VALOR(${Input.keyMapper[78]})`, '_key_N');
-        this.addCommand(`TECLA O VALOR(${Input.keyMapper[79]})`, '_key_O');
-        this.addCommand(`TECLA P VALOR(${Input.keyMapper[80]})`, '_key_P');
-        this.addCommand(`TECLA Q VALOR(${Input.keyMapper[81]})`, '_key_Q');
-        this.addCommand(`TECLA R VALOR(${Input.keyMapper[82]})`, '_key_R');
-        this.addCommand(`TECLA S VALOR(${Input.keyMapper[83]})`, '_key_S');
-        this.addCommand(`TECLA T VALOR(${Input.keyMapper[84]})`, '_key_T');
-        this.addCommand(`TECLA U VALOR(${Input.keyMapper[85]})`, '_key_U');
-        this.addCommand(`TECLA V VALOR(${Input.keyMapper[86]})`, '_key_V');
-        this.addCommand(`TECLA W VALOR(${Input.keyMapper[87]})`, '_key_W');
-        this.addCommand(`TECLA X VALOR(${Input.keyMapper[88]})`, '_key_X');
-        this.addCommand(`TECLA Y VALOR(${Input.keyMapper[89]})`, '_key_Y');
-        this.addCommand(`TECLA Z VALOR(${Input.keyMapper[90]})`, '_key_Z');
+        this.addCommand(`TECLA A VALOR(${this.textCommandConfigure(Input.keyMapper[65])})`, '_key_A');
+        this.addCommand(`TECLA B VALOR(${this.textCommandConfigure(Input.keyMapper[66])})`, '_key_B');
+        this.addCommand(`TECLA C VALOR(${this.textCommandConfigure(Input.keyMapper[67])})`, '_key_C');
+        this.addCommand(`TECLA D VALOR(${this.textCommandConfigure(Input.keyMapper[68])})`, '_key_D');
+        this.addCommand(`TECLA E VALOR(${this.textCommandConfigure(Input.keyMapper[69])})`, '_key_E');
+        this.addCommand(`TECLA F VALOR(${this.textCommandConfigure(Input.keyMapper[70])})`, '_key_F');
+        this.addCommand(`TECLA G VALOR(${this.textCommandConfigure(Input.keyMapper[71])})`, '_key_G');
+        this.addCommand(`TECLA H VALOR(${this.textCommandConfigure(Input.keyMapper[72])})`, '_key_H');
+        this.addCommand(`TECLA I VALOR(${this.textCommandConfigure(Input.keyMapper[73])})`, '_key_I');
+        this.addCommand(`TECLA J VALOR(${this.textCommandConfigure(Input.keyMapper[74])})`, '_key_J');
+        this.addCommand(`TECLA K VALOR(${this.textCommandConfigure(Input.keyMapper[75])})`, '_key_K');
+        this.addCommand(`TECLA L VALOR(${this.textCommandConfigure(Input.keyMapper[76])})`, '_key_L');
+        this.addCommand(`TECLA M VALOR(${this.textCommandConfigure(Input.keyMapper[77])})`, '_key_M');
+        this.addCommand(`TECLA N VALOR(${this.textCommandConfigure(Input.keyMapper[78])})`, '_key_N');
+        this.addCommand(`TECLA O VALOR(${this.textCommandConfigure(Input.keyMapper[79])})`, '_key_O');
+        this.addCommand(`TECLA P VALOR(${this.textCommandConfigure(Input.keyMapper[80])})`, '_key_P');
+        this.addCommand(`TECLA Q VALOR(${this.textCommandConfigure(Input.keyMapper[81])})`, '_key_Q');
+        this.addCommand(`TECLA R VALOR(${this.textCommandConfigure(Input.keyMapper[82])})`, '_key_R');
+        this.addCommand(`TECLA S VALOR(${this.textCommandConfigure(Input.keyMapper[83])})`, '_key_S');
+        this.addCommand(`TECLA T VALOR(${this.textCommandConfigure(Input.keyMapper[84])})`, '_key_T');
+        this.addCommand(`TECLA U VALOR(${this.textCommandConfigure(Input.keyMapper[85])})`, '_key_U');
+        this.addCommand(`TECLA V VALOR(${this.textCommandConfigure(Input.keyMapper[86])})`, '_key_V');
+        this.addCommand(`TECLA W VALOR(${this.textCommandConfigure(Input.keyMapper[87])})`, '_key_W');
+        this.addCommand(`TECLA X VALOR(${this.textCommandConfigure(Input.keyMapper[88])})`, '_key_X');
+        this.addCommand(`TECLA Y VALOR(${this.textCommandConfigure(Input.keyMapper[89])})`, '_key_Y');
+        this.addCommand(`TECLA Z VALOR(${this.textCommandConfigure(Input.keyMapper[90])})`, '_key_Z');
+        this.addCommand(`TECLA TAB VALOR(${this.textCommandConfigure(Input.keyMapper[9])})`, '_key_TAB');
+        this.addCommand(`TECLA ENTER VALOR(${this.textCommandConfigure(Input.keyMapper[13])})`, '_key_ENTER');
+        this.addCommand(`TECLA SHIFT(ESQUERDO/DIREITO) VALOR(${this.textCommandConfigure(Input.keyMapper[16])})`, '_key_SHIFT');
+        this.addCommand(`TECLA CTRL(ESQUERDO/DIREITO) VALOR(${this.textCommandConfigure(Input.keyMapper[17])})`, '_key_CTRL');
+        this.addCommand(`TECLA ALT(ESQUERDO/DIREITO) VALOR(${this.textCommandConfigure(Input.keyMapper[18])})`, '_key_ALT');
+        this.addCommand(`TECLA PAUSE/BREAK VALOR(${this.textCommandConfigure(Input.keyMapper[19])})`, '_key_Pause_Break');
+        this.addCommand(`TECLA CAPS-LOCK VALOR(${this.textCommandConfigure(Input.keyMapper[20])})`, '_key_Caps_Lock');
+        this.addCommand(`TECLA ESC VALOR(${this.textCommandConfigure(Input.keyMapper[27])})`, '_key_ESC');
+        this.addCommand(`TECLA ESPAÇO VALOR(${this.textCommandConfigure(Input.keyMapper[32])})`, '_key_ESPAÇO');
+        this.addCommand(`TECLA PAGE-UP VALOR(${this.textCommandConfigure(Input.keyMapper[33])})`, '_key_PAGE_UP');
+        this.addCommand(`TECLA PAGE-DOWN VALOR(${this.textCommandConfigure(Input.keyMapper[34])})`, '_key_PAGE_DOWN');
+        this.addCommand(`TECLA END VALOR(${this.textCommandConfigure(Input.keyMapper[35])})`, '_key_END');
+        this.addCommand(`TECLA HOME VALOR(${this.textCommandConfigure(Input.keyMapper[36])})`, '_key_HOME');
+        this.addCommand(`TECLA SETA PARA ESQUERDA VALOR(${this.textCommandConfigure(Input.keyMapper[37])})`, '_key_SETA_PARA_ESQUERDA');
+        this.addCommand(`TECLA SETA PARA CIMA VALOR(${this.textCommandConfigure(Input.keyMapper[38])})`, '_key_SETA_PARA_CIMA');
+        this.addCommand(`TECLA SETA PARA DIREITA VALOR(${this.textCommandConfigure(Input.keyMapper[39])})`, '_key_SETA_PARA_DIREITA');
+        this.addCommand(`TECLA SETA PARA BAIXO VALOR(${this.textCommandConfigure(Input.keyMapper[40])})`, '_key_SETA_PARA_BAIXO');
+        this.addCommand(`TECLA INSERT VALOR(${this.textCommandConfigure(Input.keyMapper[45])})`, '_key_INSERT');
+        this.addCommand(`TECLA DELETE VALOR(${this.textCommandConfigure(Input.keyMapper[46])})`, '_key_DELETE');
+        this.addCommand(`TECLA 0 VALOR(${this.textCommandConfigure(Input.keyMapper[48])})`, '_key_0');
+        this.addCommand(`TECLA 1 VALOR(${this.textCommandConfigure(Input.keyMapper[49])})`, '_key_1');
+        this.addCommand(`TECLA 2 VALOR(${this.textCommandConfigure(Input.keyMapper[50])})`, '_key_2');
+        this.addCommand(`TECLA 3 VALOR(${this.textCommandConfigure(Input.keyMapper[51])})`, '_key_3');
+        this.addCommand(`TECLA 4 VALOR(${this.textCommandConfigure(Input.keyMapper[52])})`, '_key_4');
+        this.addCommand(`TECLA 5 VALOR(${this.textCommandConfigure(Input.keyMapper[53])})`, '_key_5');
+        this.addCommand(`TECLA 6 VALOR(${this.textCommandConfigure(Input.keyMapper[54])})`, '_key_6');
+        this.addCommand(`TECLA 7 VALOR(${this.textCommandConfigure(Input.keyMapper[55])})`, '_key_7');
+        this.addCommand(`TECLA 8 VALOR(${this.textCommandConfigure(Input.keyMapper[56])})`, '_key_8');
+        this.addCommand(`TECLA NUMERICA 1 VALOR(${this.textCommandConfigure(Input.keyMapper[97])})`, '_key_NUM_1');
+        this.addCommand(`TECLA NUMERICA 0 VALOR(${this.textCommandConfigure(Input.keyMapper[96])})`, '_key_NUM_0');
+        this.addCommand(`TECLA NUMERICA 2 VALOR(${this.textCommandConfigure(Input.keyMapper[98])})`, '_key_NUM_2');
+        this.addCommand(`TECLA NUMERICA 3 VALOR(${this.textCommandConfigure(Input.keyMapper[99])})`, '_key_NUM_3');
+        this.addCommand(`TECLA NUMERICA 4 VALOR(${this.textCommandConfigure(Input.keyMapper[100])})`, '_key_NUM_4');
+        this.addCommand(`TECLA NUMERICA 5 VALOR(${this.textCommandConfigure(Input.keyMapper[101])})`, '_key_NUM_5');
+        this.addCommand(`TECLA NUMERICA 6 VALOR(${this.textCommandConfigure(Input.keyMapper[102])})`, '_key_NUM_6');
+        this.addCommand(`TECLA NUMERICA 7 VALOR(${this.textCommandConfigure(Input.keyMapper[103])})`, '_key_NUM_7');
+        this.addCommand(`TECLA NUMERICA 8 VALOR(${this.textCommandConfigure(Input.keyMapper[104])})`, '_key_NUM_8');
+        this.addCommand(`TECLA NUMERICA 9 VALOR(${this.textCommandConfigure(Input.keyMapper[105])})`, '_key_NUM_9');
+        this.addCommand(`TECLA MULTIPLICAÇÃO(*) VALOR(${this.textCommandConfigure(Input.keyMapper[106])})`, '_key_MULTIPLICAÇÃO');
+        this.addCommand(`TECLA ADIÇÃO(+) VALOR(${this.textCommandConfigure(Input.keyMapper[107])})`, '_key_ADIÇÃO');
+        this.addCommand(`TECLA SUBTRAÇÃO(-) VALOR(${this.textCommandConfigure(Input.keyMapper[109])})`, '_key_SUBTRAÇÃO');
+        this.addCommand(`TECLA PONTO DECIMAL(.) VALOR(${this.textCommandConfigure(Input.keyMapper[110])})`, '_key_PONTO_DECIMAL');
+        this.addCommand(`TECLA DIVISÃO(/) VALOR(${this.textCommandConfigure(Input.keyMapper[111])})`, '_key_DIVISÃO');
+        this.addCommand(`TECLA F1 VALOR(${this.textCommandConfigure(Input.keyMapper[112])})`, '_key_F1');
+        this.addCommand(`TECLA F2 VALOR(${this.textCommandConfigure(Input.keyMapper[113])})`, '_key_F2');
+        this.addCommand(`TECLA F3 VALOR(${this.textCommandConfigure(Input.keyMapper[114])})`, '_key_F3');
+        this.addCommand(`TECLA F4 VALOR(${this.textCommandConfigure(Input.keyMapper[115])})`, '_key_F4');
+        this.addCommand(`TECLA F5 VALOR(${this.textCommandConfigure(Input.keyMapper[116])})`, '_key_F5');
+        this.addCommand(`TECLA F6 VALOR(${this.textCommandConfigure(Input.keyMapper[117])})`, '_key_F6');
+        this.addCommand(`TECLA F7 VALOR(${this.textCommandConfigure(Input.keyMapper[118])})`, '_key_F7');
+        this.addCommand(`TECLA F8 VALOR(${this.textCommandConfigure(Input.keyMapper[119])})`, '_key_F8');
+        this.addCommand(`TECLA F9 VALOR(${this.textCommandConfigure(Input.keyMapper[120])})`, '_key_F9');
+        this.addCommand(`TECLA F10 VALOR(${this.textCommandConfigure(Input.keyMapper[121])})`, '_key_F10');
+        this.addCommand(`TECLA F11 VALOR(${this.textCommandConfigure(Input.keyMapper[122])})`, '_key_F11');
+        this.addCommand(`TECLA F12 VALOR(${this.textCommandConfigure(Input.keyMapper[123])})`, '_key_F12');
+        this.addCommand(`TECLA NUM-LOCK VALOR(${this.textCommandConfigure(Input.keyMapper[144])})`, '_key_NUM_LOCK');
+        this.addCommand(`TECLA SCROLL-LOCK VALOR(${this.textCommandConfigure(Input.keyMapper[145])})`, '_key_SCROLL_LOCK');
+        this.addCommand(`TECLA PONTO E VIRGULA(;) VALOR(${this.textCommandConfigure(Input.keyMapper[186])})`, '_key_PONTO_E_VIRGULA');
+        this.addCommand(`TECLA IGUAL(=) VALOR(${this.textCommandConfigure(Input.keyMapper[187])})`, '_key_IGUAL');
+        this.addCommand(`TECLA VIRGULA(,) VALOR(${this.textCommandConfigure(Input.keyMapper[188])})`, '_key_VIRGULA');
+        this.addCommand(`TECLA TRAÇO(-) VALOR(${this.textCommandConfigure(Input.keyMapper[189])})`, '_key_TRAÇO');
+        this.addCommand(`TECLA PONTO(.) VALOR(${this.textCommandConfigure(Input.keyMapper[190])})`, '_key_PONTO');
+        this.addCommand(`TECLA BARRA(/) VALOR(${this.textCommandConfigure(Input.keyMapper[191])})`, '_key_BARRA_1');
+        this.addCommand(`TECLA Acento Grave(\`) VALOR(${this.textCommandConfigure(Input.keyMapper[192])})`, '_key_ACENTO_GRAVE');
+        this.addCommand(`TECLA COLCHETES ABERTO([) VALOR(${this.textCommandConfigure(Input.keyMapper[219])})`, '_key_COLCHETES_ABERTO');
+        this.addCommand(`TECLA BARRA(\\) VALOR(${this.textCommandConfigure(Input.keyMapper[220])})`, '_key_BARRA_2');
+        this.addCommand(`TECLA COLCHETES FECHADO(]) VALOR(${this.textCommandConfigure(Input.keyMapper[221])})`, '_key_COLCHETES_FECHADO');
+        this.addCommand(`TECLA ASPAS SIMPLES(\') VALOR(${this.textCommandConfigure(Input.keyMapper[222])})`, '_key_ASPAS_SIMPLES');
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.textCommandConfigure = function (command) {
+        return String(command).toLocaleLowerCase() === 'menumultiplayerlocal' ? 'MENU ESPECIAL' : String(command).toUpperCase();
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.drawItem = function (index) {
@@ -1525,11 +1750,14 @@
         var align = 'center';
         this.changeTextColor(this.systemColor());
         this.contents.fontSize = 42;
-        this.changePaintOpacity(this.isCommandEnabled(index));
+        console.log(this.textWidth(this.commandName(index)))
         this.drawText(this.commandName(index), rect.x, (rect.height / 4) + (rect.y + this.standardPadding()), rect.width, align);
     };
 
+    Window_keyboardSettings_setKeyBoard.prototype.setHandlerMainCommands = function () {
+        this.setHandler('_key_A', this.showSetButtonValue.bind(this));
+    };
     // ----------------------------------------------------------------------------
     // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ MENU GERAL ↑ ↑ ↑ ↑
-    // ----------------------------------------------------------------------------    
+    // ----------------------------------------------------------------------------
 })();

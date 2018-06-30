@@ -1,7 +1,6 @@
 //-----------------------------------------------------------------------------
 // Window_CommandDefault
 //
-
 function Window_CommandDefault() {
     this.initialize.apply(this, arguments);
 }

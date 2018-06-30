@@ -1,7 +1,6 @@
 //-----------------------------------------------------------------------------
 // Sprite_Default
 //
-
 function Sprite_Default() {
     this.initialize.apply(this, arguments);
 }

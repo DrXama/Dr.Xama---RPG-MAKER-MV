@@ -1,7 +1,6 @@
 //-----------------------------------------------------------------------------
 // Window_Default
 //
-
 function Window_Default() {
     this.initialize.apply(this, arguments);
 }

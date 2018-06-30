@@ -177,31 +177,31 @@
                     104: 'up', // TECLA NUMERICA 8
                     120: 'debug', // TECLA F9
                     // A B C D...
-                    65: 'A', // TECLA A
-                    66: 'B', // TECLA B
-                    67: 'C', // TECLA C
-                    68: 'D', // TECLA D
-                    69: 'E', // TECLA E
-                    70: 'F', // TECLA F
-                    71: 'G', // TECLA G
-                    72: 'H', // TECLA H
-                    73: 'I', // TECLA I
-                    74: 'J', // TECLA J
-                    75: 'K', // TECLA K
-                    76: 'L', // TECLA L
-                    77: 'M', // TECLA M
-                    78: 'N', // TECLA N
-                    79: 'O', // TECLA O
-                    80: 'P', // TECLA P
+                    65: 'left', // TECLA A
+                    66: 'b', // TECLA B
+                    67: 'c', // TECLA C
+                    68: 'right', // TECLA D
+                    69: 'e', // TECLA E
+                    70: 'f', // TECLA F
+                    71: 'g', // TECLA G
+                    72: 'h', // TECLA H
+                    73: 'i', // TECLA I
+                    74: 'j', // TECLA J
+                    75: 'k', // TECLA K
+                    76: 'l', // TECLA L
+                    77: 'm', // TECLA M
+                    78: 'n', // TECLA N
+                    79: 'o', // TECLA O
+                    80: 'p', // TECLA P
                     81: 'pageup', // TECLA Q
-                    82: 'R', // TECLA R
-                    83: 'S', // TECLA S
-                    84: 'T', // TECLA T
-                    85: 'U', // TECLA U
-                    86: 'V', // TECLA V
-                    87: 'pagedown', // TECLA W
+                    82: 'r', // TECLA R
+                    83: 'down', // TECLA S
+                    84: 't', // TECLA T
+                    85: 'u', // TECLA U
+                    86: 'v', // TECLA V
+                    87: 'up', // TECLA W
                     88: 'escape', // TECLA X
-                    89: 'Y', // TECLA Y
+                    89: 'y', // TECLA Y
                     90: 'ok', // TECLA Z
                     // ESPECIAL
                     9: 'tab', // TECLA TAB
@@ -234,15 +234,15 @@
                     56: '8', // TECLA 8
                     57: '9', // TECLA 9
                     96: 'escape', // TECLA NUMERICA 0
-                    97: '1', // TECLA NUMERICA 1
+                    97: 'numerico 1', // TECLA NUMERICA 1
                     98: 'down', // TECLA NUMERICA 2
-                    99: '3', // TECLA NUMERICA 3
+                    99: 'numerico 3', // TECLA NUMERICA 3
                     100: 'left', // TECLA NUMERICA 4
-                    101: '5', // TECLA NUMERICA 5
+                    101: 'numerico 5', // TECLA NUMERICA 5
                     102: 'right', // TECLA NUMERICA 6
-                    103: '7', // TECLA NUMERICA 7
+                    103: 'numerico 7', // TECLA NUMERICA 7
                     104: 'up', // TECLA NUMERICA 8
-                    105: '9', // TECLA NUMERICA 9
+                    105: 'numerico 9', // TECLA NUMERICA 9
                     106: '*', // TECLA * ou Multiplicação
                     107: '+', // TECLA + ou Adição
                     109: '-', // TECLA - ou Subtração
@@ -262,17 +262,17 @@
                     123: 'f12', // TECLA F12
                     144: 'num-lock', // TECLA num lock
                     145: 'scroll-lock', // TECLA scroll lock
-                    186: 'semi-colon', // TECLA PONTO E VIRGURLA OU semi-colon
-                    187: 'equal-sign', // TECLA IGUAL(=) OU equal sign
-                    188: 'comma', // TECLA VIRGULA OU comma
-                    189: 'dash', // TECLA TRAÇO OU dash
-                    190: 'period', // TECLA PONTO OU period
-                    191: 'forward-slash', // TECLA BARRA(/) OU forward slash
-                    192: 'grave-accent', // TECLA Acento Grave(`) OU grave accent
-                    219: 'open-bracket', // TECLA COLCHETES ABERTO([) OU open bracket
-                    220: 'back-slash', // TECLA BARRA(\) OU back slash
-                    221: 'close-braket', // TECLA COLCHETES FECHADO(]) OU close braket
-                    222: 'single-quote', // TECLA ASPAS SIMPLES DO LADO DO 1 OU single quote
+                    186: ';', // TECLA PONTO E VIRGURLA OU semi-colon
+                    187: '=', // TECLA IGUAL(=) OU equal sign
+                    188: ',', // TECLA VIRGULA OU comma
+                    189: '--', // TECLA TRAÇO OU dash
+                    190: '..', // TECLA PONTO OU period
+                    191: '//', // TECLA BARRA(/) OU forward slash
+                    192: '\`', // TECLA Acento Grave(`) OU grave accent
+                    219: '[', // TECLA COLCHETES ABERTO([) OU open bracket
+                    220: '\\', // TECLA BARRA(\) OU back slash
+                    221: ']', // TECLA COLCHETES FECHADO(]) OU close braket
+                    222: '\"', // TECLA ASPAS DO LADO DO 1 OU single quote
                 }
             })));
         }
@@ -356,31 +356,31 @@
                 104: 'up', // TECLA NUMERICA 8
                 120: 'debug', // TECLA F9
                 // A B C D...
-                65: 'A', // TECLA A
-                66: 'B', // TECLA B
-                67: 'C', // TECLA C
-                68: 'D', // TECLA D
-                69: 'E', // TECLA E
-                70: 'F', // TECLA F
-                71: 'G', // TECLA G
-                72: 'H', // TECLA H
-                73: 'I', // TECLA I
-                74: 'J', // TECLA J
-                75: 'K', // TECLA K
-                76: 'L', // TECLA L
-                77: 'M', // TECLA M
-                78: 'N', // TECLA N
-                79: 'O', // TECLA O
-                80: 'P', // TECLA P
+                65: 'left', // TECLA A
+                66: 'b', // TECLA B
+                67: 'c', // TECLA C
+                68: 'right', // TECLA D
+                69: 'e', // TECLA E
+                70: 'f', // TECLA F
+                71: 'g', // TECLA G
+                72: 'h', // TECLA H
+                73: 'i', // TECLA I
+                74: 'j', // TECLA J
+                75: 'k', // TECLA K
+                76: 'l', // TECLA L
+                77: 'm', // TECLA M
+                78: 'n', // TECLA N
+                79: 'o', // TECLA O
+                80: 'p', // TECLA P
                 81: 'pageup', // TECLA Q
-                82: 'R', // TECLA R
-                83: 'S', // TECLA S
-                84: 'T', // TECLA T
-                85: 'U', // TECLA U
-                86: 'V', // TECLA V
-                87: 'pagedown', // TECLA W
+                82: 'r', // TECLA R
+                83: 'down', // TECLA S
+                84: 't', // TECLA T
+                85: 'u', // TECLA U
+                86: 'v', // TECLA V
+                87: 'up', // TECLA W
                 88: 'escape', // TECLA X
-                89: 'Y', // TECLA Y
+                89: 'y', // TECLA Y
                 90: 'ok', // TECLA Z
                 // ESPECIAL
                 9: 'tab', // TECLA TAB
@@ -413,15 +413,15 @@
                 56: '8', // TECLA 8
                 57: '9', // TECLA 9
                 96: 'escape', // TECLA NUMERICA 0
-                97: '1', // TECLA NUMERICA 1
+                97: 'numerico 1', // TECLA NUMERICA 1
                 98: 'down', // TECLA NUMERICA 2
-                99: '3', // TECLA NUMERICA 3
+                99: 'numerico 3', // TECLA NUMERICA 3
                 100: 'left', // TECLA NUMERICA 4
-                101: '5', // TECLA NUMERICA 5
+                101: 'numerico 5', // TECLA NUMERICA 5
                 102: 'right', // TECLA NUMERICA 6
-                103: '7', // TECLA NUMERICA 7
+                103: 'numerico 7', // TECLA NUMERICA 7
                 104: 'up', // TECLA NUMERICA 8
-                105: '9', // TECLA NUMERICA 9
+                105: 'numerico 9', // TECLA NUMERICA 9
                 106: '*', // TECLA * ou Multiplicação
                 107: '+', // TECLA + ou Adição
                 109: '-', // TECLA - ou Subtração
@@ -441,17 +441,17 @@
                 123: 'f12', // TECLA F12
                 144: 'num-lock', // TECLA num lock
                 145: 'scroll-lock', // TECLA scroll lock
-                186: 'semi-colon', // TECLA PONTO E VIRGURLA OU semi-colon
-                187: 'equal-sign', // TECLA IGUAL(=) OU equal sign
-                188: 'comma', // TECLA VIRGULA OU comma
-                189: 'dash', // TECLA TRAÇO OU dash
-                190: 'period', // TECLA PONTO OU period
-                191: 'forward-slash', // TECLA BARRA(/) OU forward slash
-                192: 'grave-accent', // TECLA Acento Grave(`) OU grave accent
-                219: 'open-bracket', // TECLA COLCHETES ABERTO([) OU open bracket
-                220: 'back-slash', // TECLA BARRA(\) OU back slash
-                221: 'close-braket', // TECLA COLCHETES FECHADO(]) OU close braket
-                222: 'single-quote', // TECLA ASPAS SIMPLES DO LADO DO 1 OU single quote                
+                186: ';', // TECLA PONTO E VIRGURLA OU semi-colon
+                187: '=', // TECLA IGUAL(=) OU equal sign
+                188: ',', // TECLA VIRGULA OU comma
+                189: '--', // TECLA TRAÇO OU dash
+                190: '..', // TECLA PONTO OU period
+                191: '//', // TECLA BARRA(/) OU forward slash
+                192: '\`', // TECLA Acento Grave(`) OU grave accent
+                219: '[', // TECLA COLCHETES ABERTO([) OU open bracket
+                220: '\\', // TECLA BARRA(\) OU back slash
+                221: ']', // TECLA COLCHETES FECHADO(]) OU close braket
+                222: '\"', // TECLA ASPAS DO LADO DO 1 OU single quote
             }
         }
         // DEFINE VALUES
@@ -475,6 +475,7 @@
         data.inputOwner = Input._inputOwner;
         data.gamepadOrder = Input._gamepadOrder;
         data.gamepadButtons = Input.gamepadMapper;
+        data.keyboardKeys = Input.keyMapper;
         fs.writeFileSync(file, LZString.compressToBase64(JSON.stringify(data)));
     };
 
@@ -586,7 +587,6 @@
                         this._latestButtonInputId = this._inputId[this._gamepadOrder[gamepad.index]];
                 }
             }
-
         }
         this._gamepadStates[gamepad.index] = newState;
     };
@@ -614,11 +614,11 @@
     // ImageManager
     //
     ImageManager.reserveMultiplayerLocalIMG = function (filename, hue, reservationId) {
-        return this.reserveBitmap('system/multiplayerLocal/img/', filename, hue, true, reservationId);
+        return this.reserveBitmap('img/system/', filename, hue, true, reservationId);
     };
 
     ImageManager.loadMultiplayerLocalIMG = function (filename, hue) {
-        return this.loadBitmap('system/multiplayerLocal/img/', filename, hue, true);
+        return this.loadBitmap('img/system/', filename, hue, true);
     };
 
     //-----------------------------------------------------------------------------
@@ -1019,6 +1019,7 @@
         this.activate();
         this.drawHelpText();
         this.createWindowSetValue();
+        this._cursorRectHide = null;
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype.update = function () {
@@ -1186,7 +1187,23 @@
         this._windowSetValue.activate();
         this._windowSetValue._buttonId = buttonId;
         this._windowSetValue._winParent = this;
+        this._cursorRectHide = true;
     };
+
+    Window_selectGamePadMultiplayerLocal_Options_buttonsChange.prototype._updateCursor = function () {
+        var blinkCount = this._animationCount % 40;
+        var cursorOpacity = this.contentsOpacity;
+        if (this.active) {
+            if (blinkCount < 20) {
+                cursorOpacity -= blinkCount * 8;
+            } else {
+                cursorOpacity -= (40 - blinkCount) * 8;
+            }
+        }
+        this._windowCursorSprite.alpha = cursorOpacity / 255;
+        this._windowCursorSprite.visible = this._cursorRectHide ? false : this.isOpen();
+    };
+
     //-----------------------------------------------------------------------------
     // Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue
     //
@@ -1198,9 +1215,7 @@
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.constructor = Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue;
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.initialize = function () {
-        var x = Graphics.boxWidth / 4,
-            y = Graphics.boxHeight / 4;
-        Window_Command.prototype.initialize.call(this, x, y);
+        Window_Command.prototype.initialize.call(this, Graphics.boxWidth / 4, Graphics.boxHeight / 4);
         this.deactivate();
         this.hide();
         this.setHandlerMainCommands();
@@ -1305,7 +1320,10 @@
     };
 
     Window_selectGamePadMultiplayerLocal_Options_buttonsChange_setValue.prototype.closeWin = function () {
-        if (this._winParent) this._winParent.refresh();
+        if (this._winParent) {
+            this._winParent.refresh();
+            this._winParent._cursorRectHide = false;
+        }
         this.hide();
     };
 
@@ -1325,6 +1343,7 @@
         this.hide();
         this.loadImages();
         this.setHandlerMainCommands();
+        this._cursorRectHide = null;
     };
 
     Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype.loadImages = function () {
@@ -1434,6 +1453,21 @@
         this._windowSetGamepad.activate();
         this._windowSetGamepad._gamepadId = gamepadId;
         this._windowSetGamepad._winParent = this;
+        this._cursorRectHide = true;
+    };
+
+    Window_selectGamePadMultiplayerLocal_Options_setGamepad.prototype._updateCursor = function () {
+        var blinkCount = this._animationCount % 40;
+        var cursorOpacity = this.contentsOpacity;
+        if (this.active) {
+            if (blinkCount < 20) {
+                cursorOpacity -= blinkCount * 8;
+            } else {
+                cursorOpacity -= (40 - blinkCount) * 8;
+            }
+        }
+        this._windowCursorSprite.alpha = cursorOpacity / 255;
+        this._windowCursorSprite.visible = this._cursorRectHide ? false : this.isOpen();
     };
 
     //-----------------------------------------------------------------------------
@@ -1521,7 +1555,10 @@
     };
 
     Window_selectGamePadMultiplayerLocal_Options_setGamepad_changePad.prototype.closeWin = function () {
-        if (this._winParent) this._winParent.refresh();
+        if (this._winParent) {
+            this._winParent.refresh();
+            this._winParent._cursorRectHide = false;
+        }
         this.hide();
     };
 
@@ -1621,6 +1658,13 @@
         this.deactivate();
         this.hide();
         this.setHandlerMainCommands();
+        this.createSetButtonWindow();
+        this._cursorRectHide = null;
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.refresh = function () {
+        Window_Command.prototype.refresh.call(this);
+        this.activate();
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.windowWidth = function () {
@@ -1699,8 +1743,9 @@
         this.addCommand(`TECLA 6 VALOR(${this.textCommandConfigure(Input.keyMapper[54])})`, '_key_6');
         this.addCommand(`TECLA 7 VALOR(${this.textCommandConfigure(Input.keyMapper[55])})`, '_key_7');
         this.addCommand(`TECLA 8 VALOR(${this.textCommandConfigure(Input.keyMapper[56])})`, '_key_8');
-        this.addCommand(`TECLA NUMERICA 1 VALOR(${this.textCommandConfigure(Input.keyMapper[97])})`, '_key_NUM_1');
+        this.addCommand(`TECLA 9 VALOR(${this.textCommandConfigure(Input.keyMapper[57])})`, '_key_9');
         this.addCommand(`TECLA NUMERICA 0 VALOR(${this.textCommandConfigure(Input.keyMapper[96])})`, '_key_NUM_0');
+        this.addCommand(`TECLA NUMERICA 1 VALOR(${this.textCommandConfigure(Input.keyMapper[97])})`, '_key_NUM_1');
         this.addCommand(`TECLA NUMERICA 2 VALOR(${this.textCommandConfigure(Input.keyMapper[98])})`, '_key_NUM_2');
         this.addCommand(`TECLA NUMERICA 3 VALOR(${this.textCommandConfigure(Input.keyMapper[99])})`, '_key_NUM_3');
         this.addCommand(`TECLA NUMERICA 4 VALOR(${this.textCommandConfigure(Input.keyMapper[100])})`, '_key_NUM_4');
@@ -1728,17 +1773,17 @@
         this.addCommand(`TECLA F12 VALOR(${this.textCommandConfigure(Input.keyMapper[123])})`, '_key_F12');
         this.addCommand(`TECLA NUM-LOCK VALOR(${this.textCommandConfigure(Input.keyMapper[144])})`, '_key_NUM_LOCK');
         this.addCommand(`TECLA SCROLL-LOCK VALOR(${this.textCommandConfigure(Input.keyMapper[145])})`, '_key_SCROLL_LOCK');
-        this.addCommand(`TECLA PONTO E VIRGULA(;) VALOR(${this.textCommandConfigure(Input.keyMapper[186])})`, '_key_PONTO_E_VIRGULA');
+        this.addCommand(`TECLA VIRGULA(;) VALOR(${this.textCommandConfigure(Input.keyMapper[186])})`, '_key_PONTO_E_VIRGULA');
         this.addCommand(`TECLA IGUAL(=) VALOR(${this.textCommandConfigure(Input.keyMapper[187])})`, '_key_IGUAL');
         this.addCommand(`TECLA VIRGULA(,) VALOR(${this.textCommandConfigure(Input.keyMapper[188])})`, '_key_VIRGULA');
         this.addCommand(`TECLA TRAÇO(-) VALOR(${this.textCommandConfigure(Input.keyMapper[189])})`, '_key_TRAÇO');
         this.addCommand(`TECLA PONTO(.) VALOR(${this.textCommandConfigure(Input.keyMapper[190])})`, '_key_PONTO');
         this.addCommand(`TECLA BARRA(/) VALOR(${this.textCommandConfigure(Input.keyMapper[191])})`, '_key_BARRA_1');
         this.addCommand(`TECLA Acento Grave(\`) VALOR(${this.textCommandConfigure(Input.keyMapper[192])})`, '_key_ACENTO_GRAVE');
-        this.addCommand(`TECLA COLCHETES ABERTO([) VALOR(${this.textCommandConfigure(Input.keyMapper[219])})`, '_key_COLCHETES_ABERTO');
+        this.addCommand(`TECLA COLCHETES([) VALOR(${this.textCommandConfigure(Input.keyMapper[219])})`, '_key_COLCHETES_ABERTO');
         this.addCommand(`TECLA BARRA(\\) VALOR(${this.textCommandConfigure(Input.keyMapper[220])})`, '_key_BARRA_2');
-        this.addCommand(`TECLA COLCHETES FECHADO(]) VALOR(${this.textCommandConfigure(Input.keyMapper[221])})`, '_key_COLCHETES_FECHADO');
-        this.addCommand(`TECLA ASPAS SIMPLES(\') VALOR(${this.textCommandConfigure(Input.keyMapper[222])})`, '_key_ASPAS_SIMPLES');
+        this.addCommand(`TECLA COLCHETES(]) VALOR(${this.textCommandConfigure(Input.keyMapper[221])})`, '_key_COLCHETES_FECHADO');
+        this.addCommand(`TECLA ASPAS(\'|\") VALOR(${this.textCommandConfigure(Input.keyMapper[222])})`, '_key_ASPAS');
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.textCommandConfigure = function (command) {
@@ -1750,13 +1795,446 @@
         var align = 'center';
         this.changeTextColor(this.systemColor());
         this.contents.fontSize = 42;
-        console.log(this.textWidth(this.commandName(index)))
         this.drawText(this.commandName(index), rect.x, (rect.height / 4) + (rect.y + this.standardPadding()), rect.width, align);
     };
 
     Window_keyboardSettings_setKeyBoard.prototype.setHandlerMainCommands = function () {
-        this.setHandler('_key_A', this.showSetButtonValue.bind(this));
+        this.setHandler('_key_A', this.showSetButtonWindow.bind(this, 65));
+        this.setHandler('_key_B', this.showSetButtonWindow.bind(this, 66));
+        this.setHandler('_key_C', this.showSetButtonWindow.bind(this, 67));
+        this.setHandler('_key_D', this.showSetButtonWindow.bind(this, 68));
+        this.setHandler('_key_E', this.showSetButtonWindow.bind(this, 69));
+        this.setHandler('_key_F', this.showSetButtonWindow.bind(this, 70));
+        this.setHandler('_key_G', this.showSetButtonWindow.bind(this, 71));
+        this.setHandler('_key_H', this.showSetButtonWindow.bind(this, 72));
+        this.setHandler('_key_I', this.showSetButtonWindow.bind(this, 73));
+        this.setHandler('_key_J', this.showSetButtonWindow.bind(this, 74));
+        this.setHandler('_key_K', this.showSetButtonWindow.bind(this, 75));
+        this.setHandler('_key_L', this.showSetButtonWindow.bind(this, 76));
+        this.setHandler('_key_M', this.showSetButtonWindow.bind(this, 77));
+        this.setHandler('_key_N', this.showSetButtonWindow.bind(this, 78));
+        this.setHandler('_key_O', this.showSetButtonWindow.bind(this, 79));
+        this.setHandler('_key_P', this.showSetButtonWindow.bind(this, 80));
+        this.setHandler('_key_Q', this.showSetButtonWindow.bind(this, 81));
+        this.setHandler('_key_R', this.showSetButtonWindow.bind(this, 82));
+        this.setHandler('_key_S', this.showSetButtonWindow.bind(this, 83));
+        this.setHandler('_key_T', this.showSetButtonWindow.bind(this, 84));
+        this.setHandler('_key_U', this.showSetButtonWindow.bind(this, 85));
+        this.setHandler('_key_V', this.showSetButtonWindow.bind(this, 86));
+        this.setHandler('_key_W', this.showSetButtonWindow.bind(this, 87));
+        this.setHandler('_key_X', this.showSetButtonWindow.bind(this, 88));
+        this.setHandler('_key_Y', this.showSetButtonWindow.bind(this, 89));
+        this.setHandler('_key_Z', this.showSetButtonWindow.bind(this, 90));
+        this.setHandler('_key_TAB', this.showSetButtonWindow.bind(this, 9));
+        this.setHandler('_key_ENTER', this.showSetButtonWindow.bind(this, 13));
+        this.setHandler('_key_SHIFT', this.showSetButtonWindow.bind(this, 16));
+        this.setHandler('_key_CTRL', this.showSetButtonWindow.bind(this, 17));
+        this.setHandler('_key_ALT', this.showSetButtonWindow.bind(this, 18));
+        this.setHandler('_key_Pause_Break', this.showSetButtonWindow.bind(this, 19));
+        this.setHandler('_key_Caps_Lock', this.showSetButtonWindow.bind(this, 20));
+        this.setHandler('_key_ESC', this.showSetButtonWindow.bind(this, 27));
+        this.setHandler('_key_ESPAÇO', this.showSetButtonWindow.bind(this, 32));
+        this.setHandler('_key_PAGE_UP', this.showSetButtonWindow.bind(this, 33));
+        this.setHandler('_key_PAGE_DOWN', this.showSetButtonWindow.bind(this, 34));
+        this.setHandler('_key_END', this.showSetButtonWindow.bind(this, 35));
+        this.setHandler('_key_HOME', this.showSetButtonWindow.bind(this, 36));
+        this.setHandler('_key_SETA_PARA_ESQUERDA', this.showSetButtonWindow.bind(this, 37));
+        this.setHandler('_key_SETA_PARA_CIMA', this.showSetButtonWindow.bind(this, 38));
+        this.setHandler('_key_SETA_PARA_DIREITA', this.showSetButtonWindow.bind(this, 39));
+        this.setHandler('_key_SETA_PARA_BAIXO', this.showSetButtonWindow.bind(this, 40));
+        this.setHandler('_key_INSERT', this.showSetButtonWindow.bind(this, 45));
+        this.setHandler('_key_DELETE', this.showSetButtonWindow.bind(this, 46));
+        this.setHandler('_key_0', this.showSetButtonWindow.bind(this, 48));
+        this.setHandler('_key_1', this.showSetButtonWindow.bind(this, 49));
+        this.setHandler('_key_2', this.showSetButtonWindow.bind(this, 50));
+        this.setHandler('_key_3', this.showSetButtonWindow.bind(this, 51));
+        this.setHandler('_key_4', this.showSetButtonWindow.bind(this, 52));
+        this.setHandler('_key_5', this.showSetButtonWindow.bind(this, 53));
+        this.setHandler('_key_6', this.showSetButtonWindow.bind(this, 54));
+        this.setHandler('_key_7', this.showSetButtonWindow.bind(this, 55));
+        this.setHandler('_key_8', this.showSetButtonWindow.bind(this, 56));
+        this.setHandler('_key_9', this.showSetButtonWindow.bind(this, 57));
+        this.setHandler('_key_NUM_0', this.showSetButtonWindow.bind(this, 96));
+        this.setHandler('_key_NUM_1', this.showSetButtonWindow.bind(this, 97));
+        this.setHandler('_key_NUM_2', this.showSetButtonWindow.bind(this, 98));
+        this.setHandler('_key_NUM_3', this.showSetButtonWindow.bind(this, 99));
+        this.setHandler('_key_NUM_4', this.showSetButtonWindow.bind(this, 100));
+        this.setHandler('_key_NUM_5', this.showSetButtonWindow.bind(this, 101));
+        this.setHandler('_key_NUM_6', this.showSetButtonWindow.bind(this, 102));
+        this.setHandler('_key_NUM_7', this.showSetButtonWindow.bind(this, 103));
+        this.setHandler('_key_NUM_8', this.showSetButtonWindow.bind(this, 104));
+        this.setHandler('_key_NUM_9', this.showSetButtonWindow.bind(this, 105));
+        this.setHandler('_key_MULTIPLICAÇÃO', this.showSetButtonWindow.bind(this, 106));
+        this.setHandler('_key_ADIÇÃO', this.showSetButtonWindow.bind(this, 107));
+        this.setHandler('_key_SUBTRAÇÃO', this.showSetButtonWindow.bind(this, 109));
+        this.setHandler('_key_PONTO_DECIMAL', this.showSetButtonWindow.bind(this, 110));
+        this.setHandler('_key_DIVISÃO', this.showSetButtonWindow.bind(this, 111));
+        this.setHandler('_key_F1', this.showSetButtonWindow.bind(this, 112));
+        this.setHandler('_key_F2', this.showSetButtonWindow.bind(this, 113));
+        this.setHandler('_key_F3', this.showSetButtonWindow.bind(this, 114));
+        this.setHandler('_key_F4', this.showSetButtonWindow.bind(this, 115));
+        this.setHandler('_key_F5', this.showSetButtonWindow.bind(this, 116));
+        this.setHandler('_key_F6', this.showSetButtonWindow.bind(this, 117));
+        this.setHandler('_key_F7', this.showSetButtonWindow.bind(this, 118));
+        this.setHandler('_key_F8', this.showSetButtonWindow.bind(this, 119));
+        this.setHandler('_key_F9', this.showSetButtonWindow.bind(this, 120));
+        this.setHandler('_key_F10', this.showSetButtonWindow.bind(this, 121));
+        this.setHandler('_key_F11', this.showSetButtonWindow.bind(this, 122));
+        this.setHandler('_key_F12', this.showSetButtonWindow.bind(this, 123));
+        this.setHandler('_key_NUM_LOCK', this.showSetButtonWindow.bind(this, 144));
+        this.setHandler('_key_SCROLL_LOCK', this.showSetButtonWindow.bind(this, 145));
+        this.setHandler('_key_PONTO_E_VIRGULA', this.showSetButtonWindow.bind(this, 186));
+        this.setHandler('_key_IGUAL', this.showSetButtonWindow.bind(this, 187));
+        this.setHandler('_key_VIRGULA', this.showSetButtonWindow.bind(this, 188));
+        this.setHandler('_key_TRAÇO', this.showSetButtonWindow.bind(this, 189));
+        this.setHandler('_key_PONTO', this.showSetButtonWindow.bind(this, 190));
+        this.setHandler('_key_BARRA_1', this.showSetButtonWindow.bind(this, 191));
+        this.setHandler('_key_ACENTO_GRAVE', this.showSetButtonWindow.bind(this, 191));
+        this.setHandler('_key_COLCHETES_ABERTO', this.showSetButtonWindow.bind(this, 219));
+        this.setHandler('_key_BARRA_2', this.showSetButtonWindow.bind(this, 220));
+        this.setHandler('_key_COLCHETES_FECHADO', this.showSetButtonWindow.bind(this, 221));
+        this.setHandler('_key_ASPAS', this.showSetButtonWindow.bind(this, 222));
     };
+
+    Window_keyboardSettings_setKeyBoard.prototype.createSetButtonWindow = function () {
+        this._windowSetButtonValue = new Window_keyboardSettings_setButtonValue();
+        this.addChild(this._windowSetButtonValue);
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype.showSetButtonWindow = function (buttonId) {
+        this._windowSetButtonValue.activate();
+        this._windowSetButtonValue.show();
+        this._windowSetButtonValue._buttonId = buttonId;
+        this._windowSetButtonValue._winParent = this;
+        this._cursorRectHide = true;
+    };
+
+    Window_keyboardSettings_setKeyBoard.prototype._updateCursor = function () {
+        var blinkCount = this._animationCount % 40;
+        var cursorOpacity = this.contentsOpacity;
+        if (this.active) {
+            if (blinkCount < 20) {
+                cursorOpacity -= blinkCount * 8;
+            } else {
+                cursorOpacity -= (40 - blinkCount) * 8;
+            }
+        }
+        this._windowCursorSprite.alpha = cursorOpacity / 255;
+        this._windowCursorSprite.visible = this._cursorRectHide ? false : this.isOpen();
+    };
+
+    //-----------------------------------------------------------------------------
+    // Window_keyboardSettings_setButtonValue
+    //
+    function Window_keyboardSettings_setButtonValue() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_keyboardSettings_setButtonValue.prototype = Object.create(Window_Command.prototype);
+    Window_keyboardSettings_setButtonValue.prototype.constructor = Window_keyboardSettings_setButtonValue;
+
+    Window_keyboardSettings_setButtonValue.prototype.initialize = function () {
+        Window_Command.prototype.initialize.call(this, 25, (Graphics.boxHeight / 8) - 15);
+        this.deactivate();
+        this.hide();
+        this.setHandlerMainCommands();
+        this._buttonId = null;
+        this._winParent = null;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.windowWidth = function () {
+        return Graphics.boxWidth - 25 * 2;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.windowHeight = function () {
+        return 490;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.standardBackOpacity = function () {
+        return 100;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.numVisibleRows = function () {
+        return 4;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / this.numVisibleRows());
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 62;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 2) - this.standardPadding() + rect.y, rect.width, align);
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.addMainCommands = function () {
+        this.addCommand('OK', '_ok');
+        this.addCommand('CANCEL', '_cancel');
+        this.addCommand('MENU', '_menu');
+        this.addCommand('M. ESPECIAL', '_menuEspecial');
+        this.addCommand('TAB', '_tab');
+        this.addCommand('SHIFT', '_shift');
+        this.addCommand('CONTROL', '_control');
+        this.addCommand('ESCAPE', '_escape');
+        this.addCommand('PAGEUP', '_pageup');
+        this.addCommand('PAGEDOWN', '_pagedown');
+        this.addCommand('LEFT', '_left');
+        this.addCommand('UP', '_up');
+        this.addCommand('RIGHT', '_right');
+        this.addCommand('DOWN', '_down');
+        this.addCommand('DEBUG', '_debug');
+        this.addCommand('A', '_key_A');
+        this.addCommand('B', '_key_B');
+        this.addCommand('C', '_key_C');
+        this.addCommand('D', '_key_D');
+        this.addCommand('E', '_key_E');
+        this.addCommand('F', '_key_F');
+        this.addCommand('G', '_key_G');
+        this.addCommand('H', '_key_H');
+        this.addCommand('I', '_key_I');
+        this.addCommand('J', '_key_J');
+        this.addCommand('K', '_key_K');
+        this.addCommand('L', '_key_L');
+        this.addCommand('M', '_key_M');
+        this.addCommand('N', '_key_N');
+        this.addCommand('O', '_key_O');
+        this.addCommand('P', '_key_P');
+        this.addCommand('Q', '_key_Q');
+        this.addCommand('R', '_key_R');
+        this.addCommand('S', '_key_S');
+        this.addCommand('T', '_key_T');
+        this.addCommand('U', '_key_U');
+        this.addCommand('V', '_key_V');
+        this.addCommand('W', '_key_W');
+        this.addCommand('X', '_key_X');
+        this.addCommand('Y', '_key_Y');
+        this.addCommand('Z', '_key_Z');
+        this.addCommand('TAB', '_key_TAB');
+        this.addCommand('ENTER', '_key_ENTER');
+        this.addCommand('SHIFT', '_key_SHIFT');
+        this.addCommand('CTRL', '_key_CTRL');
+        this.addCommand('ALT', '_key_ALT');
+        this.addCommand('PAUSE/BREAK', '_key_Pause_Break');
+        this.addCommand('CAPS-LOCK', '_key_Caps_Lock');
+        this.addCommand('ESC', '_key_ESC');
+        this.addCommand('ESPAÇO', '_key_ESPAÇO');
+        this.addCommand('PAGE-UP', '_key_PAGE_UP');
+        this.addCommand('PAGE-DOWN', '_key_PAGE_DOWN');
+        this.addCommand('END', '_key_END');
+        this.addCommand('HOME', '_key_HOME');
+        this.addCommand('SETA PARA ESQUERDA', '_key_SETA_PARA_ESQUERDA');
+        this.addCommand('SETA PARA CIMA', '_key_SETA_PARA_CIMA');
+        this.addCommand('SETA PARA DIREITA', '_key_SETA_PARA_DIREITA');
+        this.addCommand('SETA PARA BAIXO', '_key_SETA_PARA_BAIXO');
+        this.addCommand('INSERT', '_key_INSERT');
+        this.addCommand('DELETE', '_key_DELETE');
+        this.addCommand('TECLA 0', '_key_TECLA_0');
+        this.addCommand('TECLA 1', '_key_TECLA_1');
+        this.addCommand('TECLA 2', '_key_TECLA_2');
+        this.addCommand('TECLA 3', '_key_TECLA_3');
+        this.addCommand('TECLA 4', '_key_TECLA_4');
+        this.addCommand('TECLA 5', '_key_TECLA_5');
+        this.addCommand('TECLA 6', '_key_TECLA_6');
+        this.addCommand('TECLA 7', '_key_TECLA_7');
+        this.addCommand('TECLA 8', '_key_TECLA_8');
+        this.addCommand('TECLA 9', '_key_TECLA_9');
+        this.addCommand('TECLA NUMERICA 0', '_key_TECLA_NUMERICA_0');
+        this.addCommand('TECLA NUMERICA 1', '_key_TECLA_NUMERICA_1');
+        this.addCommand('TECLA NUMERICA 2', '_key_TECLA_NUMERICA_2');
+        this.addCommand('TECLA NUMERICA 3', '_key_TECLA_NUMERICA_3');
+        this.addCommand('TECLA NUMERICA 4', '_key_TECLA_NUMERICA_4');
+        this.addCommand('TECLA NUMERICA 5', '_key_TECLA_NUMERICA_5');
+        this.addCommand('TECLA NUMERICA 6', '_key_TECLA_NUMERICA_6');
+        this.addCommand('TECLA NUMERICA 7', '_key_TECLA_NUMERICA_7');
+        this.addCommand('TECLA NUMERICA 8', '_key_TECLA_NUMERICA_8');
+        this.addCommand('TECLA NUMERICA 9', '_key_TECLA_NUMERICA_9');
+        this.addCommand('MULTIPLICAÇÃO(*)', '_key_MULTIPLICAÇÃO');
+        this.addCommand('ADIÇÃO(+)', '_key_ADIÇÃO');
+        this.addCommand('SUBTRAÇÃO(-)', '_key_SUBTRAÇÃO');
+        this.addCommand('PONTO DECIMAL(.)', '_key_PONTO_DECIMAL');
+        this.addCommand('F1', '_key_F1');
+        this.addCommand('F2', '_key_F2');
+        this.addCommand('F3', '_key_F3');
+        this.addCommand('F4', '_key_F4');
+        this.addCommand('F5', '_key_F5');
+        this.addCommand('F6', '_key_F6');
+        this.addCommand('F7', '_key_F7');
+        this.addCommand('F8', '_key_F8');
+        this.addCommand('F9', '_key_F9');
+        this.addCommand('F10', '_key_F10');
+        this.addCommand('F11', '_key_F11');
+        this.addCommand('F12', '_key_F12');
+        this.addCommand('NUM-LOCK', '_key_Num_Lock');
+        this.addCommand('VIRGURLA(;)', '_key_PONTO_E_VIRGURLA');
+        this.addCommand('IGUAL(=)', '_key_IGUAL');
+        this.addCommand('VIRGULA(,)', '_key_VIRGULA');
+        this.addCommand('TRAÇO(-)', '_key_TRAÇO');
+        this.addCommand('PONTO(.)', '_key_PONTO');
+        this.addCommand('BARRA(/)', '_key_BARRA_1');
+        this.addCommand('Acento Grave(`)', '_key_Acento_Grave');
+        this.addCommand('COLCHETES([)', '_key_COLCHETES_ABERTO');
+        this.addCommand('BARRA(\\)', '_key_BARRA_2');
+        this.addCommand('COLCHETES([)', '_key_COLCHETES_FECHADO');
+        this.addCommand('ASPAS(\'|\")', '_key_ASPAS');
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.setHandlerMainCommands = function () {
+        this.setHandler('_ok', this.setButtonValue.bind(this, 'ok'));
+        this.setHandler('_cancel', this.setButtonValue.bind(this, 'cancel'));
+        this.setHandler('_menu', this.setButtonValue.bind(this, 'menu'));
+        this.setHandler('_menuEspecial', this.setButtonValue.bind(this, 'menuMultiplayerLocal'));
+        this.setHandler('_tab', this.setButtonValue.bind(this, 'tab'));
+        this.setHandler('_shift', this.setButtonValue.bind(this, 'shift'));
+        this.setHandler('_control', this.setButtonValue.bind(this, 'control'));
+        this.setHandler('_escape', this.setButtonValue.bind(this, 'escape'));
+        this.setHandler('_pageup', this.setButtonValue.bind(this, 'pageup'));
+        this.setHandler('_pagedown', this.setButtonValue.bind(this, 'pagedown'));
+        this.setHandler('_left', this.setButtonValue.bind(this, 'left'));
+        this.setHandler('_up', this.setButtonValue.bind(this, 'up'));
+        this.setHandler('_right', this.setButtonValue.bind(this, 'right'));
+        this.setHandler('_down', this.setButtonValue.bind(this, 'down'));
+        this.setHandler('_debug', this.setButtonValue.bind(this, 'debug'));
+        this.setHandler('_key_A', this.setButtonValue.bind(this, 'a'));
+        this.setHandler('_key_B', this.setButtonValue.bind(this, 'b'));
+        this.setHandler('_key_C', this.setButtonValue.bind(this, 'c'));
+        this.setHandler('_key_D', this.setButtonValue.bind(this, 'd'));
+        this.setHandler('_key_E', this.setButtonValue.bind(this, 'e'));
+        this.setHandler('_key_F', this.setButtonValue.bind(this, 'f'));
+        this.setHandler('_key_G', this.setButtonValue.bind(this, 'g'));
+        this.setHandler('_key_H', this.setButtonValue.bind(this, 'h'));
+        this.setHandler('_key_I', this.setButtonValue.bind(this, 'i'));
+        this.setHandler('_key_J', this.setButtonValue.bind(this, 'j'));
+        this.setHandler('_key_K', this.setButtonValue.bind(this, 'k'));
+        this.setHandler('_key_L', this.setButtonValue.bind(this, 'l'));
+        this.setHandler('_key_M', this.setButtonValue.bind(this, 'm'));
+        this.setHandler('_key_N', this.setButtonValue.bind(this, 'n'));
+        this.setHandler('_key_O', this.setButtonValue.bind(this, 'o'));
+        this.setHandler('_key_P', this.setButtonValue.bind(this, 'p'));
+        this.setHandler('_key_Q', this.setButtonValue.bind(this, 'q'));
+        this.setHandler('_key_R', this.setButtonValue.bind(this, 'r'));
+        this.setHandler('_key_S', this.setButtonValue.bind(this, 's'));
+        this.setHandler('_key_T', this.setButtonValue.bind(this, 't'));
+        this.setHandler('_key_U', this.setButtonValue.bind(this, 'u'));
+        this.setHandler('_key_V', this.setButtonValue.bind(this, 'v'));
+        this.setHandler('_key_W', this.setButtonValue.bind(this, 'w'));
+        this.setHandler('_key_X', this.setButtonValue.bind(this, 'x'));
+        this.setHandler('_key_Y', this.setButtonValue.bind(this, 'y'));
+        this.setHandler('_key_Z', this.setButtonValue.bind(this, 'z'));
+        this.setHandler('_key_TAB', this.setButtonValue.bind(this, 'tab'));
+        this.setHandler('_key_ENTER', this.setButtonValue.bind(this, 'enter'));
+        this.setHandler('_key_SHIFT', this.setButtonValue.bind(this, 'shift'));
+        this.setHandler('_key_CTRL', this.setButtonValue.bind(this, 'ctrl'));
+        this.setHandler('_key_ALT', this.setButtonValue.bind(this, 'alt'));
+        this.setHandler('_key_Pause_Break', this.setButtonValue.bind(this, 'pause/break'));
+        this.setHandler('_key_Caps_Lock', this.setButtonValue.bind(this, 'caps-lock'));
+        this.setHandler('_key_ESC', this.setButtonValue.bind(this, 'esc'));
+        this.setHandler('_key_ESPAÇO', this.setButtonValue.bind(this, 'espaço'));
+        this.setHandler('_key_PAGE_UP', this.setButtonValue.bind(this, 'page-up'));
+        this.setHandler('_key_PAGE_DOWN', this.setButtonValue.bind(this, 'page-down'));
+        this.setHandler('_key_END', this.setButtonValue.bind(this, 'end'));
+        this.setHandler('_key_HOME', this.setButtonValue.bind(this, 'home'));
+        this.setHandler('_key_SETA_PARA_ESQUERDA', this.setButtonValue.bind(this, 'seta para esquerda'));
+        this.setHandler('_key_SETA_PARA_CIMA', this.setButtonValue.bind(this, 'seta para cima'));
+        this.setHandler('_key_SETA_PARA_DIREITA', this.setButtonValue.bind(this, 'seta para direita'));
+        this.setHandler('_key_SETA_PARA_BAIXO', this.setButtonValue.bind(this, 'seta para baixo'));
+        this.setHandler('_key_INSERT', this.setButtonValue.bind(this, 'insert'));
+        this.setHandler('_key_DELETE', this.setButtonValue.bind(this, 'delete'));
+        this.setHandler('_key_TECLA_0', this.setButtonValue.bind(this, '0'));
+        this.setHandler('_key_TECLA_1', this.setButtonValue.bind(this, '1'));
+        this.setHandler('_key_TECLA_2', this.setButtonValue.bind(this, '2'));
+        this.setHandler('_key_TECLA_3', this.setButtonValue.bind(this, '3'));
+        this.setHandler('_key_TECLA_4', this.setButtonValue.bind(this, '4'));
+        this.setHandler('_key_TECLA_5', this.setButtonValue.bind(this, '5'));
+        this.setHandler('_key_TECLA_6', this.setButtonValue.bind(this, '6'));
+        this.setHandler('_key_TECLA_7', this.setButtonValue.bind(this, '7'));
+        this.setHandler('_key_TECLA_8', this.setButtonValue.bind(this, '8'));
+        this.setHandler('_key_TECLA_9', this.setButtonValue.bind(this, '9'));
+        this.setHandler('_key_TECLA_NUMERICA_0', this.setButtonValue.bind(this, 'numerico 0'));
+        this.setHandler('_key_TECLA_NUMERICA_1', this.setButtonValue.bind(this, 'numerico 1'));
+        this.setHandler('_key_TECLA_NUMERICA_2', this.setButtonValue.bind(this, 'numerico 2'));
+        this.setHandler('_key_TECLA_NUMERICA_3', this.setButtonValue.bind(this, 'numerico 3'));
+        this.setHandler('_key_TECLA_NUMERICA_4', this.setButtonValue.bind(this, 'numerico 4'));
+        this.setHandler('_key_TECLA_NUMERICA_5', this.setButtonValue.bind(this, 'numerico 5'));
+        this.setHandler('_key_TECLA_NUMERICA_6', this.setButtonValue.bind(this, 'numerico 6'));
+        this.setHandler('_key_TECLA_NUMERICA_7', this.setButtonValue.bind(this, 'numerico 7'));
+        this.setHandler('_key_TECLA_NUMERICA_8', this.setButtonValue.bind(this, 'numerico 8'));
+        this.setHandler('_key_TECLA_NUMERICA_9', this.setButtonValue.bind(this, 'numerico 9'));
+        this.setHandler('_key_MULTIPLICAÇÃO', this.setButtonValue.bind(this, '*'));
+        this.setHandler('_key_ADIÇÃO', this.setButtonValue.bind(this, '+'));
+        this.setHandler('_key_SUBTRAÇÃO', this.setButtonValue.bind(this, '-'));
+        this.setHandler('_key_PONTO_DECIMAL', this.setButtonValue.bind(this, '.'));
+        this.setHandler('_key_DIVISÃO', this.setButtonValue.bind(this, '/'));
+        this.setHandler('_key_F1', this.setButtonValue.bind(this, 'f1'));
+        this.setHandler('_key_F2', this.setButtonValue.bind(this, 'f2'));
+        this.setHandler('_key_F3', this.setButtonValue.bind(this, 'f3'));
+        this.setHandler('_key_F4', this.setButtonValue.bind(this, 'f4'));
+        this.setHandler('_key_F5', this.setButtonValue.bind(this, 'f5'));
+        this.setHandler('_key_F6', this.setButtonValue.bind(this, 'f6'));
+        this.setHandler('_key_F7', this.setButtonValue.bind(this, 'f7'));
+        this.setHandler('_key_F8', this.setButtonValue.bind(this, 'f8'));
+        this.setHandler('_key_F9', this.setButtonValue.bind(this, 'f9'));
+        this.setHandler('_key_F10', this.setButtonValue.bind(this, 'f10'));
+        this.setHandler('_key_F11', this.setButtonValue.bind(this, 'f11'));
+        this.setHandler('_key_F12', this.setButtonValue.bind(this, 'f12'));
+        this.setHandler('_key_Num_Lock', this.setButtonValue.bind(this, 'num-lock'));
+        this.setHandler('_key_Scroll_Lock', this.setButtonValue.bind(this, 'scroll-lock'));
+        this.setHandler('_key_PONTO_E_VIRGURLA', this.setButtonValue.bind(this, ';'));
+        this.setHandler('_key_IGUAL', this.setButtonValue.bind(this, '='));
+        this.setHandler('_key_VIRGULA', this.setButtonValue.bind(this, ','));
+        this.setHandler('_key_TRAÇO', this.setButtonValue.bind(this, '--'));
+        this.setHandler('_key_PONTO', this.setButtonValue.bind(this, '..'));
+        this.setHandler('_key_BARRA_1', this.setButtonValue.bind(this, '//'));
+        this.setHandler('_key_Acento_Grave', this.setButtonValue.bind(this, '\`'));
+        this.setHandler('_key_COLCHETES_ABERTO', this.setButtonValue.bind(this, '['));
+        this.setHandler('_key_BARRA_2', this.setButtonValue.bind(this, '\\'));
+        this.setHandler('_key_COLCHETES_FECHADO', this.setButtonValue.bind(this, ']'));
+        this.setHandler('_key_ASPAS', this.setButtonValue.bind(this, '\"'));
+        this.setHandler('cancel', this.closeWin.bind(this));
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.setButtonValue = function (value) {
+        if (this._buttonId != null && this._winParent != null) {
+            var buttonsEssentials = ['ok', 'cancel', 'menu', 'menuMultiplayerLocal'];
+            if (buttonsEssentials.filter(function (button) {
+                return Input.keyMapper[this._buttonId] === button;
+            }, this).length > 0 && !this.buttonAlradyExist(buttonsEssentials, [this._buttonId, Input.keyMapper[this._buttonId]])) {
+                SoundManager.playBuzzer();
+                this.activate();
+                return;
+            }
+            Input.keyMapper[this._buttonId] = value;
+            Input._fileSettingsUpdate();
+            this.closeWin();
+        }
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.buttonAlradyExist = function (values, exclude) {
+        var buttons = [];
+        Object.keys(Input.keyMapper).filter(function (key) {
+            if (exclude[0] != key)
+                if (values.indexOf(Input.keyMapper[key]) != -1)
+                    buttons.push(Input.keyMapper[key]);
+        });
+        return buttons.length >= 0 && buttons.indexOf(exclude[1]) != -1;
+    };
+
+    Window_keyboardSettings_setButtonValue.prototype.closeWin = function () {
+        if (this._winParent) {
+            this._winParent.refresh();
+            this._winParent._cursorRectHide = false;
+        }
+        this.hide();
+    };
+
     // ----------------------------------------------------------------------------
     // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ MENU GERAL ↑ ↑ ↑ ↑
     // ----------------------------------------------------------------------------

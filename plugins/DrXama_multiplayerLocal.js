@@ -21,6 +21,11 @@
 (function () {
     "use strict";
     // ----------------------------------------------------------------------------
+    // CONFIGURAÇÃO DE TODA A BASE DE FUNÇÕES DO SISTEMA
+    // Essa parte é muito importante e não deve ser alterada
+    //
+
+    // ----------------------------------------------------------------------------
     // Base
     //
     function localPath(p) {
@@ -81,6 +86,9 @@
             }
         }
     };
+    // ------------------------------------------------------------------------------------------
+    // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ CONFIGURAÇÃO DE TODA A BASE DE FUNÇÕES DO SISTEMA ↑ ↑ ↑ ↑
+    // ------------------------------------------------------------------------------------------
 
     // ----------------------------------------------------------------------------
     // CONFIGURAÇÃO DO TECLADO E CONTROLE
@@ -111,10 +119,10 @@
         if (!fs.existsSync(file)) {
             fs.writeFileSync(file, LZString.compressToBase64(JSON.stringify({
                 'inputId': { // Indentificador de cada jogador no teclado
-                    'player_1': null, // valor padrão é null
-                    'player_2': 0,
-                    'player_3': 1,
-                    'player_4': 2
+                    'player_1': 1,
+                    'player_2': 2,
+                    'player_3': 3,
+                    'player_4': 4
                 },
                 'inputOwner': 'player_1', // Defina quem controla o teclado
                 'inputMenuCall': 112, // Defina a tecla que chama o menu, padrão é F1
@@ -280,16 +288,16 @@
         // DEFAULT VALUES
         if (file.inputId instanceof Object === false) {
             file.inputId = {
-                'player_1': null, // valor padrão é null
-                'player_2': 0,
-                'player_3': 1,
-                'player_4': 2
+                'player_1': 1,
+                'player_2': 2,
+                'player_3': 3,
+                'player_4': 4
             }
         }
-        if (file.inputOwner instanceof String === false) {
+        if (typeof file.inputOwner != 'string') {
             file.inputOwner = 'player_1'; // Defina quem controla o teclado
         }
-        if (file.inputMenuCall instanceof Number === false) {
+        if (typeof file.inputMenuCall != 'number') {
             file.inputMenuCall = 112; // Defina a tecla que chama o menu, padrão é F1
         }
         if (file.gamepadOrder instanceof Object === false) {
@@ -496,7 +504,7 @@
     };
 
     Input.isPressed = function (keyName, inputId) {
-        if (!inputId) inputId = this._latestButtonInputId;
+        if (inputId === undefined) inputId = this._latestButtonInputId;
         if (this._isEscapeCompatible(keyName) && this.isPressed('escape', inputId)) {
             return true;
         } else {
@@ -505,7 +513,7 @@
     };
 
     Input.isTriggered = function (keyName, inputId) {
-        if (!inputId) inputId = this._latestButtonInputId;
+        if (inputId === undefined) inputId = this._latestButtonInputId;
         if (this._isEscapeCompatible(keyName) && this.isTriggered('escape', inputId)) {
             return true;
         } else {
@@ -516,7 +524,7 @@
     };
 
     Input.isRepeated = function (keyName, inputId) {
-        if (!inputId) inputId = this._latestButtonInputId;
+        if (inputId === undefined) inputId = this._latestButtonInputId;
         if (this._isEscapeCompatible(keyName) && this.isRepeated('escape', inputId)) {
             return true;
         } else {
@@ -529,7 +537,7 @@
     };
 
     Input.isLongPressed = function (keyName, inputId) {
-        if (!inputId) inputId = this._latestButtonInputId;
+        if (inputId === undefined) inputId = this._latestButtonInputId;
         if (this._isEscapeCompatible(keyName) && this.isLongPressed('escape', inputId)) {
             return true;
         } else {
@@ -660,6 +668,7 @@
         this._menuWindow = new Window_menuMultiplayerLocal();
         this._menuWindow.setHandler('gamepadConfig', this.showSelectGamepad.bind(this));
         this._menuWindow.setHandler('keyboardConfig', this.showKeyboardSettings.bind(this));
+        this._menuWindow.setHandler('cancel', this.popScene.bind(this));
         this.addWindow(this._menuWindow);
     };
 
@@ -1578,6 +1587,7 @@
         this.hide();
         this.setHandlerMainCommands();
         this.createWindowSetKeyBoard();
+        this.createWindowDefineOwnerKeyBoard();
     };
 
     Window_keyboardSettings.prototype.windowWidth = function () {
@@ -1621,6 +1631,7 @@
 
     Window_keyboardSettings.prototype.setHandlerMainCommands = function () {
         this.setHandler('setKeys', this.showWindowSetKeyBoard.bind(this));
+        this.setHandler('setKeyboard', this.showWindowDefineOwnerKeyBoard.bind(this));
         this.setHandler('cancel', SceneManager._scene.hideKeyboardSettings.bind(SceneManager._scene));
     };
 
@@ -1639,6 +1650,26 @@
     Window_keyboardSettings.prototype.hideWindowSetKeyBoard = function () {
         this._windowSetKeyBoard.deactivate();
         this._windowSetKeyBoard.hide();
+        SceneManager._scene._menuWindow.show();
+        this.activate();
+    };
+
+    Window_keyboardSettings.prototype.createWindowDefineOwnerKeyBoard = function () {
+        this._windowDefineOwnerKeyBoard = new Window_keyboardSettings_defineOwnerKeyBoard();
+        this._windowDefineOwnerKeyBoard.setHandler('cancel', this.hideWindowDefineOwnerKeyBoard.bind(this));
+        SceneManager._scene.addChild(this._windowDefineOwnerKeyBoard);
+    };
+
+    Window_keyboardSettings.prototype.showWindowDefineOwnerKeyBoard = function () {
+        SceneManager._scene._menuWindow.hide();
+        this._windowDefineOwnerKeyBoard.activate();
+        this._windowDefineOwnerKeyBoard.refresh();
+        this._windowDefineOwnerKeyBoard.show();
+    };
+
+    Window_keyboardSettings.prototype.hideWindowDefineOwnerKeyBoard = function () {
+        this._windowDefineOwnerKeyBoard.deactivate();
+        this._windowDefineOwnerKeyBoard.hide();
         SceneManager._scene._menuWindow.show();
         this.activate();
     };
@@ -2235,7 +2266,273 @@
         this.hide();
     };
 
+    //-----------------------------------------------------------------------------
+    // Window_keyboardSettings_defineOwnerKeyBoard
+    //
+    function Window_keyboardSettings_defineOwnerKeyBoard() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype = Object.create(Window_Command.prototype);
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.constructor = Window_keyboardSettings_defineOwnerKeyBoard;
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.initialize = function () {
+        Window_Command.prototype.initialize.call(this, 0, 0);
+        this.deactivate();
+        this.hide();
+        this.setHandlerMainCommands();
+        this.loadImages();
+        this._cursorRectHide = null;
+        this.createWindowSetOwnerKeyBoard();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.loadImages = function () {
+        ImageManager.reserveMultiplayerLocalIMG('selectKeyboard');
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.windowWidth = function () {
+        return Graphics.boxWidth;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.windowHeight = function () {
+        return Graphics.boxHeight;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.numVisibleRows = function () {
+        return 1;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / this.numVisibleRows());
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 62;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 2) - this.standardPadding() + rect.y, rect.width, align);
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.addMainCommands = function () {
+        this.addCommand('Teclado', 'setOwnerKeyboard');
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.setHandlerMainCommands = function () {
+        this.setHandler('setOwnerKeyboard', this.showWindowSetOwnerKeyBoard.bind(this));
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.drawItem = function (index) {
+        this.drawItemImage(index);
+        this.drawItemText(index);
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.drawItemImage = function (index) {
+        var rect = this.itemRect(index),
+            fontSize = this.contents.fontSize;
+        this.drawIMG('selectKeyboard', index, (rect.width / 4) + this.standardPadding() * 4, (rect.height / 4) + 12);
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 74;
+        this.drawText('Teclado', this.standardPadding(), this.standardPadding() * 4, rect.width, 'center');
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.drawItemText = function (index) {
+        var rect = this.itemRectForText(index);
+        this.resetFontSettings();
+        this.changeTextColor(this.systemColor());
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.contents.fontSize = 32;
+        this.drawText(`${this.commandKeyBoard(Input._inputOwner)} - Aperte('OK') para trocar o jogador`, 5, (rect.height / 2) + this.standardPadding() * 10, rect.width, 'center');
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.commandKeyBoard = function (keyboardIndex) {
+        switch (String(keyboardIndex).toLowerCase()) {
+            case 'player_1':
+                return 'JOGADOR 1';
+            case 'player_2':
+                return 'JOGADOR 2';
+            case 'player_3':
+                return 'JOGADOR 3';
+            case 'player_4':
+                return 'JOGADOR 4';
+        };
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.drawIMG = function (file, index, x, y, width, height) {
+        width = width || 288;
+        height = height || 288;
+        var bitmap = ImageManager.loadMultiplayerLocalIMG(file);
+        var pw = width;
+        var ph = height;
+        var sw = Math.min(width, pw);
+        var sh = Math.min(height, ph);
+        var dx = Math.floor(x + Math.max(width - pw, 0) / 2);
+        var dy = Math.floor(y + Math.max(height - ph, 0) / 2);
+        var sx = index % 4 * pw + (pw - sw) / 2;
+        var sy = Math.floor(index / 4) * ph + (ph - sh) / 2;
+        this.contents.blt(bitmap, sx, sy, sw, sh, dx, dy);
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype._updateCursor = function () {
+        var blinkCount = this._animationCount % 40;
+        var cursorOpacity = this.contentsOpacity;
+        if (this.active) {
+            if (blinkCount < 20) {
+                cursorOpacity -= blinkCount * 8;
+            } else {
+                cursorOpacity -= (40 - blinkCount) * 8;
+            }
+        }
+        this._windowCursorSprite.alpha = cursorOpacity / 255;
+        this._windowCursorSprite.visible = this._cursorRectHide ? false : this.isOpen();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.createWindowSetOwnerKeyBoard = function () {
+        this._windowSetOwnerKeyBoard = new Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard();
+        this._windowSetOwnerKeyBoard.setHandler('cancel', this.hideWindowSetOwnerKeyBoard.bind(this));
+        this.addChild(this._windowSetOwnerKeyBoard);
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.showWindowSetOwnerKeyBoard = function () {
+        this._windowSetOwnerKeyBoard.activate();
+        this._windowSetOwnerKeyBoard.show();
+        this._windowSetOwnerKeyBoard._winParent = this;
+        this._cursorRectHide = true;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.hideWindowSetOwnerKeyBoard = function () {
+        this._windowSetOwnerKeyBoard.deactivate();
+        this._windowSetOwnerKeyBoard.hide();
+        this.refresh();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard.prototype.refresh = function () {
+        Window_Command.prototype.refresh.call(this);
+        this.activate();
+        this._cursorRectHide = false;
+    };
+
+    //-----------------------------------------------------------------------------
+    // Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard
+    //
+    function Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype = Object.create(Window_Command.prototype);
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.constructor = Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard;
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.initialize = function () {
+        Window_Command.prototype.initialize.call(this, 25, (Graphics.boxHeight / 8) - 15);
+        this.deactivate();
+        this.hide();
+        this._winParent = null;
+        this.setHandlerMainCommands();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.windowWidth = function () {
+        return Graphics.boxWidth - 25 * 2;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.windowHeight = function () {
+        return 490;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.standardBackOpacity = function () {
+        return 100;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.numVisibleRows = function () {
+        return 4;
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.itemHeight = function () {
+        var clientHeight = this.windowHeight() - this.standardPadding() * 2;
+        return Math.floor(clientHeight / this.numVisibleRows());
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.drawItem = function (index) {
+        var rect = this.itemRectForText(index);
+        var align = 'center';
+        this.changeTextColor(this.systemColor());
+        this.contents.fontSize = 62;
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawText(this.commandName(index), rect.x, (rect.height / 2) - this.standardPadding() + rect.y, rect.width, align);
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.makeCommandList = function () {
+        this.addMainCommands();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.addMainCommands = function () {
+        this.addCommand('JOGADOR 1', 'player_1');
+        this.addCommand('JOGADOR 2', 'player_2');
+        this.addCommand('JOGADOR 3', 'player_3');
+        this.addCommand('JOGADOR 4', 'player_4');
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.setHandlerMainCommands = function () {
+        this.setHandler('player_1', this.setOwnerKeyBoard.bind(this, 'player_1'));
+        this.setHandler('player_2', this.setOwnerKeyBoard.bind(this, 'player_2'));
+        this.setHandler('player_3', this.setOwnerKeyBoard.bind(this, 'player_3'));
+        this.setHandler('player_4', this.setOwnerKeyBoard.bind(this, 'player_4'));
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.setOwnerKeyBoard = function (value) {
+        Input._inputOwner = value;
+        Input._fileSettingsUpdate();
+        this.closeWin();
+    };
+
+    Window_keyboardSettings_defineOwnerKeyBoard_setOwnerKeyBoard.prototype.closeWin = function () {
+        if (this._winParent)
+            this._winParent.refresh();
+        this.hide();
+    };
     // ----------------------------------------------------------------------------
     // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ MENU GERAL ↑ ↑ ↑ ↑
     // ----------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------
+    // CONFIGURAÇÃO DE MOVIMENTO DO JOGADOR PRINCIPAL
+    // Essa parte controla o sistema para o movimento individual do teclado.
+    //
+
+    //-----------------------------------------------------------------------------
+    // Input
+    //
+    Input._signX = function () {
+        var x = 0,
+            player1_id = this._inputId['player_1'];
+
+        if (this.isPressed('left', player1_id)) {
+            x--;
+        }
+        if (this.isPressed('right', player1_id)) {
+            x++;
+        }
+        return x;
+    };
+
+    Input._signY = function () {
+        var y = 0,
+            player1_id = this._inputId['player_1'];
+
+        if (this.isPressed('up', player1_id)) {
+            y--;
+        }
+        if (this.isPressed('down', player1_id)) {
+            y++;
+        }
+        return y;
+    };
+    // ---------------------------------------------------------------------------------------
+    // - - - END PART CODE ☼ ☼ ☺ ☺ ☼ ☼ CONFIGURAÇÃO DE MOVIMENTO DO JOGADOR PRINCIPAL ↑ ↑ ↑ ↑
+    // ---------------------------------------------------------------------------------------
 })();

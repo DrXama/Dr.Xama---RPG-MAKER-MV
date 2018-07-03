@@ -2,10 +2,10 @@
 // MVDebug
 // By Dr.Xamã
 // GS_MVDebug.js
-// Version: 1.16
+// Version: 1.17
 //===============================================================================
 /*:
- * @plugindesc v1.16 - Grande biblioteca de utilitários que fornece uma grande 
+ * @plugindesc v1.17 - Grande biblioteca de utilitários que fornece uma grande 
  * depuração do sistema.
  *
  * @author Dr.Xamã
@@ -94,7 +94,7 @@
 // IMPORT PLUGIN
 //===============================================================================
 var Imported = Imported || {};
-Imported["GS_debuggEx"] = "1.16";
+Imported["GS_debuggEx"] = "1.17";
 
 var GS = GS || {},
   MVDebug = {},
@@ -173,6 +173,7 @@ GS.MVD = MVD;
    * @property keyMapper
    * @type Object
    */
+  console.log(_InputkeyMapper);
   if (_InputkeyMapper instanceof Array) {
     _InputkeyMapper.push(
       {
@@ -189,6 +190,7 @@ GS.MVD = MVD;
       });
     _InputkeyMapper.map(function (key) {
       if (Input.keyMapper && key) {
+        if (typeof key === 'string') key = JSON.parse(key) || {};
         var keyCode = Number(key['Numero da tecla']),
           keyValue = String(key['Nome da tecla']);
         Object.defineProperty(Input.keyMapper, keyCode, {

@@ -31,6 +31,7 @@
  * Para evitar erros digite exatamente como está a baixo!
  * Comentario dos eventos:
  * - event_textOff - Desliga a exibição do nome do evento
+ * - event_textOn - Força a exibição do nome do evento
  * - event_name: String - Nome a ser exibido
  * - event_textColor: Number(0-31) - Numero da cor do texto
  * - event_textFontSize: Number(10-72) - Tamanho do texto

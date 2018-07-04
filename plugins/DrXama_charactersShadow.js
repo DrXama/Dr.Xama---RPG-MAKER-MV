@@ -2,7 +2,7 @@
 // DrXama_charactersShadow.js
 //==================================================================================================
 /*:
- * @plugindesc v1.11 - Adiciona sombras aos objetos.
+ * @plugindesc v1.13 - Adiciona sombras aos objetos.
  *
  * @author Dr.Xamã
  * 
@@ -201,7 +201,8 @@
 
     Sprite_CharacterShadow.prototype.updateTransparent = function () {
         if (this._character instanceof Game_Character) {
-            if (this._character.isTransparent() || this._character._hideSpriteCharacter) {
+            if (this._character.isTransparent() || this._character._hideSpriteCharacter ||
+                this._character.characterName().length <= 0) {
                 if (!this._characterHide) {
                     this._characterHide = true;
                     this.hide();
@@ -232,7 +233,8 @@
 
     Sprite_CharacterShadow.prototype.updateFollowers = function () {
         if (this._character instanceof Game_Follower) {
-            if (!this._character.isVisible() || this._character.actor().characterName().length <= 0) {
+            if (!this._character.isVisible() || this._character.actor().characterName().length <= 0 ||
+                this._character.characterName().length <= 0) {
                 this.hide();
             } else {
                 if ($gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY)) {
@@ -247,7 +249,8 @@
                 } else {
                     this.opacity = 255;
                 }
-                if (this._character.pos($gamePlayer._realX, $gamePlayer._realY) && !$gamePlayer.hideSpriteCharacter()) {
+                if (this._character.pos($gamePlayer._realX, $gamePlayer._realY) &&
+                    !$gamePlayer.hideSpriteCharacter() || this._character.characterName().length <= 0) {
                     this.hide();
                 } else {
                     if ($gamePlayer.isInVehicle()) {
@@ -264,7 +267,8 @@
 
     Sprite_CharacterShadow.prototype.updateEvents = function () {
         if (this._character instanceof Game_Event) {
-            if (this._character._erased || this._character._pageIndex == -1) {
+            if (this._character._erased || this._character._pageIndex == -1 ||
+                this._character.characterName().length <= 0) {
                 return this.hide();
             }
             if (this._eventHide) {
@@ -321,11 +325,9 @@
 
     Sprite_CharacterShadow.prototype.updateVehicles = function () {
         if (this._character instanceof Game_Vehicle) {
-            if (this._character._driving || this._character.isTransparent() || this._character.pos($gamePlayer._realX, $gamePlayer._realY) ||
-                $gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY)) {
-                if (this._character.isAirship() || this._character.isTransparent()) {
-                    this.hide();
-                }
+            if (this._character._driving || this._character.isTransparent() || this._character.characterName().length <= 0 || this._character.pos($gamePlayer._realX, $gamePlayer._realY) ||
+                $gamePlayer._followers.isSomeoneCollidedEx(this._character, this._character._realX, this._character._realY) || this._character.isAirship()) {
+                this.hide();
             } else {
                 if (!this._characterHide) {
                     this.show();

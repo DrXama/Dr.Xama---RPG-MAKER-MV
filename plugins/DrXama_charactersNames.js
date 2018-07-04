@@ -2,7 +2,7 @@
 // DrXama_charactersNames.js
 //==================================================================================================
 /*:
- * @plugindesc v1.12 - Adição de nome sobre o personagem, seguidores e eventos
+ * @plugindesc v1.13 - Adição de nome sobre o personagem, seguidores e eventos
  *
  * @author Dr.Xamã
  * 
@@ -255,6 +255,7 @@
                 var page = this._character.event().pages[i];
                 var hide = false;
                 var adjustX = false;
+                var forceShow = false;
                 page.list.forEach(function (line) {
                     if (line.code == 108 || line.code == 408) {
                         var text = line.parameters[0].trim();
@@ -262,6 +263,8 @@
                             bitmapText = text.replace('event_name:', '');
                         } else if (text.contains('event_textOff')) {
                             hide = true;
+                        } else if (text.contains('event_textOn')) {
+                            forceShow = true;
                         } else if (text.contains('event_textColor')) {
                             let colorId = parseInt(text.replace('event_textColor:', '')) || 0;
                             if (colorId < 0) colorId = 0;
@@ -311,10 +314,13 @@
                         }
                     }
                 });
-                if (hide) {
+                if (hide && !forceShow) {
                     bitmapTextShow = false;
                     this._bitmapTextHide = true;
                     this.hide();
+                }
+                if (forceShow) {
+                    this._bitmapTextForceShow = true;
                 }
                 if (adjustX) {
                     this._bitmapTextAdjustX = bitmapTextAdjustX;
@@ -341,12 +347,15 @@
         }
         if (this._character instanceof Game_Follower || this._character instanceof Game_Player) {
             if (this._character.actor) {
-                var actorId = this._character.actor().actorId();
-                var actor = $dataActors[actorId];
+                if (this._character.actor() != undefined) {
+                    var actorId = this._character.actor().actorId();
+                    var actor = $dataActors[actorId];
+                }
             } else {
                 var actorId = $gameParty.leader().actorId();
                 var actor = $dataActors[actorId];
             }
+            if (!actor) return;
             bitmapText = actor.name;
             var actorNameShow = eval(actorParameter(actorId)["Exibir nome"]) || false;
             var actorName = actorParameter(actorId)["Nome"];
@@ -530,21 +539,25 @@
 
     Sprite_CharacterName.prototype.updateTransparent = function () {
         if (this._character instanceof Game_Character) {
-            if (this._character.isTransparent() || this._character._hideSpriteCharacter) {
+            if (this._character.isTransparent() || this._character.characterName().length <= 0 ||
+                this._character._hideSpriteCharacter) {
                 this.hide();
             } else {
                 if (!this._bitmapTextHide) {
                     this.show();
                 }
             }
+            if (this._bitmapTextForceShow) this.show();
         }
     };
 
     Sprite_CharacterName.prototype.updateEvents = function () {
         if (this._character instanceof Game_Event) {
-            if (this._character._erased || this._character._pageIndex == -1) {
+            if (this._character._erased || this._character._pageIndex == -1 ||
+                this._character.characterName().length <= 0) {
                 this.hide();
             }
+            if (this._bitmapTextForceShow) this.show();
         }
     };
 })();

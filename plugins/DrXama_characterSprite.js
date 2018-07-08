@@ -2,7 +2,7 @@
 // DrXama_characterSprite.js
 //==================================================================================================
 /*:
- * @plugindesc v1.04 - Altera o sprite dos personagens, seguidores, veiculos e eventos
+ * @plugindesc v1.05 - Altera o sprite dos personagens, seguidores, veiculos e eventos
  *
  * @author Dr.Xamã
  *
@@ -10,7 +10,7 @@
  * @desc A velocidade em que a alteração é feita.
  * Padrão: 60 Frames = 1 Segundo
  * @type number
- * @default 60
+ * @default 5
  * @min 5
  * @max 999
  * 
@@ -91,37 +91,37 @@
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'event', eventId],
-                    [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'event', eventId],
+                [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'event', eventId],
-                    [$gameTemp.characterSprite_setScale, scale]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'event', eventId],
+                [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'event', eventId],
-                    [$gameTemp.characterSprite_setOpacity, opacity]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'event', eventId],
+                [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'event', eventId],
-                    [$gameTemp.characterSprite_setBlend, blend]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'event', eventId],
+                [$gameTemp.characterSprite_setBlend, blend]
                 ]);
             }
         }
@@ -135,37 +135,37 @@
                     b = parseInt(args[3]) || 0,
                     gray = parseInt(args[4]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'player', playerId],
-                    [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'player', playerId],
+                [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[1]) || 0, parseFloat(args[2]) || 0];
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'player', playerId],
-                    [$gameTemp.characterSprite_setScale, scale]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'player', playerId],
+                [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[1]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'player', playerId],
-                    [$gameTemp.characterSprite_setOpacity, opacity]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'player', playerId],
+                [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[1]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'player', playerId],
-                    [$gameTemp.characterSprite_setBlend, blend]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'player', playerId],
+                [$gameTemp.characterSprite_setBlend, blend]
                 ]);
             }
         }
@@ -179,37 +179,37 @@
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'follower', followerId],
-                    [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'follower', followerId],
+                [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'follower', followerId],
-                    [$gameTemp.characterSprite_setScale, scale]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'follower', followerId],
+                [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'follower', followerId],
-                    [$gameTemp.characterSprite_setOpacity, opacity]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'follower', followerId],
+                [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'follower', followerId],
-                    [$gameTemp.characterSprite_setBlend, blend]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'follower', followerId],
+                [$gameTemp.characterSprite_setBlend, blend]
                 ]);
             }
         }
@@ -223,37 +223,37 @@
                     b = parseInt(args[4]) || 0,
                     gray = parseInt(args[5]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
-                    [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
+                [$gameTemp.characterSprite_setColorTone, [r, g, b, gray]]
                 ]);
             }
             if (command == 'scale') {
                 var scale = [parseFloat(args[2]) || 0, parseFloat(args[3]) || 0];
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
-                    [$gameTemp.characterSprite_setScale, scale]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
+                [$gameTemp.characterSprite_setScale, scale]
                 ]);
             }
             if (command == 'opacity') {
                 var opacity = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
-                    [$gameTemp.characterSprite_setOpacity, opacity]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
+                [$gameTemp.characterSprite_setOpacity, opacity]
                 ]);
             }
             if (command == 'blend') {
                 var blend = parseInt(args[2]) || 0;
                 $gameTemp.characterSprite_addConfig([{
-                        'isCallOk': false
-                    },
-                    [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
-                    [$gameTemp.characterSprite_setBlend, blend]
+                    'isCallOk': false
+                },
+                [$gameTemp.characterSprite_setId, 'vehicle', vehicleId],
+                [$gameTemp.characterSprite_setBlend, blend]
                 ]);
             }
         }
@@ -481,18 +481,14 @@
         }
     };
 
+    const sprite_character_update = Sprite_Character.prototype.update;
     Sprite_Character.prototype.update = function () {
-        Sprite_Base.prototype.update.call(this);
-        this.updateBitmap();
-        this.updateFrame();
-        this.updatePosition();
-        this.updateAnimation();
-        this.updateBalloon();
-        this.updateOther();
+        sprite_character_update.call(this);
         this.updateCharacterSprite();
+        this.updateBushDepth();
     };
 
-    Sprite_Character.prototype.updateOther = function () {
+    Sprite_Character.prototype.updateBushDepth = function () {
         this._bushDepth = this._character.bushDepth();
     };
 

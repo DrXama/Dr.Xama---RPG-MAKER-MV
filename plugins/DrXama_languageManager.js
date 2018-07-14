@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.00 - Gerenciador de traduções
+ * @plugindesc v2.01 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -3218,7 +3218,6 @@
 	//
 	const window_base_convertEscapeCharacters = Window_Base.prototype.convertEscapeCharacters;
 	Window_Base.prototype.convertEscapeCharacters = function (text) {
-		window_base_convertEscapeCharacters.apply(this, arguments);
 		text = text.replace(/\\/g, '\x1b');
 		text = text.replace(/\x1b\x1b/g, '\\');
 		text = text.replace(/\x1bTX\[(\d+)\]/gi, function () {
@@ -3227,7 +3226,7 @@
 		text = text.replace(/\x1bST\[(.*)\]/gi, function () {
 			return specialTextValue(arguments[1]);
 		}.bind(this));
-		return text;
+		return window_base_convertEscapeCharacters.apply(this, [text]);
 	};
 
 	//-----------------------------------------------------------------------------

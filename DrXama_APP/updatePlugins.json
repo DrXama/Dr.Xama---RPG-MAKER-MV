@@ -2,5 +2,49 @@
     "DrXama_MVDebug": {
         "version": "1.17",
         "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_MVDebug.js"
+    },
+    "DrXama_characterSprite": {
+        "version": "1.05",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_characterSprite.js"
+    },
+    "DrXama_charactersNames": {
+        "version": "1.14",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_charactersNames.js"
+    },
+    "DrXama_charactersShadow": {
+        "version": "1.13",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_charactersShadow.js"
+    },
+    "DrXama_copyEvents": {
+        "version": "1.08",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_copyEvents.js"
+    },
+    "DrXama_craftSystem": {
+        "version": "1.02",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_craftSystem.js"
+    },
+    "DrXama_inventoryManager": {
+        "version": "1.00",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_inventoryManager.js"
+    },
+    "DrXama_languageManager": {
+        "version": "2.01",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_languageManager.js"
+    },
+    "DrXama_spriteDestination": {
+        "version": "1.00",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_spriteDestination.js"
+    },
+    "DrXama_updateManager": {
+        "version": "2.01",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_updateManager.js"
+    },
+    "DrXama_windowManager": {
+        "version": "1.01",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowManager.js"
+    },
+    "DrXama_windowPauseSign": {
+        "version": "1.02",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowPauseSign.js"
     }
 }

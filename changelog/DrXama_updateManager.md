@@ -1,3 +1,6 @@
+# v2.02 - 22 de agosto de 2018
+- Corrigido erro no sistema quando estava sem internet
+
 # v2.01 - 22 de junho de 2018
 - Corrigido erro no download do arquivo de atualizações
 

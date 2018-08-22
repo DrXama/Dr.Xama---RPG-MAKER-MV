@@ -2,7 +2,7 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.01 - Gerenciador de atualizações
+ * @plugindesc v2.02 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
  * 
@@ -158,8 +158,16 @@
     const __scene_boot_start = Scene_Boot.prototype.start;
     Scene_Boot.prototype.start = function () {
         if (!roster_downloadsComplete) {
-            initializeSystem();
             this.drawLoadUpdate();
+            isInternetStates({
+                success: () => {
+                    initializeSystem();
+                },
+                failure: () => {
+                    roster_downloadsComplete = true;
+                    completeAllDownloads();
+                }
+            });
         } else {
             __scene_boot_start.call(this);
         }
@@ -702,8 +710,7 @@
             if (!roster_initialized) {
                 /** @description Deleta o arquivo de atualização */
                 function deleteFileUpdate() {
-                    if (fs.existsSync(localPath(fileUpdate)))
-                        fs.unlinkSync(localPath(fileUpdate));
+                    if (fs.existsSync(localPath(fileUpdate))) fs.unlinkSync(localPath(fileUpdate));
                 }
                 // Arquivo de atualizações
                 if (fs.existsSync(localPath(fileUpdate))) {
@@ -800,6 +807,34 @@
      */
     function initializeSystem() {
         downloadUpdateFile();
+    };
+
+    /**
+     * @description Verifica se existe internet
+     */
+    function isInternetStates(callback) {
+        if (typeof callback != 'object') return;
+        callback.dns = [
+            'google.com',
+            'uol.com.br'
+        ];
+        callback.counter = callback.dns.length;
+        callback.dns.map(dns => {
+            require('dns').lookup(dns, function (err) {
+                callback.counter--;
+                if (callback.counter <= 0) {
+                    if (err) {
+                        if (err.code === "ENOTFOUND" || err.code == "SERVFAIL") {
+                            if (typeof callback.failure === 'function')
+                                callback.failure();
+                        }
+                    } else {
+                        if (typeof callback.success === 'function')
+                            callback.success();
+                    }
+                }
+            });
+        });
     };
 
     /**
@@ -1036,30 +1071,34 @@
                 }
             }
             var file = fs.createWriteStream(fileDest),
-                request = http.get(fileUrl, function (res) {
-                    res.pipe(file);
-                    windowProgress.add();
+                fileComplete = () => {
+                    completeDownloadToRoster(fileName, filePath, fileVersion, fileSize, fileRestore);
+                    windowProgress.remove();
                     windowProgress.update();
-                    res.on('data', function (data) {
-                        var menor = formatBytes(res.socket.bytesRead),
-                            maior = formatBytes(res.headers['content-length']),
-                            total = padZero(res.headers['content-length'], 2),
-                            corrent = res.socket.bytesRead,
-                            porcent = corrent / total * 100;
-                        fileSize = maior;
-                        windowDownloadProgress.setTextFile(`${fileName}(${windowDownloadProgress.getProgress()}%)`);
-                        windowDownloadProgress.setTextBar(`${menor} / ${maior}`);
-                        windowDownloadProgress.setProgress(porcent);
-                        windowDownloadProgress.setProgressBar(porcent);
-                    }).on('end', function () {
-                        completeDownloadToRoster(fileName, filePath, fileVersion, fileSize, fileRestore);
-                        windowProgress.remove();
-                        windowProgress.update();
-                        windowDownloadProgress.resetProgress();
-                    });
-                }).on('error', function (err) {
-                    fs.unlinkSync(fileDest);
+                    windowDownloadProgress.resetProgress();
+                };
+            http.get(fileUrl, function (res) {
+                res.pipe(file);
+                windowProgress.add();
+                windowProgress.update();
+                res.on('data', function (data) {
+                    var menor = formatBytes(res.socket.bytesRead),
+                        maior = formatBytes(res.headers['content-length']),
+                        total = padZero(res.headers['content-length'], 2),
+                        corrent = res.socket.bytesRead,
+                        porcent = corrent / total * 100;
+                    fileSize = maior;
+                    windowDownloadProgress.setTextFile(`${fileName}(${windowDownloadProgress.getProgress()}%)`);
+                    windowDownloadProgress.setTextBar(`${menor} / ${maior}`);
+                    windowDownloadProgress.setProgress(porcent);
+                    windowDownloadProgress.setProgressBar(porcent);
+                }).on('end', function () {
+                    fileComplete();
                 });
+            }).on('error', function (err) {
+                fileComplete();
+                fs.unlinkSync(fileDest);
+            });
         }
     };
 })();

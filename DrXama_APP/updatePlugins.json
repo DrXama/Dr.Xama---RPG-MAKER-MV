@@ -46,5 +46,9 @@
     "DrXama_windowPauseSign": {
         "version": "1.02",
         "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowPauseSign.js"
+    },
+    "DrXama_MapSoundEx": {
+        "version": "1.00",
+        "link": "https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_MapSoundEx.js"
     }
 }

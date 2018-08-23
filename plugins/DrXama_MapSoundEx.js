@@ -2,7 +2,7 @@
 // DrXama_MapSoundEx.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Esse plugin cria sons ambiente com virtualização 3D.
+ * @plugindesc v1.01 - Esse plugin cria sons ambiente com virtualização 3D.
  *
  * @author Dr.Xamã
  * 
@@ -178,6 +178,48 @@
             pTileY = player._y,
             distance = parseInt(String(`${$gameMap.distance(this._tileX, this._tileY, pTileX, pTileY)}0`)),
             volume = this._volumeEx * (100 - distance) / 10000;
+        if (!this._volumeFadeOptions) {
+            this._volumeFadeOptions = {
+                active: false,
+                frames: 120,
+                fadeOut: {
+                    frames: 0,
+                    active: false
+                },
+                fadeIn: {
+                    frames: 0,
+                    active: false
+                }
+            }
+        }
+        if (this._volumeFadeOptions.fadeOut.active) {
+            if (this._volumeFadeOptions.fadeOut.frames < this._volumeFadeOptions.frames) {
+                this._volumeFadeOptions.fadeOut.frames++;
+                if (this.volume > 0) this.volume -= .01;
+                else this._volumeFadeOptions.fadeOut.active = false;
+            }
+            return;
+        } else if (this._volumeFadeOptions.fadeIn.active) {
+            if (this._volumeFadeOptions.fadeOut.frames < this._volumeFadeOptions.frames) {
+                this._volumeFadeOptions.fadeOut.frames++;
+                if (this.volume < volume) this.volume += .01;
+                else {
+                    this._volumeFadeOptions.fadeIn.active = false;
+                    this._volumeFadeOptions.active = false;
+                }
+            }
+            return;
+        }
+        if (volume <= 0 && !this._volumeFadeOptions.active) {
+            this._volumeFadeOptions.active = true;
+            this._volumeFadeOptions.fadeOut.active = true;
+            this._volumeFadeOptions.fadeOut.frames = 0;
+            return this._volumeFadeOptions.fadeIn.active = false;
+        } else if (volume >= .1 && this._volumeFadeOptions.active) {
+            this._volumeFadeOptions.fadeIn.active = true;
+            this._volumeFadeOptions.fadeIn.frames = 0;
+            return this._volumeFadeOptions.fadeOut.active = false;
+        }
         this.volume = volume > 0 ? volume : 0;
     };
 

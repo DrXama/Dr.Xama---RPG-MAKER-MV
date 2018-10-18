@@ -14,15 +14,22 @@
  * ================================================================================
  *    Comandos de Plugin e Script
  * ================================================================================
- * - teleportToRegion mapId regionId direction fade
- *   - direction: 2, 4, 6, 8
- *   - fade: 0 ou 1
- *   - Exemplo: teleportToRegion 1 10 2 0
+ * - createTeleportToRegion mapId regionId
+ *   - Exemplo: createTeleportToRegion 1 2
  *
- * - $gameTemp.teleportToRegion(mapId, regionId, direction);
- *   - direction: 2, 4, 6, 8
- *   - fade: 0 ou 1
- *   - Exemplo: $gameTemp.teleportToRegion(1, 10, 2, 0);
+ * - teleportToRegion mapId direction fade
+ *   - direction: 2, 4, 6, 8 // 2 = Baixo, 4 = Esquerda, 6 = Direita e 8 = Cima
+ *   - fade: 0 ou 1 // 0 = Preto e 1 = Branco
+ *   - Exemplo: teleportToRegion 1 2 0
+ *
+ * - $gameTemp.createTeleportToRegion(mapId, regionId);
+ * - $gameTemp.teleportToRegion(mapId, direction, fade);
+ * - $gameTemp.getRegionXy(mapId, Xy);
+ *   - Xy: 'X', 'Y' ou nada
+ *   - Exemplo: $gameTemp.getRegionXy(1, 'X'); // Pega o TileX
+ *   - Exemplo: $gameTemp.getRegionXy(1, 'Y'); // Pega o TileY
+ *   - Exemplo: $gameTemp.getRegionXy(1); // Pega ambos os tiles em um array,
+ *              elemento 0 = X e 1 = Y
  * ================================================================================
  *    Informações
  * ================================================================================
@@ -89,7 +96,8 @@
                 } else {
                     x = 0;
                     y++;
-                } x++;
+                }
+                x++;
             }
         }
         getRegionXy(Xy) {
@@ -126,12 +134,25 @@
         return this._teleportRegion[mapId];
     };
 
-    Game_Temp.prototype.teleportToRegion = function (mapId, regionId, direction, fade) {
+    Game_Temp.prototype.createTeleportToRegion = function (mapId, regionId) {
+        $gameMap._interpreter.pluginCommand('createteleporttoregion', [
+            String(mapId),
+            String(regionId)
+        ]);
+    };
+
+    Game_Temp.prototype.teleportToRegion = function (mapId, direction, fade) {
         $gameMap._interpreter.pluginCommand('teleportToRegion', [
             String(mapId),
-            String(regionId),
             String(direction),
             String(fade)
+        ]);
+    };
+
+    Game_Temp.prototype.getRegionXy = function (mapId, Xy) {
+        return $gameMap._interpreter.pluginCommand('getRegionXy', [
+            String(mapId),
+            String(Xy)
         ]);
     };
 
@@ -141,16 +162,27 @@
     const _game_interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
     Game_Interpreter.prototype.pluginCommand = function (command, args) {
         _game_interpreter_pluginCommand.apply(this, arguments);
+        if (String(command).toLocaleLowerCase() === 'createteleporttoregion') {
+            let mapId = Number(args[0]),
+                regionId = Number(args[1]);
+            $gameTemp.addTeleportRegion(mapId, DataManager.createTeleportRegion(mapId, regionId));
+        }
         if (String(command).toLocaleLowerCase() === 'teleporttoregion') {
             let mapId = Number(args[0]),
-                regionId = Number(args[1]),
-                direction = Number(args[2]),
-                fade = Number(args[3]);
-            $gameTemp.addTeleportRegion(mapId, DataManager.createTeleportRegion(mapId, regionId));
-            $gameTemp.getTeleportRegion(mapId).teleportToRegion({
-                direction: direction,
-                fade: fade
-            });
+                direction = Number(args[1]),
+                fade = Number(args[2]);
+            if ($gameTemp.getTeleportRegion(mapId) instanceof TeleportRegion)
+                $gameTemp.getTeleportRegion(mapId).teleportToRegion({
+                    direction: direction,
+                    fade: fade
+                });
+        }
+        if (String(command).toLocaleLowerCase() === 'getregionxy') {
+            let mapId = Number(args[0]),
+                Xy = String(args[1]);
+            if ($gameTemp.getTeleportRegion(mapId) instanceof TeleportRegion)
+                return $gameTemp.getTeleportRegion(mapId).getRegionXy(Xy);
+            return false;
         }
     };
 })();

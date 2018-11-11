@@ -3,31 +3,21 @@
 // DrXama_getEventId.js
 //==================================================================================================
 /*:
- * @plugindesc v1.00 - Pega o ID do evento pelo nome do mesmo em qualquer mapa.
+ * @plugindesc v2.00 - Pega o ID do evento pelo nome do mesmo em qualquer mapa.
  *
  * @author Dr.Xamã
+ * 
+ * @param Quantidade de mapas
+ * @desc Quantos mapas terão as informações carregadas?
+ * @type number
+ * @default 999
+ * @min 1
  * 
  * @help
  * ================================================================================
  *    Introdução
  * ================================================================================
  * Você coloca o ID do mapa e o nome do evento para pegar o ID do mesmo.
- * ================================================================================
- *    Comandos
- * ================================================================================
- * - Para pegar o id do evento
- * - $gameTemp.getEventId(mapId, eventName, callback);
- *   - mapId : ID do mapa
- *   - eventName : Nome do evento
- *   - callback : Função a ser executada após a verificação
- * 
- * Exemplos:
- * - $gameTemp.getEventId(1, 'Teste');
- * - $gameTemp.getEventId(1, 'Teste', eventId => { $gameVariables.setValue(1, eventId) });
- * 
- * - Para pegar o id do evento que está no cache
- * - $gameTemp.cacheEventId();
- * 
  * ================================================================================
  *    Informações
  * ================================================================================
@@ -39,86 +29,72 @@
     /**
      * Global Variables
      */
-    let _mapData = {},
-        _eventName = '',
-        _eventId,
-        _callback;
+    let params = PluginManager.parameters('DrXama_getEventId'),
+        qmaps = Number(params['Quantidade de mapas']),
+        dmaps = {};
+
+    /**
+     * Functions
+     */
+    function localPath(p) {
+        if (p.substring(0, 1) === '/')
+            p = p.substring(1);
+        var path = require('path'),
+            base = path.dirname(process.mainModule.filename);
+        return path.join(base, p);
+    };
 
     /**
      * DataManager
      */
-    DataManager._DrXama_getEventId_loadMapData = function (mapId) {
+    DataManager._drXama_loadMapData = function (mapId) {
         if (mapId > 0) {
             var filename = 'Map%1.json'.format(mapId.padZero(3));
-            this._mapLoader = ResourceHandler.createLoader('data/' + filename, this.loadDataFile.bind(this, '$dataMap', filename));
-            this._DrXama_getEventId_loadDataFile('$dataMap', filename);
+            if (require('fs').existsSync(localPath(`data/${filename}`))) {
+                this._mapLoader = ResourceHandler.createLoader('data/' + filename, this.loadDataFile.bind(this, '$dataMap', filename));
+                this._drXama_loadDataFile(mapId, `$dataMap${mapId.padZero(3)}`, filename);
+            }
         }
     };
 
-    DataManager._DrXama_getEventId_loadDataFile = function (name, src) {
+    DataManager._drXama_loadDataFile = function (mapId, name, src) {
         var xhr = new XMLHttpRequest();
         var url = 'data/' + src;
         xhr.open('GET', url);
         xhr.overrideMimeType('application/json');
         xhr.onload = function () {
             if (xhr.status < 400) {
-                _mapData[name] = JSON.parse(xhr.responseText);
-                DataManager._DrXama_getEventId_onLoad(_mapData[name], () => {
-                    $gameTemp.processEventId();
-                });
+                dmaps[name] = JSON.parse(xhr.responseText);
+                dmaps[name]['id'] = mapId;
+                DataManager.onLoad(dmaps[name]);
             }
         };
         xhr.onerror = this._mapLoader || function () {
             DataManager._errorUrl = DataManager._errorUrl || url;
         };
-        _mapData[name] = null;
+        dmaps[name] = null;
         xhr.send();
-    };
-
-    DataManager._DrXama_getEventId_onLoad = function (object, callback) {
-        var array;
-        if (object === $dataMap) {
-            this.extractMetadata(object);
-            array = object.events;
-        } else {
-            array = object;
-        }
-        if (Array.isArray(array)) {
-            for (var i = 0; i < array.length; i++) {
-                var data = array[i];
-                if (data && data.note !== undefined) {
-                    this.extractMetadata(data);
-                }
-            }
-        }
-        if (object === $dataSystem) {
-            Decrypter.hasEncryptedImages = !!object.hasEncryptedImages;
-            Decrypter.hasEncryptedAudio = !!object.hasEncryptedAudio;
-            Scene_Boot.loadSystemImages();
-        }
-        if (typeof callback === 'function') callback();
     };
 
     /**
      * Game_Temp
      */
-    Game_Temp.prototype.getEventId = function (mapId, eventName, callback) {
-        DataManager._DrXama_getEventId_loadMapData(mapId);
-        _eventName = String(eventName);
-        _callback = callback;
-    };
-
-    Game_Temp.prototype.processEventId = function () {
-        _mapData['$dataMap'].events.map(event => {
-            if (event)
-                if (event.name === _eventName) {
-                    if (typeof _callback === 'function') return _callback(event.id);
-                    _eventId = event.id;
-                }
+    Game_Temp.prototype.getEventId = function (mapId, eventName) {
+        let eventsId = [];
+        Object.keys(dmaps).map(key => {
+            let map = dmaps[key];
+            if (map.id === Number(mapId)) {
+                map.events.map(event => {
+                    if (event && event.name === String(eventName))
+                        eventsId.push(event.id);
+                })
+            }
         });
+        return eventsId;
     };
 
-    Game_Temp.prototype.cacheEventId = function () {
-        return _eventId;
-    }
+    /**
+     * GET MAP DATA
+     */
+    (() => { let i = 0; while (i < qmaps) DataManager._drXama_loadMapData(i++); })();
 })();

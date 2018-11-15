@@ -2,7 +2,7 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.09 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.1.09 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
  *
@@ -15,20 +15,39 @@
  *
  * @help
  * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * v1.1.09:
+ * Foi adicionado uma nova funcionalidade que possibilita ao desenvolvedor
+ * ativar/desativar as 'Switches Locais' dos eventos.
+ * ================================================================================
  *    Introdução
  * ================================================================================
  * Faça uma copia de qualquer evento que quiser.
  * ================================================================================
  *    Comandos de plugin
  * ================================================================================
- * copyEvent mapId eventId tileX tileY - Copia o evento no mapa atual
- * copyEventFrontPlayer mapId eventId - Copia o evento para a frente do jogador
- * copyEventBackPlayer mapId eventId - Copia o evento para trás do jogador
- * copyEventLeftPlayer mapId eventId - Copia o evento para a esquerda do jogador
- * copyEventRightPlayer mapId eventId - Copia o evento para a direita do jogador
- * copyEventRegion mapId eventId regionId quantity - Copia o evento para a região
- * copyEventName eventName mapId tileX tileY - Copia o evento para o mapa pelo
- *                                             nome do evento
+ * copyEvent mapId eventId tileX tileY switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento no mapa atual
+ * 
+ * copyEventFrontPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento para a frente do jogador
+ * 
+ * copyEventBackPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento para trás do jogador
+ * 
+ * copyEventLeftPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento para a esquerda do jogador
+ * 
+ * copyEventRightPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento para a direita do jogador
+ * 
+ * copyEventRegion mapId eventId regionId quantity switchLocalA switchLocalB 
+ * switchLocalC switchLocalD - Copia o evento para a região
+ * 
+ * copyEventName eventName mapId tileX tileY switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copia o evento para o mapa pelo nome do evento
+ * 
  * Exemplo: copyEvent 1 1 10 4 - Copia o evento 1 do mapa 1 para a posição x e y
  * Exemplo: copyEventFrontPlayer 1 1 - Copia o evento 1 do mapa 1 para trás do
  *                                     jogador
@@ -50,19 +69,32 @@
  * ================================================================================
  *    Comandos de script
  * ================================================================================
- * $gameMap.copyEvent(mapId, eventId, mapX, mapY) - Copia o evento no mapa atual
- * $gameMap.copyEventFrontPlayer(mapId, eventId) - Copia o evento 1 do mapa 1 para
- *                                                 trás do jogador
- * $gameMap.copyEventBackPlayer(mapId, eventId) - Copia o evento para trás do
- *                                                jogador
- * $gameMap.copyEventLeftPlayer(mapId, eventId) - Copia o evento para a esquerda do
- *                                                jogador
- * $gameMap.copyEventRightPlayer(mapId, eventId) - Copia o evento para a direita do
- *                                                 jogador
- * $gameMap.copyEventRegion(mapId, eventId, regionId, quantity) - Copia o evento
- *                                                                para a região
- * $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity)
+ * $gameMap.copyEvent(mapId, eventId, mapX, mapY, selfSwitches) 
+ * - Copia o evento no mapa atual
+ * 
+ * $gameMap.copyEventFrontPlayer(mapId, eventId, selfSwitches) 
+ * - Copia o evento 1 do mapa 1 para trás do jogador
+ * 
+ * $gameMap.copyEventBackPlayer(mapId, eventId, selfSwitches) 
+ * - Copia o evento para trás do jogador
+ * 
+ * $gameMap.copyEventLeftPlayer(mapId, eventId, selfSwitches) 
+ * - Copia o evento para a esquerda do jogador
+ * 
+ * $gameMap.copyEventRightPlayer(mapId, eventId, selfSwitches) 
+ * - Copia o evento para a direita do jogador
+ * 
+ * $gameMap.copyEventRegion(mapId, eventId, regionId, quantity, selfSwitches) 
+ * - Copia o evento para a região
+ * 
+ * $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity, selfSwitches)
  *  - Copia o evento para o mapa pelo nome do evento
+ * 
+ * Exemplo: 
+ * - $gameMap.copyEvent(1, 2, 4, 8, [true])
+ *   - Copia o evento 2 do mapa 1 para a posição 4(X) e 8(Y), definindo o switch 
+ *     local A para true(ativado)
+ * 
  * ================================================================================
  *    Informações
  * ================================================================================
@@ -88,6 +120,12 @@
             var eventId = parseInt(args[1]) || 0;
             var mapX = parseInt(args[2]) || 0;
             var mapY = parseInt(args[3]) || 0;
+            var selfSwitches = {
+                A: Boolean(args[4]) || null,
+                B: Boolean(args[5]) || null,
+                C: Boolean(args[6]) || null,
+                D: Boolean(args[7]) || null
+            };
             var src = 'Map%1.json'.format(mapId.padZero(3));
             var callback = function (mapInfo) {
                 if (!mapInfo) {
@@ -107,6 +145,18 @@
                     var eventIndexOf = $dataMap.events.indexOf(event);
                     // Cria o evento no mapa
                     var eventMap = new Game_Event($gameMap._mapId, eventIndexOf);
+                    // Configura o SelfSwitches
+                    var keys = {
+                        A: [eventMap._mapId, eventMap._eventId, "A"],
+                        B: [eventMap._mapId, eventMap._eventId, "B"],
+                        C: [eventMap._mapId, eventMap._eventId, "C"],
+                        D: [eventMap._mapId, eventMap._eventId, "D"]
+                    };
+                    if (selfSwitches.A != null) $gameSelfSwitches.setValue(keys.A, selfSwitches.A);
+                    if (selfSwitches.B != null) $gameSelfSwitches.setValue(keys.B, selfSwitches.B);
+                    if (selfSwitches.C != null) $gameSelfSwitches.setValue(keys.C, selfSwitches.C);
+                    if (selfSwitches.D != null) $gameSelfSwitches.setValue(keys.D, selfSwitches.D);
+                    // ---------------------------------------------
                     $gameMap._events.push(eventMap);
                     $gameMap._eventsCopy.push(event);
                     SceneManager._scene._spriteset.drXama_copyEvent(eventMap);
@@ -128,29 +178,49 @@
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventfrontplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            $gameMap.copyEventFrontPlayer(mapId, eventId);
+            var selfSwitches_A = Boolean(args[2]) || null;
+            var selfSwitches_B = Boolean(args[3]) || null;
+            var selfSwitches_C = Boolean(args[4]) || null;
+            var selfSwitches_D = Boolean(args[5]) || null;
+            $gameMap.copyEventFrontPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventbackplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            $gameMap.copyEventBackPlayer(mapId, eventId);
+            var selfSwitches_A = Boolean(args[2]) || null;
+            var selfSwitches_B = Boolean(args[3]) || null;
+            var selfSwitches_C = Boolean(args[4]) || null;
+            var selfSwitches_D = Boolean(args[5]) || null;
+            $gameMap.copyEventBackPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventleftplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            $gameMap.copyEventLeftPlayer(mapId, eventId);
+            var selfSwitches_A = Boolean(args[2]) || null;
+            var selfSwitches_B = Boolean(args[3]) || null;
+            var selfSwitches_C = Boolean(args[4]) || null;
+            var selfSwitches_D = Boolean(args[5]) || null;
+            $gameMap.copyEventLeftPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventrightplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            $gameMap.copyEventRightPlayer(mapId, eventId);
+            var selfSwitches_A = Boolean(args[2]) || null;
+            var selfSwitches_B = Boolean(args[3]) || null;
+            var selfSwitches_C = Boolean(args[4]) || null;
+            var selfSwitches_D = Boolean(args[5]) || null;
+            $gameMap.copyEventRightPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventregion') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
             var regionId = parseInt(args[2]) || -1;
             var quantity = parseInt(args[3]) || 0;
-            $gameMap.copyEventRegion(mapId, eventId, regionId, quantity);
+            var selfSwitches_A = Boolean(args[4]) || null;
+            var selfSwitches_B = Boolean(args[5]) || null;
+            var selfSwitches_C = Boolean(args[6]) || null;
+            var selfSwitches_D = Boolean(args[7]) || null;
+            $gameMap.copyEventRegion(mapId, eventId, regionId, quantity, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventname') {
             var eventName = String(args[0]) || '';
@@ -164,19 +234,24 @@
                 tileY = parseInt(args[3]) || 0;
                 quantity = parseInt(args[4]) || 0;
             }
-            $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity);
+            var selfSwitches_A = Boolean(args[5]) || null;
+            var selfSwitches_B = Boolean(args[6]) || null;
+            var selfSwitches_C = Boolean(args[7]) || null;
+            var selfSwitches_D = Boolean(args[8]) || null;
+            $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
     };
     //================================================================================
     // Game_Map
     //================================================================================
     // Copia o evento para a posição x e y
-    Game_Map.prototype.copyEvent = function (mapId, eventId, mapX, mapY) {
-        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+    Game_Map.prototype.copyEvent = function (mapId, eventId, mapX, mapY, selfSwitches) {
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`,
+        `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
     };
 
     // Copia o evento para a frente do jogador
-    Game_Map.prototype.copyEventFrontPlayer = function (mapId, eventId) {
+    Game_Map.prototype.copyEventFrontPlayer = function (mapId, eventId, selfSwitches) {
         var mapX,
             mapY;
         switch ($gamePlayer.direction()) {
@@ -197,11 +272,12 @@
                 mapY = $gamePlayer._y;
                 break;
         }
-        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`,
+        `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
     };
 
     // Copia o evento para trás do jogador
-    Game_Map.prototype.copyEventBackPlayer = function (mapId, eventId) {
+    Game_Map.prototype.copyEventBackPlayer = function (mapId, eventId, selfSwitches) {
         var mapX,
             mapY;
         switch ($gamePlayer.direction()) {
@@ -222,11 +298,12 @@
                 mapY = $gamePlayer._y;
                 break;
         }
-        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`,
+        `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
     };
 
     // Copia o evento para a esquerda do jogador
-    Game_Map.prototype.copyEventLeftPlayer = function (mapId, eventId) {
+    Game_Map.prototype.copyEventLeftPlayer = function (mapId, eventId, selfSwitches) {
         var mapX,
             mapY;
         switch ($gamePlayer.direction()) {
@@ -247,12 +324,12 @@
                 mapY = $gamePlayer._y - 1;
                 break;
         }
-        console.log(mapX, mapY);
-        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`,
+        `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
     };
 
     // Copia o evento para a direita do jogador
-    Game_Map.prototype.copyEventRightPlayer = function (mapId, eventId) {
+    Game_Map.prototype.copyEventRightPlayer = function (mapId, eventId, selfSwitches) {
         var mapX,
             mapY;
         switch ($gamePlayer.direction()) {
@@ -273,11 +350,12 @@
                 mapY = $gamePlayer._y + 1;
                 break;
         }
-        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`]);
+        this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapX}`, `${mapY}`,
+        `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
     };
 
     // Copia o evento aleatoriamente para a região
-    Game_Map.prototype.copyEventRegion = function (mapId, eventId, regionId, quantity) {
+    Game_Map.prototype.copyEventRegion = function (mapId, eventId, regionId, quantity, selfSwitches) {
         var regionXy = (function () {
             var value = [];
             var x = 0;
@@ -317,7 +395,8 @@
             if (regionEventXyIsValid(mapXy[0], mapXy[1])) {
                 if ($gameMap.eventsXy(mapXy[0], mapXy[1]).length <= 0) {
                     regionEventXy.push([mapXy[0], mapXy[1]]);
-                    this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapXy[0]}`, `${mapXy[1]}`]);
+                    this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${eventId}`, `${mapXy[0]}`, `${mapXy[1]}`,
+                    `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                 } else {
                     regionEventXy.push([-1, -1]);
                 }
@@ -333,7 +412,7 @@
     };
 
     // Copia o evento para o mapa pelo nome do evento
-    Game_Map.prototype.copyEventName = function (eventName, mapId, tileX, tileY, quantity) {
+    Game_Map.prototype.copyEventName = function (eventName, mapId, tileX, tileY, quantity, selfSwitches) {
         var src = 'Map%1.json'.format(mapId.padZero(3));
         DataManager.drXama_loadDataFile(src, (mapInfo) => {
             let events = mapInfo.events;
@@ -341,17 +420,23 @@
                 if (event)
                     if (event.name.replace(/\s{1,}/g, '') === eventName)
                         if (tileX === 'frontplayer')
-                            this._interpreter.pluginCommand('copyeventfrontplayer', [`${mapId}`, `${event.id}`]);
+                            this._interpreter.pluginCommand('copyeventfrontplayer', [`${mapId}`, `${event.id}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                         else if (tileX === 'backplayer')
-                            this._interpreter.pluginCommand('copyeventbackplayer', [`${mapId}`, `${event.id}`]);
+                            this._interpreter.pluginCommand('copyeventbackplayer', [`${mapId}`, `${event.id}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                         else if (tileX === 'leftplayer')
-                            this._interpreter.pluginCommand('copyeventleftplayer', [`${mapId}`, `${event.id}`]);
+                            this._interpreter.pluginCommand('copyeventleftplayer', [`${mapId}`, `${event.id}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                         else if (tileX === 'rightplayer')
-                            this._interpreter.pluginCommand('copyeventrightplayer', [`${mapId}`, `${event.id}`]);
+                            this._interpreter.pluginCommand('copyeventrightplayer', [`${mapId}`, `${event.id}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                         else if (tileX === 'region')
-                            this._interpreter.pluginCommand('copyeventregion', [`${mapId}`, `${event.id}`, `${tileY}`, `${quantity}`]);
+                            this._interpreter.pluginCommand('copyeventregion', [`${mapId}`, `${event.id}`, `${tileY}`, `${quantity}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
                         else
-                            this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${event.id}`, `${tileX}`, `${tileY}`]);
+                            this._interpreter.pluginCommand('copyevent', [`${mapId}`, `${event.id}`, `${tileX}`, `${tileY}`,
+                            `${selfSwitches[0]}`, `${selfSwitches[1]}`, `${selfSwitches[2]}`, `${selfSwitches[3]}`]);
             });
         });
     };

@@ -1,3 +1,7 @@
+# v2.2.3 - 23 de novembro de 2018
+- Agora o sistema conta com uma variável global chamada DX
+- Correção de erros
+
 # v2.01 - 14 de julho de 2018
 - Correção na função **Window_Base.prototype.convertEscapeCharacters**
 

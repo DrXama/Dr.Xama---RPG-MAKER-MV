@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.01 - Gerenciador de traduções
+ * @plugindesc v2.2.3 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -101,8 +101,8 @@
  * @parent Janelas
  * @desc Textos da janela de status
  * @type struct<JanelaStatus>
- * @default {"Texto Max HP":"[\"{\\\"Valor\\\":\\\"Max HP\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Max MP":"[\"{\\\"Valor\\\":\\\"Max MP\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Attack":"[\"{\\\"Valor\\\":\\\"Ataque\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Attack\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Defense":"[\"{\\\"Valor\\\":\\\"Defesa\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Defense\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto M.Attack":"[\"{\\\"Valor\\\":\\\"M.Ataque\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"M.Attack\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto M.Defense":"[\"{\\\"Valor\\\":\\\"M.Defesa\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"M.Defense\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Agility":"[\"{\\\"Valor\\\":\\\"Agilidade\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Agility\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Luck":"[\"{\\\"Valor\\\":\\\"Sorte\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Luck\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Hit":"[\"{\\\"Valor\\\":\\\"Dano\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Hit\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Evasion":"[\"{\\\"Valor\\\":\\\"Evasão\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Evasion\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Current":"[\"{\\\"Valor\\\":\\\"%1 Atual\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 Current\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Exp":"[\"{\\\"Valor\\\":\\\"Exp\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Exp Next":"[\"{\\\"Valor\\\":\\\"Para o Próximo %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"%1 to next\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]"}
- *
+ * @default {"Texto Max HP":"[\"{\\\"Valor\\\":\\\"Max HP\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Max MP":"[\"{\\\"Valor\\\":\\\"Max MP\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Attack":"[\"{\\\"Valor\\\":\\\"Ataque\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Attack\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Defense":"[\"{\\\"Valor\\\":\\\"Defesa\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Defense\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto M.Attack":"[\"{\\\"Valor\\\":\\\"M.Ataque\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"M.Attack\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto M.Defense":"[\"{\\\"Valor\\\":\\\"M.Defesa\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"M.Defense\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Agility":"[\"{\\\"Valor\\\":\\\"Agilidade\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Agility\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Luck":"[\"{\\\"Valor\\\":\\\"Sorte\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Luck\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Hit":"[\"{\\\"Valor\\\":\\\"Dano\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Hit\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Evasion":"[\"{\\\"Valor\\\":\\\"Evasão\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Evasion\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Current":"[\"{\\\"Valor\\\":\\\"%1 Atual\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"Current %1\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]","Texto Exp":"[\"{\\\"Valor\\\":\\\"Exp\\\",\\\"Idioma\\\":\\\"qualquer\\\"}\"]","Texto Exp Next":"[\"{\\\"Valor\\\":\\\"Para o Próximo %1\\\",\\\"Idioma\\\":\\\"pt_br\\\"}\",\"{\\\"Valor\\\":\\\"To next %1\\\",\\\"Idioma\\\":\\\"en_us\\\"}\"]"}
+ * 
  * @param GameEnd
  * @parent Janelas
  * @desc Textos da janela de sair do jogo
@@ -333,8 +333,39 @@
  * Para atualizar esse plugin acesse:
  * https://www.dropbox.com/s/mv6xcnbpyqvlus2/DrXama_languageManager.js?dl=0
  */
+var DX = DX || {
+	'site': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?i=1'); },
+	'terms': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?page_id=296'); },
+	'compatibility': function () {
+		if (Utils.RPGMAKER_VERSION == '1.4.1' ||
+			Utils.RPGMAKER_VERSION == '1.4.0' ||
+			Utils.RPGMAKER_VERSION == '1.3.5' ||
+			Utils.RPGMAKER_VERSION == '1.3.4' ||
+			Utils.RPGMAKER_VERSION == '1.3.3' ||
+			Utils.RPGMAKER_VERSION == '1.3.2' ||
+			Utils.RPGMAKER_VERSION == '1.3.1' ||
+			Utils.RPGMAKER_VERSION == '1.3.0' ||
+			Utils.RPGMAKER_VERSION == '1.2.0' ||
+			Utils.RPGMAKER_VERSION == '1.1.0' ||
+			Utils.RPGMAKER_VERSION == '1.0.1' ||
+			Utils.RPGMAKER_NAME != 'MV')
+			return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_languageManager'), SceneManager.stop();
+	}
+};
+DX.languageManager = DX.languageManager || {
+	'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=1'); },
+	'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/mv6xcnbpyqvlus2/DrXama_languageManager.js?dl=0'); },
+	'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_languageManager.md'); },
+	'version': function () { return console.log('v2.2.3') }
+};
 (function () {
 	"use strict";
+	//-----------------------------------------------------------------------------
+	// SceneManager
+	//
+	const scenemanager_run = SceneManager.run;
+	SceneManager.run = function (sceneClass) { scenemanager_run.apply(this, arguments); DX.compatibility(); };
+
 	//-----------------------------------------------------------------------------
 	// Parâmetros
 	//
@@ -752,7 +783,6 @@
 				}
 			});
 		};
-
 		function setTextParameterMessage(manager, object) {
 			Object.keys(manager).forEach(function (key) {
 				Object.keys(object).forEach(function (key2) {
@@ -767,7 +797,38 @@
 			length = systemTerms.params.length,
 			object = systemTerms.params;
 		for (; i < length; i++) {
-			setTextParameter(params.status, object[i], object, $dataSystem.terms.params, i);
+			switch (i) {
+				case 0:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Max HP']);
+					break;
+				case 1:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Max MP']);
+					break;
+				case 2:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Attack']);
+					break;
+				case 3:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Defense']);
+					break;
+				case 4:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto M.Attack']);
+					break;
+				case 5:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto M.Defense']);
+					break;
+				case 6:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Agility']);
+					break;
+				case 7:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Luck']);
+					break;
+				case 8:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Hit']);
+					break;
+				case 9:
+					$dataSystem.terms.params[i] = getterTextLanguage(params.status['Texto Evasion']);
+					break;
+			}
 		}
 		i = 0,
 			length = systemTerms.basic.length,
@@ -3310,6 +3371,13 @@
 				this.refresh();
 			}
 		}
+	};
+
+	//-----------------------------------------------------------------------------
+	// TextManager
+	//
+	TextManager.param = function (paramId) {
+		return $dataSystem.terms.params[paramId] || '';
 	};
 
 	//-----------------------------------------------------------------------------

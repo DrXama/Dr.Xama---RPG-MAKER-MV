@@ -2,11 +2,21 @@
 // DrXama_MapSoundEx.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Esse plugin cria sons ambiente com virtualização 3D.
+ * @plugindesc v1.0.2 - Esse plugin cria sons ambiente com virtualização 3D.
  *
  * @author Dr.Xamã
  * 
+ * @param MapAudioExRestrict
+ * @desc Restringe a criação de múltiplos áudios com o mesmo ID.
+ * @type string[]
+ * @default []
+ * 
  * @help
+ * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * v1.0.2
+ * - Resolvido o erro do áudio no máximo ao iniciar o mapa.
  * ================================================================================
  *    Introdução
  * ================================================================================
@@ -73,9 +83,39 @@
  * - Site: http://drxama.epizy.com/?page_id=299
  * - Github: https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
  */
-
+var DX = DX || {
+    'site': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?i=1'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?page_id=296'); },
+    'compatibility': function () {
+        if (Utils.RPGMAKER_VERSION == '1.4.1' ||
+            Utils.RPGMAKER_VERSION == '1.4.0' ||
+            Utils.RPGMAKER_VERSION == '1.3.5' ||
+            Utils.RPGMAKER_VERSION == '1.3.4' ||
+            Utils.RPGMAKER_VERSION == '1.3.3' ||
+            Utils.RPGMAKER_VERSION == '1.3.2' ||
+            Utils.RPGMAKER_VERSION == '1.3.1' ||
+            Utils.RPGMAKER_VERSION == '1.3.0' ||
+            Utils.RPGMAKER_VERSION == '1.2.0' ||
+            Utils.RPGMAKER_VERSION == '1.1.0' ||
+            Utils.RPGMAKER_VERSION == '1.0.1' ||
+            Utils.RPGMAKER_NAME != 'MV')
+            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_copyEvents'), SceneManager.stop();
+    }
+};
+DX.mapSoundEx = DX.mapSoundEx || {
+    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=294'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/2hxrzef194ghtr9/DrXama_copyEvents.js?dl=0'); },
+    'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_MapSoundEx.md'); },
+    'version': function () { return console.log('v1.0.2') }
+};
 (function () {
     "use strict";
+    //-----------------------------------------------------------------------------
+    // Parameters
+    //
+    const params = PluginManager.parameters('DrXama_MapSoundEx');
+    const param_mapAudioExRestrict = JSON.parse(params['MapAudioExRestrict']) || [];
+
     //-----------------------------------------------------------------------------
     // Variaveis Globais
     //
@@ -114,14 +154,17 @@
     MapAudioEX.prototype = Object.create(WebAudio.prototype);
     MapAudioEX.prototype.constructor = MapAudioEX;
 
-    MapAudioEX.prototype.initialize = function (id, url, tileX, tileY, loop, volume, offset, state, fadeOutIsOn) {
+    MapAudioEX.prototype.initialize = function (id, mapId, url, tileX, tileY, loop, volume, offset, state, fadeOutIsOn) {
         WebAudio.prototype.initialize.call(this, MapAudioEX.formatURL(url));
         this._id = id;
+        this._mapId = mapId;
         this._tileX = tileX || 0;
         this._tileY = tileY || 0;
         this._loop = loop || false;
         this._volumeEx = (() => {
             if (typeof volume != 'number' || isNaN(volume)) volume = 100;
+            if (volume < 0 || volume >= 100) return 1;
+            if (volume < 10) return Number(`.${volume}`);
             return volume;
         })();
         this._state = state || 'stop';
@@ -132,6 +175,10 @@
 
     MapAudioEX.prototype.id = function () {
         return this._id;
+    };
+
+    MapAudioEX.prototype.mapId = function () {
+        return this._mapId;
     };
 
     MapAudioEX.prototype.fadeOutIsOn = function () {
@@ -166,9 +213,16 @@
     };
 
     MapAudioEX.prototype.update = function () {
+        this.updateMap();
         if (!this.fadeOutIsOn()) {
-            this.updateVolume();
             this.updatePosition();
+            this.updateVolume();
+        }
+    };
+
+    MapAudioEX.prototype.updateMap = function () {
+        if (this.mapId() != $gameMap.mapId()) {
+            if (this._state === 'play') this.fadeOut(0.5);
         }
     };
 
@@ -214,11 +268,11 @@
             this._volumeFadeOptions.active = true;
             this._volumeFadeOptions.fadeOut.active = true;
             this._volumeFadeOptions.fadeOut.frames = 0;
-            return this._volumeFadeOptions.fadeIn.active = false;
+            this._volumeFadeOptions.fadeIn.active = false;
         } else if (volume >= .1 && this._volumeFadeOptions.active) {
             this._volumeFadeOptions.fadeIn.active = true;
             this._volumeFadeOptions.fadeIn.frames = 0;
-            return this._volumeFadeOptions.fadeOut.active = false;
+            this._volumeFadeOptions.fadeOut.active = false;
         }
         this.volume = volume > 0 ? volume : 0;
     };
@@ -274,6 +328,9 @@
     const _game_temp_initialize = Game_Temp.prototype.initialize;
     Game_Temp.prototype.initialize = function () {
         _game_temp_initialize.call(this);
+        this._mapAudioExRestrict = {};
+        if (param_mapAudioExRestrict instanceof Array)
+            param_mapAudioExRestrict.map(audio => { this._mapAudioExRestrict[audio] = null; }, this);
         this._mapAudioEx = [];
         this._mapAudioEx_cacheStop = [];
     };
@@ -282,10 +339,13 @@
         return this._mapAudioEx;
     };
 
-    Game_Temp.prototype.createMapAudioEx = function (id, url, tileX, tileY, loop, volume) {
-        this.mapAudioEX().push(new MapAudioEX(id, url, tileX, tileY, loop, volume));
+    Game_Temp.prototype.createMapAudioEx = function (id, mapId, url, tileX, tileY, loop, volume) {
+        if (this._mapAudioExRestrict[id] === null) this._mapAudioExRestrict[id] = true;
+        else if (this._mapAudioExRestrict[id]) return;
+        this.mapAudioEX().push(new MapAudioEX(id, mapId, url, tileX, tileY, loop, volume));
         $gameSystem.mapAudioEx().push({
             id: id,
+            mapId: mapId,
             url: url,
             tileX: tileX,
             tileY: tileY,
@@ -385,12 +445,13 @@
         _game_interpreter_pluginCommand.apply(this, arguments);
         if (String(command).toLowerCase() === 'createmapaudioex') {
             let id = String(args[0]),
-                url = String(args[1]),
-                tileX = Number(args[2]),
-                tileY = Number(args[3]),
-                loop = Boolean(args[4]),
-                volume = Number(args[5]);
-            $gameTemp.createMapAudioEx(id, url, tileX, tileY, loop, volume);
+                mapId = Number(args[1]),
+                url = String(args[2]),
+                tileX = Number(args[3]),
+                tileY = Number(args[4]),
+                loop = Boolean(args[5]),
+                volume = Number(args[6]);
+            $gameTemp.createMapAudioEx(id, mapId, url, tileX, tileY, loop, volume);
         }
         if (String(command).toLowerCase() === 'playmapaudioex') {
             let id = String(args[0]);

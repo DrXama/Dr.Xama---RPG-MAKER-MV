@@ -2,7 +2,7 @@
 // DrXama_copyEvents.js
 //==================================================================================================
 /*:
- * @plugindesc v1.2.12 - Copie seus eventos de uma maneira simples
+ * @plugindesc v1.2.13 - Copie seus eventos de uma maneira simples
  *
  * @author Dr.Xamã
  *
@@ -17,6 +17,9 @@
  * ================================================================================
  *    CHANGELOG
  * ================================================================================
+ * v1.2.13
+ * - Resolvido o erro onde os selfSwitches estavam todos sendo ativados.
+ * 
  * v1.2.12
  * - Agora não é necessário ter a quantia de vezes para copiar um evento para uma
  * região.
@@ -130,7 +133,7 @@ DX.copyEvents = DX.copyEvents || {
     'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=294'); },
     'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/2hxrzef194ghtr9/DrXama_copyEvents.js?dl=0'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_copyEvents.md'); },
-    'version': function () { return console.log('v1.2.12') }
+    'version': function () { return console.log('v1.2.13') }
 };
 (function () {
     "use strict";
@@ -158,10 +161,10 @@ DX.copyEvents = DX.copyEvents || {
             var mapX = parseInt(args[2]) || 0;
             var mapY = parseInt(args[3]) || 0;
             var selfSwitches = {
-                A: Boolean(args[4]) || null,
-                B: Boolean(args[5]) || null,
-                C: Boolean(args[6]) || null,
-                D: Boolean(args[7]) || null
+                A: Boolean(eval(args[4])) || null,
+                B: Boolean(eval(args[5])) || null,
+                C: Boolean(eval(args[6])) || null,
+                D: Boolean(eval(args[7])) || null
             };
             var src = 'Map%1.json'.format(mapId.padZero(3));
             var callback = function (mapInfo) {
@@ -215,37 +218,37 @@ DX.copyEvents = DX.copyEvents || {
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventfrontplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            var selfSwitches_A = Boolean(args[2]) || null;
-            var selfSwitches_B = Boolean(args[3]) || null;
-            var selfSwitches_C = Boolean(args[4]) || null;
-            var selfSwitches_D = Boolean(args[5]) || null;
+            var selfSwitches_A = Boolean(eval(args[2])) || null;
+            var selfSwitches_B = Boolean(eval(args[3])) || null;
+            var selfSwitches_C = Boolean(eval(args[4])) || null;
+            var selfSwitches_D = Boolean(eval(args[5])) || null;
             $gameMap.copyEventFrontPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventbackplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            var selfSwitches_A = Boolean(args[2]) || null;
-            var selfSwitches_B = Boolean(args[3]) || null;
-            var selfSwitches_C = Boolean(args[4]) || null;
-            var selfSwitches_D = Boolean(args[5]) || null;
+            var selfSwitches_A = Boolean(eval(args[2])) || null;
+            var selfSwitches_B = Boolean(eval(args[3])) || null;
+            var selfSwitches_C = Boolean(eval(args[4])) || null;
+            var selfSwitches_D = Boolean(eval(args[5])) || null;
             $gameMap.copyEventBackPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventleftplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            var selfSwitches_A = Boolean(args[2]) || null;
-            var selfSwitches_B = Boolean(args[3]) || null;
-            var selfSwitches_C = Boolean(args[4]) || null;
-            var selfSwitches_D = Boolean(args[5]) || null;
+            var selfSwitches_A = Boolean(eval(args[2])) || null;
+            var selfSwitches_B = Boolean(eval(args[3])) || null;
+            var selfSwitches_C = Boolean(eval(args[4])) || null;
+            var selfSwitches_D = Boolean(eval(args[5])) || null;
             $gameMap.copyEventLeftPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventrightplayer') {
             var mapId = parseInt(args[0]) || 0;
             var eventId = parseInt(args[1]) || 0;
-            var selfSwitches_A = Boolean(args[2]) || null;
-            var selfSwitches_B = Boolean(args[3]) || null;
-            var selfSwitches_C = Boolean(args[4]) || null;
-            var selfSwitches_D = Boolean(args[5]) || null;
+            var selfSwitches_A = Boolean(eval(args[2])) || null;
+            var selfSwitches_B = Boolean(eval(args[3])) || null;
+            var selfSwitches_C = Boolean(eval(args[4])) || null;
+            var selfSwitches_D = Boolean(eval(args[5])) || null;
             $gameMap.copyEventRightPlayer(mapId, eventId, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventregion') {
@@ -253,10 +256,10 @@ DX.copyEvents = DX.copyEvents || {
             var eventId = parseInt(args[1]) || 0;
             var regionId = parseInt(args[2]) || -1;
             var quantity = parseInt(args[3]) || 0;
-            var selfSwitches_A = Boolean(args[4]) || null;
-            var selfSwitches_B = Boolean(args[5]) || null;
-            var selfSwitches_C = Boolean(args[6]) || null;
-            var selfSwitches_D = Boolean(args[7]) || null;
+            var selfSwitches_A = Boolean(eval(args[4])) || null;
+            var selfSwitches_B = Boolean(eval(args[5])) || null;
+            var selfSwitches_C = Boolean(eval(args[6])) || null;
+            var selfSwitches_D = Boolean(eval(args[7])) || null;
             $gameMap.copyEventRegion(mapId, eventId, regionId, quantity, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
         if (typeof command === 'string' && command.toLowerCase() === 'copyeventname') {
@@ -271,10 +274,10 @@ DX.copyEvents = DX.copyEvents || {
                 tileY = parseInt(args[3]) || 0;
                 quantity = parseInt(args[4]) || 0;
             }
-            var selfSwitches_A = Boolean(args[5]) || null;
-            var selfSwitches_B = Boolean(args[6]) || null;
-            var selfSwitches_C = Boolean(args[7]) || null;
-            var selfSwitches_D = Boolean(args[8]) || null;
+            var selfSwitches_A = Boolean(eval(args[5])) || null;
+            var selfSwitches_B = Boolean(eval(args[6])) || null;
+            var selfSwitches_C = Boolean(eval(args[7])) || null;
+            var selfSwitches_D = Boolean(eval(args[8])) || null;
             $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity, [selfSwitches_A, selfSwitches_B, selfSwitches_C, selfSwitches_D]);
         }
     };

@@ -99,12 +99,12 @@ var DX = DX || {
             Utils.RPGMAKER_VERSION == '1.1.0' ||
             Utils.RPGMAKER_VERSION == '1.0.1' ||
             Utils.RPGMAKER_NAME != 'MV')
-            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_copyEvents'), SceneManager.stop();
+            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_MapSoundEx'), SceneManager.stop();
     }
 };
 DX.mapSoundEx = DX.mapSoundEx || {
-    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=294'); },
-    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/2hxrzef194ghtr9/DrXama_copyEvents.js?dl=0'); },
+    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=482'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/9hrxl1laqhl8rb9/DrXama_MapSoundEx.js?dl=0'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_MapSoundEx.md'); },
     'version': function () { return console.log('v1.0.2') }
 };

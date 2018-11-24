@@ -18,7 +18,7 @@
  *    CHANGELOG
  * ================================================================================
  * v1.2.12
- * - Agora não é nescessario ter a quantia de vezes para copiar um evento para uma
+ * - Agora não é necessário ter a quantia de vezes para copiar um evento para uma
  * região.
  * - Correção de erros.
  * 

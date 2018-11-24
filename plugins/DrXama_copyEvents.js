@@ -135,6 +135,12 @@ DX.copyEvents = DX.copyEvents || {
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
+    // SceneManager
+    //
+    const scenemanager_run = SceneManager.run;
+    SceneManager.run = function (sceneClass) { scenemanager_run.apply(this, arguments); DX.compatibility(); };
+
+    //-----------------------------------------------------------------------------
     // Parameters
     //
     const params = PluginManager.parameters('DrXama_copyEvents');

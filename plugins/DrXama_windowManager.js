@@ -2,7 +2,7 @@
 // DrXama_windowManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.01 - Gerenciador de janelas
+ * @plugindesc v1.1.1 - Gerenciador de janelas
  *
  * @author Dr.Xamã
  * 
@@ -12,6 +12,11 @@
  * @default ["{\"Fonte Nome\":\"GameFont\",\"Fonte Url\":\"mplus-1m-regular.ttf\"}"]
  * 
  * @help
+ * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * v1.1.1
+ * - Agora é possível fixar as janelas no mapa.
  * ================================================================================
  *    Introdução
  * ================================================================================
@@ -26,8 +31,8 @@
  *    Comandos de script
  * ================================================================================
  * - this.createHudWindow(tag, x, y, width, height, opacity, padding, margin, 
- * zIndex, colorTone);
- *                    - tag : indicador da janela
+ * zIndex, colorTone, tileXy);
+ *                    - tag : Id da janela
  *                    - x : eixo x da janela
  *                    - y : eixo y da janela
  *                    - width : largura da janela
@@ -38,10 +43,11 @@
  *                    - margin : O tamanho da margem para o fundo da janela.
  *                    - zIndex : O valor da camada em que a janela se aplica
  *                    - colorTone : A cor da janela em [r, g, b]
+ *                    - tileXy : Se o eixo x e y são posições em tiles.
  * 
  * - this.windowHudDrawText(tag, text, x, y, opacity, fontFace, fontSize, 
  * fontItalic, textColor, outlineWidth, outlineColor, textAlign);
- *                    - tag : indicador da janela
+ *                    - tag : Id da janela
  *                    - text : valor do texto
  *                    - x : eixo x do texto
  *                    - y : eixo y do texto
@@ -57,7 +63,7 @@
  *                                  - left, right e center
  * 
  * - this.windowHudDrawPicture(tag, pictureName, opacity, x, y, scale);
- *                    - tag : indicador da janela
+ *                    - tag : Id da janela
  *                    - pictureName : Nome da imagem
  *                    - opacity : Opacidade da imagem
  *                    - x : eixo x da imagem
@@ -66,15 +72,15 @@
  * 
  * - this.windowHudDrawInfo(tag, target, infoId, targetId, 
  * messageValue, textSettings);
- *                    - tag : Indicador da janela
+ *                    - tag : Id da janela
  *                    - target : O alvo para coletar a informação
- *                    - infoId : Indicador da informação
+ *                    - infoId : Id da informação
  *                    - targetId : Id do alvo(caso for um evento por exemplo)
  *                    - messageValue : Mensagem a ser exibida(Caso for preciso)
  *                    - textSettings : Configuração do texto da mensagem
  * 
  * - this.removeHudWindow(tag);
- *                    - tag : Indicador da janela
+ *                    - tag : Id da janela
  * ================================================================================
  *    DrawInfo
  * ================================================================================
@@ -122,6 +128,32 @@
  * @default mplus-1m-regular.ttf
  * 
  */
+var DX = DX || {
+    'site': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?i=1'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?page_id=296'); },
+    'compatibility': function () {
+        if (Utils.RPGMAKER_VERSION == '1.4.1' ||
+            Utils.RPGMAKER_VERSION == '1.4.0' ||
+            Utils.RPGMAKER_VERSION == '1.3.5' ||
+            Utils.RPGMAKER_VERSION == '1.3.4' ||
+            Utils.RPGMAKER_VERSION == '1.3.3' ||
+            Utils.RPGMAKER_VERSION == '1.3.2' ||
+            Utils.RPGMAKER_VERSION == '1.3.1' ||
+            Utils.RPGMAKER_VERSION == '1.3.0' ||
+            Utils.RPGMAKER_VERSION == '1.2.0' ||
+            Utils.RPGMAKER_VERSION == '1.1.0' ||
+            Utils.RPGMAKER_VERSION == '1.0.1' ||
+            Utils.RPGMAKER_NAME != 'MV')
+            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_windowManager'), SceneManager.stop();
+    }
+};
+DX.windowManager = DX.windowManager || {
+    'font': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/z3nj4rbigv6u9jp/fonts.rar?dl=0'); },
+    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=257'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/vtjqe6mvgh2osh2/DrXama_windowManager.js?dl=0'); },
+    'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_windowManager.md'); },
+    'version': function () { return console.log('v1.1.1') }
+};
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
@@ -165,7 +197,7 @@
     //-----------------------------------------------------------------------------
     // Game_Interpreter
     //
-    Game_Interpreter.prototype.createHudWindow = function (tag, x, y, width, height, opacity, padding, margin, zIndex, colorTone) {
+    Game_Interpreter.prototype.createHudWindow = function (tag, x, y, width, height, opacity, padding, margin, zIndex, colorTone, tileXy) {
         var scene = SceneManager._scene;
         scene.createHudWindow.apply(scene, arguments);
     };
@@ -193,8 +225,8 @@
     //-----------------------------------------------------------------------------
     // Scene_Base
     //
-    Scene_Base.prototype.createHudWindow = function (tag, x, y, width, height, opacity, padding, margin, zIndex, colorTone) {
-        var win = new Window_Hud(x, y, width, height),
+    Scene_Base.prototype.createHudWindow = function (tag, x, y, width, height, opacity, padding, margin, zIndex, colorTone, tileXy) {
+        var win = new Window_Hud(x, y, width, height, tileXy),
             tag = tag || Math.floor(window_huds.length + 1),
             zIndex = zIndex || Math.floor(window_huds.length + 1),
             colorTone = colorTone || [
@@ -322,7 +354,7 @@
     Window_Hud.prototype = Object.create(Window_Base.prototype);
     Window_Hud.prototype.constructor = Window_Hud;
 
-    Window_Hud.prototype.initialize = function (x, y, width, height) {
+    Window_Hud.prototype.initialize = function (x, y, width, height, tileXy) {
         width = width || this.windowWidth();
         height = height || this.windowHeight();
         x = x || 0;
@@ -331,6 +363,9 @@
         this._width = width;
         this._height = height;
         this._pictures = [];
+        this._tileXy = tileXy;
+        this._tileX = x;
+        this._tileY = y;
     };
 
     Window_Hud.prototype.windowWidth = function () {
@@ -341,7 +376,7 @@
         return this._height || SceneManager._screenHeight;
     };
 
-    Window_Hud.prototype.updateTone = function () {};
+    Window_Hud.prototype.updateTone = function () { };
 
     Window_Hud.prototype.drawTextMaster = function (text, x, y, opacity, fontFace, fontSize,
         fontItalic, textColor, outlineWidth, outlineColor, textAlign) {
@@ -430,5 +465,35 @@
         this.drawTextMaster(value, textSettings[0], textSettings[1], textSettings[2],
             textSettings[3], textSettings[4], textSettings[5], textSettings[6],
             textSettings[7], textSettings[8], textSettings[9]);
+    };
+
+    Window_Hud.prototype.scrolledX = function () {
+        return $gameMap.adjustX(this._tileX);
+    };
+
+    Window_Hud.prototype.scrolledY = function () {
+        return $gameMap.adjustY(this._tileY);
+    };
+
+    Window_Hud.prototype.screenX = function () {
+        var tw = $gameMap.tileWidth();
+        return Math.round(this.scrolledX() * tw + tw / 2);
+    };
+
+    Window_Hud.prototype.screenY = function () {
+        var th = $gameMap.tileHeight();
+        return Math.round(this.scrolledY() * th + th);
+    };
+
+    Window_Hud.prototype.update = function () {
+        Window_Base.prototype.update.call(this);
+        this.updatePosition();
+    };
+
+    Window_Hud.prototype.updatePosition = function () {
+        if (this._tileXy) {
+            this.x = this.screenX();
+            this.y = this.screenY();
+        }
     };
 })();

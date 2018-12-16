@@ -2,7 +2,7 @@
 // DrXama_characterSprite.js
 //==================================================================================================
 /*:
- * @plugindesc v1.05 - Altera o sprite dos personagens, seguidores, veiculos e eventos
+ * @plugindesc v1.1.7 - Altera o sprite dos personagens, seguidores, veiculos e eventos
  *
  * @author Dr.Xamã
  *
@@ -10,18 +10,29 @@
  * @desc A velocidade em que a alteração é feita.
  * Padrão: 60 Frames = 1 Segundo
  * @type number
- * @default 5
- * @min 5
- * @max 999
+ * @default 1
+ * @min 1
+ * @max 1000
  * 
  * @help
  * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * v1.1.7
+ * - Agora você pode alterar todos os sprites de uma só vez
+ * - Correção de erros
+ * ================================================================================
  *    Introdução
  * ================================================================================
- * Permite uma alteração avançada nos personagens, seguidores, veiculos e eventos
+ * Permite uma alteração avançada nos personagens, seguidores, veiculos e eventos.
  * ================================================================================
  *    Comandos de plugin
  * ================================================================================
+ * ------- TODOS -------
+ * - allsprite color r g b gray
+ * - allsprite scale x y
+ * - allsprite opacity opacity
+ * - allsprite blend type(0~3)
  * ------- EVENT -------
  * - eventSprite eventId color r g b gray
  * - eventSprite eventId scale x y
@@ -48,6 +59,31 @@
  * Para atualizar esse plugin vá no github do Dr.Xamã
  * https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
  */
+var DX = DX || {
+    'site': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?i=1'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?page_id=296'); },
+    'compatibility': function () {
+        if (Utils.RPGMAKER_VERSION == '1.4.1' ||
+            Utils.RPGMAKER_VERSION == '1.4.0' ||
+            Utils.RPGMAKER_VERSION == '1.3.5' ||
+            Utils.RPGMAKER_VERSION == '1.3.4' ||
+            Utils.RPGMAKER_VERSION == '1.3.3' ||
+            Utils.RPGMAKER_VERSION == '1.3.2' ||
+            Utils.RPGMAKER_VERSION == '1.3.1' ||
+            Utils.RPGMAKER_VERSION == '1.3.0' ||
+            Utils.RPGMAKER_VERSION == '1.2.0' ||
+            Utils.RPGMAKER_VERSION == '1.1.0' ||
+            Utils.RPGMAKER_VERSION == '1.0.1' ||
+            Utils.RPGMAKER_NAME != 'MV')
+            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_characterSprite'), SceneManager.stop();
+    }
+};
+DX.characterSprite = DX.characterSprite || {
+    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=283'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/ud8tgdi9fmegn8u/DrXama_characterSprite.js?dl=0'); },
+    'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_characterSprite.md'); },
+    'version': function () { return console.log('v1.1.7') }
+};
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
@@ -81,6 +117,146 @@
     Game_Interpreter.prototype.pluginCommand = function (command, args) {
         _game_interpreter_pluginCommand.apply(this, arguments);
         command = String(command).toLowerCase();
+        // ALL
+        if (command === 'allsprite') {
+            command = String(args[0]).toLowerCase();
+            if (command === 'scale') {
+                var scaleX = parseFloat(args[1]),
+                    scaleY = parseFloat(args[2]);
+                this.pluginCommand('playerSprite', ['scale', scaleX, scaleY]);
+                var i = 0,
+                    l = $gamePlayer.followers()._data.length;
+                for (; i <= l; i++) {
+                    this.pluginCommand('followerSprite', [i, 'scale', scaleX, scaleY]);
+                }
+                $gameMap.vehicles().map(vehicle => {
+                    this.pluginCommand('vehicleSprite', [vehicle._type, 'scale', scaleX, scaleY]);
+                });
+                $dataMap.events.map(event => {
+                    let eventChange = true, eventId;
+                    if (event) {
+                        eventId = event.id;
+                        for (var i = 0; i < event.pages.length; i++) {
+                            var page = event.pages[i];
+                            page.list.forEach(function (line) {
+                                if (line.code == 108 || line.code == 408) {
+                                    var text = line.parameters[0].toLowerCase().replace(/\s{1,}/g, '');
+                                    if (text === 'spritechange_off') {
+                                        return eventChange = false;
+                                    }
+                                }
+                            });
+                            break;
+                        }
+                        if (eventChange) {
+                            this.pluginCommand('eventSprite', [eventId, 'scale', scaleX, scaleY]);
+                        }
+                    }
+                });
+            }
+            if (command === 'color') {
+                var r = parseInt(args[1]) || 0,
+                    g = parseInt(args[2]) || 0,
+                    b = parseInt(args[3]) || 0,
+                    gray = parseInt(args[4]) || 0;
+                this.pluginCommand('playerSprite', ['color', r, g, b, gray]);
+                var i = 0,
+                    l = $gamePlayer.followers()._data.length;
+                for (; i <= l; i++) {
+                    this.pluginCommand('followerSprite', [i, 'color', r, g, b, gray]);
+                }
+                $gameMap.vehicles().map(vehicle => {
+                    this.pluginCommand('vehicleSprite', [vehicle._type, 'color', r, g, b, gray]);
+                });
+                $dataMap.events.map(event => {
+                    let eventChange = true, eventId;
+                    if (event) {
+                        eventId = event.id;
+                        for (var i = 0; i < event.pages.length; i++) {
+                            var page = event.pages[i];
+                            page.list.forEach(function (line) {
+                                if (line.code == 108 || line.code == 408) {
+                                    var text = line.parameters[0].toLowerCase().replace(/\s{1,}/g, '');
+                                    if (text === 'spritechange_off') {
+                                        return eventChange = false;
+                                    }
+                                }
+                            });
+                            break;
+                        }
+                        if (eventChange) {
+                            this.pluginCommand('eventSprite', [eventId, 'color', r, g, b, gray]);
+                        }
+                    }
+                });
+            }
+            if (command == 'opacity') {
+                var opacity = parseInt(args[1])
+                this.pluginCommand('playerSprite', ['opacity', opacity]);
+                var i = 0,
+                    l = $gamePlayer.followers()._data.length;
+                for (; i <= l; i++) {
+                    this.pluginCommand('followerSprite', [i, 'opacity', opacity]);
+                }
+                $gameMap.vehicles().map(vehicle => {
+                    this.pluginCommand('vehicleSprite', [vehicle._type, 'opacity', opacity]);
+                });
+                $dataMap.events.map(event => {
+                    let eventChange = true, eventId;
+                    if (event) {
+                        eventId = event.id;
+                        for (var i = 0; i < event.pages.length; i++) {
+                            var page = event.pages[i];
+                            page.list.forEach(function (line) {
+                                if (line.code == 108 || line.code == 408) {
+                                    var text = line.parameters[0].toLowerCase().replace(/\s{1,}/g, '');
+                                    if (text === 'spritechange_off') {
+                                        return eventChange = false;
+                                    }
+                                }
+                            });
+                            break;
+                        }
+                        if (eventChange) {
+                            this.pluginCommand('eventSprite', [eventId, 'opacity', opacity]);
+                        }
+                    }
+                });
+            }
+            if (command == 'blend') {
+                var blend = parseInt(args[1])
+                this.pluginCommand('playerSprite', ['blend', blend]);
+                var i = 0,
+                    l = $gamePlayer.followers()._data.length;
+                for (; i <= l; i++) {
+                    this.pluginCommand('followerSprite', [i, 'blend', blend]);
+                }
+                $gameMap.vehicles().map(vehicle => {
+                    this.pluginCommand('vehicleSprite', [vehicle._type, 'blend', blend]);
+                });
+                $dataMap.events.map(event => {
+                    let eventChange = true, eventId;
+                    if (event) {
+                        eventId = event.id;
+                        for (var i = 0; i < event.pages.length; i++) {
+                            var page = event.pages[i];
+                            page.list.forEach(function (line) {
+                                if (line.code == 108 || line.code == 408) {
+                                    var text = line.parameters[0].toLowerCase().replace(/\s{1,}/g, '');
+                                    if (text === 'spritechange_off') {
+                                        return eventChange = false;
+                                    }
+                                }
+                            });
+                            break;
+                        }
+                        if (eventChange) {
+                            this.pluginCommand('eventSprite', [eventId, 'blend', blend]);
+                        }
+                    }
+                });
+            }
+        }
         // EVENT
         if (command == 'eventsprite') {
             var eventId = parseInt(args[0]) || 0;
@@ -527,6 +703,12 @@
         this.scale = new Point(scale[0], scale[1]);
         this.opacity = opacity;
         this.blendMode = blend;
+    };
+
+    Sprite_Character.prototype.updateOther = function () {
+        this.opacity = this._dataCharacterSprite.opacity;
+        this.blendMode = this._dataCharacterSprite.blend;
+        this._bushDepth = this._character.bushDepth();
     };
 })();
 

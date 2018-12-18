@@ -2,7 +2,7 @@
 // DrXama_windowManager.js
 //==================================================================================================
 /*:
- * @plugindesc v1.1.1 - Gerenciador de janelas
+ * @plugindesc v1.3.1 - Gerenciador de janelas
  *
  * @author Dr.Xamã
  * 
@@ -15,6 +15,10 @@
  * ================================================================================
  *    CHANGELOG
  * ================================================================================
+ * v1.3.1
+ * - Agora é possível definir frames para o desaparecimento das janelas.
+ * - Novo efeito de fade-in quando a janela é criada.
+ * 
  * v1.1.1
  * - Agora é possível fixar as janelas no mapa.
  * ================================================================================
@@ -78,6 +82,10 @@
  *                    - targetId : Id do alvo(caso for um evento por exemplo)
  *                    - messageValue : Mensagem a ser exibida(Caso for preciso)
  *                    - textSettings : Configuração do texto da mensagem
+ * 
+ * - this.windowHudSetFramesHide(tag, frames);
+ *                    - tag : Id da janela
+ *                    - frames : Tempo que a janela ficará visível(60 = 1 Segundo)
  * 
  * - this.removeHudWindow(tag);
  *                    - tag : Id da janela
@@ -152,7 +160,7 @@ DX.windowManager = DX.windowManager || {
     'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=257'); },
     'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/vtjqe6mvgh2osh2/DrXama_windowManager.js?dl=0'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_windowManager.md'); },
-    'version': function () { return console.log('v1.1.1') }
+    'version': function () { return console.log('v1.3.1') }
 };
 (function () {
     "use strict";
@@ -217,6 +225,11 @@ DX.windowManager = DX.windowManager || {
         scene.windowHudDrawInfo.apply(scene, arguments);
     };
 
+    Game_Interpreter.prototype.windowHudSetFramesHide = function (tag, frames) {
+        var scene = SceneManager._scene;
+        scene.windowHudSetFramesHide.apply(scene, arguments);
+    };
+
     Game_Interpreter.prototype.removeHudWindow = function (tag) {
         var scene = SceneManager._scene;
         scene.removeHudWindow.apply(scene, arguments);
@@ -243,7 +256,7 @@ DX.windowManager = DX.windowManager || {
             ];
         }
         win.tag = tag;
-        win.opacity = opacity || 0;
+        win.saveOpacity = opacity || 0;
         win.padding = padding || 18;
         win.margin = margin || 4;
         win.setTone(colorTone[0], colorTone[1], colorTone[2]);
@@ -330,6 +343,17 @@ DX.windowManager = DX.windowManager || {
         });
     };
 
+    Scene_Base.prototype.windowHudSetFramesHide = function (tag, frames) {
+        var win = window_huds.map(function (windowHud) {
+            if (windowHud.tag == tag)
+                return windowHud;
+        });
+        win.forEach(function (windowHud) {
+            if (windowHud instanceof Window_Hud)
+                windowHud.setFramesHide(frames);
+        });
+    };
+
     Scene_Base.prototype.removeHudWindow = function (tag) {
         var win = window_huds.map(function (windowHud) {
             if (windowHud.tag == tag)
@@ -366,6 +390,9 @@ DX.windowManager = DX.windowManager || {
         this._tileXy = tileXy;
         this._tileX = x;
         this._tileY = y;
+        this.opacity = 0;
+        this.contentsOpacity = 0;
+        this._isStarted = false;
     };
 
     Window_Hud.prototype.windowWidth = function () {
@@ -467,6 +494,10 @@ DX.windowManager = DX.windowManager || {
             textSettings[7], textSettings[8], textSettings[9]);
     };
 
+    Window_Hud.prototype.setFramesHide = function (frames) {
+        this._framesHide = parseInt(frames);
+    };
+
     Window_Hud.prototype.scrolledX = function () {
         return $gameMap.adjustX(this._tileX);
     };
@@ -487,13 +518,32 @@ DX.windowManager = DX.windowManager || {
 
     Window_Hud.prototype.update = function () {
         Window_Base.prototype.update.call(this);
+        this.updateStarted();
         this.updatePosition();
+        this.updateFramesHide();
+    };
+
+    Window_Hud.prototype.updateStarted = function () {
+        if (!this._isStarted) {
+            if (this.opacity < this.saveOpacity) this.opacity += 4;
+            if (this.contentsOpacity < 255) this.contentsOpacity += 4;
+            if (this.opacity >= this.saveOpacity && this.contentsOpacity >= 255) this._isStarted = true;
+        }
     };
 
     Window_Hud.prototype.updatePosition = function () {
         if (this._tileXy) {
             this.x = this.screenX();
             this.y = this.screenY();
+        }
+    };
+
+    Window_Hud.prototype.updateFramesHide = function () {
+        if (!this._isStarted) return;
+        if (typeof this._framesHide === 'number') {
+            if (this._framesHide > 0) return this._framesHide -= .60;
+            if (this.opacity > 0) this.opacity -= 4, this.contentsOpacity -= 4;
+            else SceneManager._scene.removeHudWindow.call(SceneManager._scene, this.tag);
         }
     };
 })();

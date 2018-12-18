@@ -55,10 +55,10 @@
  *                                    8 vezes
  * Exemplo: copyEventName Teste 1 4 5 - Copia o evento 1 do mapa 1 para a posição
  *                                      x e y
- *          copyEventName Teste 1 frontPlayer - Copia o evento 1 do mapa 1 para a
- *                                              frente do jogador
- *          copyEventName Teste 1 Region 1 8 - Copia o evento 1 do mapa 1 para a
- *                                             região 1, 8 vezes
+ *          copyEventName Teste 1 frontPlayer - Copia o evento com o nome "Teste" do mapa 1 
+ *                                              para a frente do jogador                                             
+ *          copyEventName Teste 1 Region 1 8 - Copia o evento com o nome "Teste" do mapa 1 
+ *                                             para a região 1, 8 vezes
  * CODES:
  * - copyEventName:
  *  - frontPlayer

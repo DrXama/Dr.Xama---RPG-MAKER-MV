@@ -2,6 +2,6 @@
 layout: default
 ---
 
-Confira a lista de plugins do **Dr.Xamã**.
+[Confira a lista de plugins do **Dr.Xamã**](./plugins-list.html).
 
-[Link to another page](./pages/plugins-list.html)
+[Termos de uso dos plugins](./plugins-license.html).

@@ -31,4 +31,4 @@ __Gerenciador de janelas.__
 - [DrXama_windowPauseSign](https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowPauseSign.js)
 __Altera a seta de pause da janela de mensagens.__
 
-[Voltar](../)
+[Voltar](./)

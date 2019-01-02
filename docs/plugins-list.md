@@ -29,6 +29,7 @@ __Gerenciador de atualizações.__
 - [DrXama_windowManager](https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowManager.js)
 __Gerenciador de janelas.__
 - [DrXama_windowPauseSign](https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_windowPauseSign.js)
+- [DrXama_gameJolt](https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_gameJolt.js)
 __Altera a seta de pause da janela de mensagens.__
 
 [Voltar](./)

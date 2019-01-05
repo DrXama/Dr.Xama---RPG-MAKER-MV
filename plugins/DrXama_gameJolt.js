@@ -2,7 +2,7 @@
 // DrXama_gameJolt.js
 //==================================================================================================
 /*:
- * @plugindesc v1.0.0 - Integração do Game Jolt
+ * @plugindesc v1.2.1 - Integração do Game Jolt
  *
  * @author Dr.Xamã
  * 
@@ -16,10 +16,41 @@
  * @type string
  * @default ???
  * 
+ * @param Text Connected
+ * @desc Texto apresentado quando o usuário é conectado.
+ * @type string
+ * @default %1 está conectado!
+ * 
+ * @param Text Disconnected
+ * @desc Texto apresentado quando o usuário é desconectado.
+ * @type string
+ * @default %1 está desconectado!
+ * 
+ * @param Text AddPonts
+ * @desc Texto apresentado quando o usuário marca uma pontuação.
+ * @type string
+ * @default %1 acaba de marcar %2 pontos na tabela(%3)!
+ * 
+ * @param Text AddTrophies
+ * @desc Texto apresentado quando o usuário recebe um troféu.
+ * @type string
+ * @default %1 acaba de receber um troféu(%2)!
+ * 
+ * @param Text RemoveTrophies
+ * @desc Texto apresentado quando o usuário perde um troféu.
+ * @type string
+ * @default %1 acaba de perder um troféu(%2)!
+ * 
  * @help
  * ================================================================================
  *    CHANGELOG
  * ================================================================================
+ * v1.2.1
+ * - Novo sistema de notificações.
+ * - Agora a função 'update' da classe dos usuários é atualizada junto a 
+ *   Scene_Base.
+ * - Corrigido a falha na declaração de callbacks.
+ * 
  * v1.0.0
  * - Plugin Lançado!
  * ================================================================================
@@ -82,14 +113,19 @@ var DX = DX || {
 DX.gameJolt = DX.gameJolt || {
     'update': function () { return require('nw.gui').Shell.openExternal('https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_gameJolt.js'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_gameJolt.md'); },
-    'version': function () { return console.log('v1.0.0') }
+    'version': function () { return console.log('v1.2.1') }
 };
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
     // Parametros
     //
-    var params = PluginManager.parameters('DrXama_gameJolt');
+    var params = PluginManager.parameters('DrXama_gameJolt'),
+        textConnected = String(params['Text Connected']) || '%1 está conectado!',
+        textDisconnected = String(params['Text Disconnected']) || '%1 está desconectado!',
+        textAddPoints = String(params['Text AddPonts']) || '%1 acaba de marcar %2 pontos na tabela(%3)!',
+        textAddTrophies = String(params['Text AddTrophies']) || '%1 acaba de receber um troféu(%2)!',
+        textRemoveTrophies = String(params['Text RemoveTrophies']) || '%1 acaba de perder um troféu(%2)!';
 
     //-----------------------------------------------------------------------------
     // Variables
@@ -226,6 +262,13 @@ DX.gameJolt = DX.gameJolt || {
         return api.https.get(url, callback);
     };
 
+    HTTPS.trophiesFetchAll = function (username, user_token, callback) {
+        let url = `${api.url}/trophies/?game_id=${api.gameId}&username=${username}&user_token=${user_token}`.replace(/\s{1,}/g, ""),
+            signature = this.signature(url + api.privateKey);
+        url += `&signature=${signature}`;
+        return api.https.get(url, callback);
+    };
+
     HTTPS.trophiesAdd = function (username, user_token, trophyId, callback) {
         let url = `${api.url}/trophies/add-achieved/?game_id=${api.gameId}&username=${username}&user_token=${user_token}\
         &trophy_id=${trophyId}`.replace(/\s{1,}/g, ""),
@@ -240,6 +283,160 @@ DX.gameJolt = DX.gameJolt || {
             signature = this.signature(url + api.privateKey);
         url += `&signature=${signature}`;
         return api.https.get(url, callback);
+    };
+
+    //-----------------------------------------------------------------------------
+    // ImageManager
+    //
+    ImageManager.gameJoltloadFile = function (url, hue) {
+        return this.gameJoltloadBitmap(url, hue, true);
+    };
+
+    ImageManager.gameJoltloadBitmap = function (url, hue, smooth) {
+        if (url) {
+            var path = encodeURIComponent(url);
+            var bitmap = this.loadNormalBitmap(path, hue || 0);
+            bitmap.smooth = smooth;
+            return bitmap;
+        } else {
+            return this.loadEmptyBitmap();
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Sprite_GameJolt_Notify
+    //
+    function Sprite_GameJolt_Notify() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Sprite_GameJolt_Notify.prototype = Object.create(Sprite.prototype);
+    Sprite_GameJolt_Notify.prototype.constructor = Sprite_GameJolt_Notify;
+
+    Sprite_GameJolt_Notify.prototype.initialize = function (url, text, scene) {
+        Sprite.prototype.initialize.call(this);
+        this.bitmap = ImageManager.gameJoltloadFile(url);
+        this.scale = new Point(1, 1);
+        this.move(25, 25);
+        this._frames = {
+            stage1: {
+                on: true,
+                frames: 380
+            },
+            stage2: {
+                on: true,
+                frames: 380
+            }
+        };
+        this._scene = scene;
+        this._text = text;
+        this.opacity = 0;
+    };
+
+    Sprite_GameJolt_Notify.prototype.draw = function (text) {
+        if (this._drawSprite) return;
+        if (typeof text != 'string') text = '???';
+        let sprite = new Sprite(),
+            bitmap = new Bitmap(0, 0),
+            width = bitmap.measureTextWidth(text);
+        bitmap.resize(width, 60);
+        bitmap.fillRect(0, 0, width + 10, 8, '#2fe228');
+        bitmap.fillRect(0, 8, width + 10, 50, '#211f1f');
+        bitmap.fontSize = 14;
+        bitmap.drawText(text, 8, 60 / 2, width + 10, 8, 'left');
+        sprite.bitmap = bitmap;
+        sprite.move(85, 25);
+        this._drawSprite = sprite;
+        this._drawSprite.opacity = 0;
+        this._drawSprite.scale.x = 0;
+        this._scene.addChild(sprite);
+    };
+
+    Sprite_GameJolt_Notify.prototype.remove = function () {
+        this._hiding = true;
+    };
+
+    Sprite_GameJolt_Notify.prototype.update = function () {
+        if (this._activated) {
+            this.draw(this._text);
+            if (this._frames.stage1.on) {
+                if (this._frames.stage1.frames > 0) {
+                    this._frames.stage1.frames -= .60;
+                    if (this.opacity < 255)
+                        this.opacity += 8;
+                    if (this._drawSprite.opacity < 255)
+                        this._drawSprite.opacity += 8;
+                    if (this._drawSprite.scale.x < 1)
+                        this._drawSprite.scale.x += .060;
+                    if (this.opacity >= 255 && this._drawSprite.opacity >= 255 &&
+                        this._drawSprite.scale.x >= 1)
+                        this._frames.stage1.on = false;
+                }
+            } else if (this._frames.stage2.on) {
+                if (this._frames.stage2.frames > 0) {
+                    this._frames.stage2.frames -= .60;
+                } else {
+                    this._frames.stage2.on = false;
+                    this.remove();
+                }
+            }
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Scene_Base
+    //
+    const _scene_base_update = Scene_Base.prototype.update;
+    Scene_Base.prototype.update = function () {
+        _scene_base_update.call(this);
+        this.updateGameJoltUsers();
+        this.updateGameJoltNotify();
+    };
+
+    Scene_Base.prototype.gameJoltAddNotify = function (url, text) {
+        if (!this._gameJoltNotify) this._gameJoltNotify = [];
+        let notify = new Sprite_GameJolt_Notify(url, text, this);
+        this._gameJoltNotify.push(notify);
+    };
+
+    Scene_Base.prototype.updateGameJoltUsers = function () {
+        if (api.users instanceof Array && api.users.length > 0) {
+            api.users.map(user => { user.update(); });
+        }
+    };
+
+    Scene_Base.prototype.updateGameJoltNotify = function () {
+        if (this._gameJoltNotify instanceof Array && this._gameJoltNotify.length > 0) {
+            if (!this._gameJoltNotifyActivated) {
+                this._gameJoltNotifyActivated = true;
+                this._gameJoltNotify[0]._activated = true;
+                this.addChild(this._gameJoltNotify[0]);
+            }
+            this._gameJoltNotify[0].update();
+            if (this._gameJoltNotify[0]._hiding)
+                if (this._gameJoltNotify[0].opacity > 0) {
+                    this._gameJoltNotify[0].opacity -= 8;
+                    this._gameJoltNotify[0]._drawSprite.opacity -= 8;
+                    if (this._gameJoltNotify[0]._drawSprite.scale.x > 0)
+                        this._gameJoltNotify[0]._drawSprite.scale.x -= .030;
+                }
+                else {
+                    if (this._gameJoltNotifyRefresh === undefined) {
+                        this._gameJoltNotifyRefresh = 30;
+                        this.removeChild(this._gameJoltNotify[0]);
+                        this.removeChild(this._gameJoltNotify[0]._drawSprite);
+                    } else {
+                        if (this._gameJoltNotifyRefresh > 0) {
+                            this._gameJoltNotifyRefresh -= .60;
+                        } else {
+                            this._gameJoltNotifyRefresh = undefined;
+                            this._gameJoltNotifyList = false;
+                            this._gameJoltNotify.splice(0, 1);
+                            this._gameJoltNotifyActivated = false;
+                        }
+                    }
+                }
+        }
     };
 
     //-----------------------------------------------------------------------------
@@ -265,7 +462,6 @@ DX.gameJolt = DX.gameJolt || {
                 user._developer_name = data.response.users[0].developer_name;
                 user._developer_website = data.response.users[0].developer_website;
                 user._developer_description = data.response.users[0].developer_description;
-                user.update();
             }
         });
     };
@@ -285,6 +481,12 @@ DX.gameJolt = DX.gameJolt || {
         });
     };
 
+    Game_Jolt_User.setLoginNotify = function (username, loginNotify) {
+        api.users.map(user => {
+            if (user.username() === username) user._login_notify = loginNotify;
+        });
+    };
+
     Game_Jolt_User.prototype.initialize = function (username, userToken) {
         this._username = String(username) || '';
         this._userToken = String(userToken) || '';
@@ -300,6 +502,17 @@ DX.gameJolt = DX.gameJolt || {
         this._developer_website = null;
         this._developer_description = null;
         this._login_ping = null;
+        this._login_notify = null;
+        this._tables = null;
+        this._trophies = null;
+        this._delay = {
+            tables: 60,
+            trophies: 60
+        };
+        this._tick = {
+            tables: 0,
+            trophies: 60
+        };
     };
 
     Game_Jolt_User.prototype.username = function () {
@@ -354,6 +567,96 @@ DX.gameJolt = DX.gameJolt || {
         return this._developer_description;
     };
 
+    Game_Jolt_User.prototype.loginNotify = function () {
+        return this._login_notify;
+    };
+
+    Game_Jolt_User.prototype.tables = function () {
+        return this._tables;
+    };
+
+    Game_Jolt_User.prototype.trophiesData = function () {
+        return this._trophies;
+    };
+
+    Game_Jolt_User.prototype.delay = function (content) {
+        return this._delay[content];
+    };
+
+    Game_Jolt_User.prototype.tick = function (content) {
+        return this._tick[content];
+    };
+
+    Game_Jolt_User.prototype.addTick = function (content) {
+        this._tick[content]++;
+    };
+
+    Game_Jolt_User.prototype.setTick = function (content, tick) {
+        this._tick[content] = tick;
+    };
+
+    Game_Jolt_User.prototype.update = function () {
+        // Update Stage...
+        this.updateLoginNotify();
+        this.updateScoresTables();
+        this.updateTrophies();
+    };
+
+    Game_Jolt_User.prototype.updateLoginNotify = function () {
+        if (this.loginNotify()) {
+            let username = this.username(),
+                usertype = this.type(),
+                userAvatarURL = this.avatarUrl();
+            if (usertype && userAvatarURL) {
+                SceneManager._scene.gameJoltAddNotify(userAvatarURL, textConnected.format(`${username}(${usertype})`));
+                this._login_notify = false;
+            }
+        }
+    };
+
+    Game_Jolt_User.prototype.updateScoresTables = function () {
+        if (this.tick('tables') < this.delay('tables')) {
+            this.addTick('tables');
+        } else {
+            let username = this.username();
+            HTTPS.scoresFetchTables({
+                success: res => {
+                    api.users.map(user => {
+                        if (user.username() === username) {
+                            user._tables = res.response.tables;
+                            user.setTick('tables', 0);
+                        }
+                    });
+                },
+                error: e => {
+                    return console.error(e);
+                }
+            });
+        }
+    };
+
+    Game_Jolt_User.prototype.updateTrophies = function () {
+        if (this.tick('trophies') < this.delay('trophies')) {
+            this.addTick('trophies');
+        } else {
+            let username = this.username(),
+                userToken = this.userToken();
+            HTTPS.trophiesFetchAll(username, userToken, {
+                success: res => {
+                    api.users.map(user => {
+                        if (user.username() === username) {
+                            user._trophies = res.response.trophies;
+                            user.setTick('trophies', 0);
+                        }
+                    });
+                },
+                error: e => {
+                    return console.error(e);
+                }
+            });
+        }
+    };
+
     Game_Jolt_User.prototype.login = function (callback) {
         let username = this.username(),
             userToken = this.userToken(),
@@ -370,6 +673,7 @@ DX.gameJolt = DX.gameJolt || {
                                     }
                                 });
                             }, 3600));
+                            Game_Jolt_User.setLoginNotify(username, true);
                             callback(true);
                         }
                     },
@@ -419,10 +723,13 @@ DX.gameJolt = DX.gameJolt || {
 
     Game_Jolt_User.prototype.close = function (callback) {
         let username = this.username(),
-            userToken = this.userToken();
+            userToken = this.userToken(),
+            userAvatarURL = this._avatar_url,
+            usertype = this.type();
         HTTPS.sessionsClose(username, userToken, {
             success: (data) => {
                 if (data.response.success) {
+                    SceneManager._scene.gameJoltAddNotify(userAvatarURL, textDisconnected.format(`${username}(${usertype})`));
                     Game_Jolt_User.sessionsConnected--;
                     clearInterval(this._login_ping);
                     callback(true);
@@ -685,17 +992,56 @@ DX.gameJolt = DX.gameJolt || {
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltscoresaddpoints') {
             $gameTemp.gamejoltScoresAddPoint(String(args[0]), String(args[1]),
-                String(args[2]), String(args[3]), { success: () => { }, error: () => { } });
+                String(args[2]), String(args[3]), response => {
+                    if (response) {
+                        return api.users.map(user => {
+                            if (user.username() === String(args[0])) {
+                                let tables = user.tables();
+                                tables.map(table => {
+                                    if (String(table.id) === String(args[1])) {
+                                        SceneManager._scene.gameJoltAddNotify(user.avatarUrl(), textAddPoints.format(user.username(), String(args[2]), table.name));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltscoresaddguestpoints') {
             $gameTemp.gamejoltScoresAddGuestPoints(String(args[0]), String(args[1]),
-                String(args[2]), String(args[3]), { success: () => { }, error: () => { } });
+                String(args[2]), String(args[3]), () => { });
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejolttrophiesadduser') {
-            $gameTemp.gamejoltTrophiesAddUser(String(args[0]), String(args[1]), { success: () => { }, error: () => { } });
+            $gameTemp.gamejoltTrophiesAddUser(String(args[0]), String(args[1]), response => {
+                if (response) {
+                    return api.users.map(user => {
+                        if (user.username() === String(args[0])) {
+                            let trophies = user.trophiesData();
+                            trophies.map(trophy => {
+                                if (String(trophy.id) === String(args[1])) {
+                                    SceneManager._scene.gameJoltAddNotify(user.avatarUrl(), textAddTrophies.format(user.username(), trophy.title));
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejolttrophiesremoveuser') {
-            $gameTemp.gamejoltTrophiesRemoveUser(String(args[0]), String(args[1]), { success: () => { }, error: () => { } });
+            $gameTemp.gamejoltTrophiesRemoveUser(String(args[0]), String(args[1]), response => {
+                if (response) {
+                    return api.users.map(user => {
+                        if (user.username() === String(args[0])) {
+                            let trophies = user.trophiesData();
+                            trophies.map(trophy => {
+                                if (String(trophy.id) === String(args[1])) {
+                                    SceneManager._scene.gameJoltAddNotify(user.avatarUrl(), textRemoveTrophies.format(user.username(), trophy.title));
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
     };
 })();

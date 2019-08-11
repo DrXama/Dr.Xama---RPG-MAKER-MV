@@ -2,7 +2,7 @@
 // DrXama_languageManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.2.3 - Gerenciador de traduções
+ * @plugindesc v3.2.5 - Gerenciador de traduções
  *
  * @author Dr.Xamã
  *
@@ -382,14 +382,22 @@ DX.languageManager = DX.languageManager || {
 		var file = PluginManager.parameters('DrXama_languageManager'),
 			language = JSON.parse(file['Idiomas'] || []),
 			languageId = (function () {
-				var fs = require('fs'),
-					path_folderSystem = localPath('system'),
-					path_folderLanguage = localPath('system/language/save'),
-					path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
-					value = Number(file['Idioma'] || 0);
-				if (fs.existsSync(path_folderLanguage)) {
-					if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
-						var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
+				if (Utils.isNwjs()) {
+					var fs = require('fs'),
+						path_folderLanguage = localPath('system/language/save'),
+						path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
+						value = Number(file['Idioma'] || 0);
+					if (fs.existsSync(path_folderLanguage)) {
+						if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
+							var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
+							value = datafile.languageId;
+						}
+					}
+				} else {
+					var path_fileSettingsLanguage = 'settingsLanguageSystem',
+						value = Number(file['Idioma'] || 0);
+					if (localStorage.getItem(path_fileSettingsLanguage)) {
+						var datafile = JSON.parse(LZString.decompressFromBase64(localStorage.getItem(path_fileSettingsLanguage)));
 						value = datafile.languageId;
 					}
 				}
@@ -521,27 +529,47 @@ DX.languageManager = DX.languageManager || {
 
 	// Cria o arquivo de configuração do sistema
 	function createFileSettingsLanguage(callback, setLanguage) {
-		var fs = require('fs'),
-			path_folderSystem = localPath('system'),
-			path_folderLanguage = localPath('system/language/save'),
-			path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
-			data = LZString.compressToBase64(JSON.stringify({
-				'language': params.language[params.languageId],
-				'languageId': params.languageId,
-				'isCompleteGame': false
-			}, null, 2));
-		if (fs.existsSync(path_folderLanguage)) {
-			if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test') || setLanguage) {
-				fs.writeFileSync(path_fileSettingsLanguage, data);
+		if (Utils.isNwjs()) {
+			var fs = require('fs'),
+				path_folderLanguage = localPath('system/language/save'),
+				path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
+				data = LZString.compressToBase64(JSON.stringify({
+					'language': params.language[params.languageId],
+					'languageId': params.languageId,
+					'isCompleteGame': false
+				}, null, 2));
+			if (fs.existsSync(path_folderLanguage)) {
+				if (!fs.existsSync(path_fileSettingsLanguage) || Utils.isOptionValid('test') || setLanguage) {
+					fs.writeFileSync(path_fileSettingsLanguage, data);
+				}
+				if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
+					var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
+					if (!datafile.isCompleteGame) {
+						datafile.language = params.language[params.languageId];
+						datafile.languageId = params.languageId;
+						datafile.isCompleteGame = true;
+						fs.writeFileSync(path_fileSettingsLanguage,
+							LZString.compressToBase64(JSON.stringify(datafile, null, 2)));
+					}
+				}
 			}
-			if (fs.existsSync(path_fileSettingsLanguage) && !Utils.isOptionValid('test')) {
-				var datafile = JSON.parse(LZString.decompressFromBase64(fs.readFileSync(path_fileSettingsLanguage, { encoding: 'utf8' })));
+		} else {
+			var path_fileSettingsLanguage = 'settingsLanguageSystem',
+				data = LZString.compressToBase64(JSON.stringify({
+					'language': params.language[params.languageId],
+					'languageId': params.languageId,
+					'isCompleteGame': false
+				}, null, 2));
+			if (!!localStorage.getItem(path_fileSettingsLanguage) || setLanguage) {
+				localStorage.setItem(path_fileSettingsLanguage, data);
+			}
+			if (localStorage.getItem(path_fileSettingsLanguage)) {
+				var datafile = JSON.parse(LZString.decompressFromBase64(localStorage.getItem(path_fileSettingsLanguage)));
 				if (!datafile.isCompleteGame) {
 					datafile.language = params.language[params.languageId];
 					datafile.languageId = params.languageId;
 					datafile.isCompleteGame = true;
-					fs.writeFileSync(path_fileSettingsLanguage,
-						LZString.compressToBase64(JSON.stringify(datafile, null, 2)));
+					localStorage.setItem(path_fileSettingsLanguage, LZString.compressToBase64(JSON.stringify(datafile, null, 2)));
 				}
 			}
 		}
@@ -550,17 +578,25 @@ DX.languageManager = DX.languageManager || {
 
 	// Retorna a linguagem padrão do sistema
 	function getterLanguageSystem() {
-		var fs = require('fs'),
-			path_folderSystem = localPath('system'),
-			path_folderLanguage = localPath('system/language/save'),
-			path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
-			language = params.language[params.languageId];
-		if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_fileSettingsLanguage)) {
-			var data = JSON.parse(LZString.decompressFromBase64(
-				fs.readFileSync(path_fileSettingsLanguage, {
-					'encoding': 'utf8'
-				})));
-			language = data.language;
+		if (Utils.isNwjs()) {
+			var fs = require('fs'),
+				path_folderLanguage = localPath('system/language/save'),
+				path_fileSettingsLanguage = path_folderLanguage + '\\' + 'settingsLanguageSystem.drxamasave',
+				language = params.language[params.languageId];
+			if (fs.existsSync(path_folderLanguage) && fs.existsSync(path_fileSettingsLanguage)) {
+				var data = JSON.parse(LZString.decompressFromBase64(
+					fs.readFileSync(path_fileSettingsLanguage, {
+						'encoding': 'utf8'
+					})));
+				language = data.language;
+			}
+		} else {
+			var path_fileSettingsLanguage = 'settingsLanguageSystem',
+				language = params.language[params.languageId];
+			if (localStorage.getItem(path_fileSettingsLanguage)) {
+				var data = JSON.parse(LZString.decompressFromBase64(localStorage.getItem(path_fileSettingsLanguage)));
+				language = data.language;
+			}
 		}
 		return language;
 	};
@@ -1342,8 +1378,12 @@ DX.languageManager = DX.languageManager || {
 	function specialTextValue(code) {
 		switch (String(code).toLowerCase()) {
 			case 'username':
-			case '1':
-				return process.env.SteamAppUser || process.env.USERNAME;
+			case '1': {
+				if (Utils.isNwjs())
+					return process.env.SteamAppUser || process.env.USERNAME;
+				else
+					return '???';
+			}
 		}
 	};
 
@@ -1402,15 +1442,19 @@ DX.languageManager = DX.languageManager || {
 
 	// Inicia o sistema
 	function initializeSystem() {
-		loadSystemTextsFolders();
-		createSystemFolders();
-		if (params.windowToCompilator) {
-			if (!winHelpSystemInfo) {
-				createFileSettingsLanguage();
+		if (Utils.isNwjs()) {
+			loadSystemTextsFolders();
+			createSystemFolders();
+			if (params.windowToCompilator) {
+				if (!winHelpSystemInfo) {
+					createFileSettingsLanguage();
+				} else {
+					createFileSettingsLanguage(defineAllTexts);
+				}
+				helpWindowSystemInfo();
 			} else {
 				createFileSettingsLanguage(defineAllTexts);
 			}
-			helpWindowSystemInfo();
 		} else {
 			createFileSettingsLanguage(defineAllTexts);
 		}
@@ -1419,7 +1463,6 @@ DX.languageManager = DX.languageManager || {
 	// Carrega os textos personalizados nas pastas
 	function loadSystemTextsFolders() {
 		var fs = require('fs'),
-			path_folderSystem = localPath('system'),
 			path_folderLanguage = localPath('system/language'),
 			path_folderLanguageTranslate = localPath(`system/language/translate`),
 			folders = [],
@@ -3330,7 +3373,6 @@ DX.languageManager = DX.languageManager || {
 		__Window_Options__processOk.call(this);
 		var index = this.index();
 		var symbol = this.commandSymbol(index);
-		var value = this.getConfigValue(symbol);
 		if (this.isLanguageSymbol(symbol)) {
 			if (params.languageId < params.language.length - 1) {
 				params.languageId++;
@@ -3606,7 +3648,7 @@ DX.languageManager = DX.languageManager || {
  * @desc Os valores do texto
  * @desc Os valores do texto
  * @type struct<TextoMenu>[]
- * 
+ *
  * @param Texto Lv
  * @desc Os valores do texto
  * @type struct<TextoMenu>[]
@@ -4183,7 +4225,7 @@ DX.languageManager = DX.languageManager || {
  * @desc O valor do texto
  * @type string
  * @default Idioma
- * 
+ *
  * @param Valor
  * @desc O identificador do idioma
  * @type string

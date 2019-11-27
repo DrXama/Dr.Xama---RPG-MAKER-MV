@@ -2,10 +2,10 @@
 // MVDebug
 // By Dr.Xamã
 // GS_MVDebug.js
-// Version: 1.17
+// Version: 1.18
 //===============================================================================
 /*:
- * @plugindesc v1.17 - Grande biblioteca de utilitários que fornece uma grande 
+ * @plugindesc v1.18 - Grande biblioteca de utilitários que fornece uma grande 
  * depuração do sistema.
  *
  * @author Dr.Xamã
@@ -94,7 +94,7 @@
 // IMPORT PLUGIN
 //===============================================================================
 var Imported = Imported || {};
-Imported["GS_debuggEx"] = "1.17";
+Imported["GS_debuggEx"] = "1.18";
 
 var GS = GS || {},
   MVDebug = {},
@@ -1223,7 +1223,6 @@ GS.MVD = MVD;
           fl_lines.push(line);
         }
       }).on('close', function () {
-        var groupName = '%c ✰ Depuração das linhas favoritas(FL) para (' + '%c' + pluginPath + '.js' + '%c) está completo! ✰ ';
         writeFileSync();
       });
 
@@ -1241,6 +1240,12 @@ GS.MVD = MVD;
 
         var fl_path = localPath(pathFileDebuggExCodeRun()) + '\\' + 'CodeRun_file_' + pluginPath + '_date_' + completeDate + '_time_' + completeHour + '.js';
         fs.writeFileSync(fl_path, fl_lines.join('\r\n'));
+        var message = '%c ✰ Depuração das linhas favoritas(FL) para (' + '%c' + pluginPath + '.js' + '%c) está completo! ✰ ';
+        console.log(message,
+          'background: #1f1f1f; font-size: 120%; color: #ffffff',
+          'background: #1f1f1f; font-size: 120%; color: #00ffff',
+          'background: #1f1f1f; font-size: 120%; color: #ffffff'
+        );
       }
 
       function isFavoriteLine(line) {
@@ -1463,79 +1468,78 @@ GS.MVD = MVD;
     }
     var fs = require('fs');
     var folderPath = localPath(pathFileDebuggExCodePlugins());
-    if (fs.existsSync(folderPath)) {
-      var pathFile = folderPath + '\\' + fileName + '.js';
-      var pluginName = fileConfig["pluginName"] || 'pluginName';
-      var pluginFileAuthor = fileConfig["fileAuthor"] || 'author';
-      var pluginFileName = fileConfig["fileName"] || fileName;
-      var pluginFileVersion = fileConfig["fileVersion"] || '1.00';
-      var pluginDescription = fileConfig["pluginDescription"] || 'Plugin Description.';
-      var pluginParameterName = fileConfig["pluginParameter"] || 'paramName';
-      var pluginParameterDescription = fileConfig["pluginParameterDescription"] || 'paramDesc';
-      var pluginParameterValueDefault = fileConfig["pluginParameterValue"] || 'paramDefault';
-      var pluginHelpIntroduction = fileConfig["pluginHelpIntroduction"] || 'Plugin introduction.';
-      var pluginVariableNameSpace = fileConfig["pluginVariableNameSpace"] || 'VSP';
-      var pluginNameSpace = fileConfig["pluginNameSpace"] || 'nameSpace';
-      var pluginCodePrefix = fileConfig["pluginCodePrefix"] || '$';
-      var pluginImportedName = fileConfig["pluginImportedName"] || fileName;
-      var useStrict = 'use strict';
-      var dataFile = [
-        '//===============================================================================' + '\n' +
-        '// ' + pluginName + '\n' +
-        '// By ' + pluginFileAuthor + '\n' +
-        '// ' + pluginFileName + '.js' + '\n' +
-        '// Version: ' + pluginFileVersion + '\n' +
-        '//===============================================================================',
-        '/*\:' + '\n' +
-        ' * @plugindesc v' + pluginFileVersion + '- ' + pluginDescription + '\n' + ' *' + '\n' +
-        ' * @author ' + pluginFileAuthor + '\n' + ' *' + '\n' +
-        ' * @param ' + pluginParameterName + '\n' +
-        ' * @desc ' + pluginParameterDescription + '\n' +
-        ' * @default ' + pluginParameterValueDefault + '\n' + ' *' + '\n' +
-        ' * @help' + '\n' +
-        ' * ============================================================================== ' + '\n' +
-        ' *    Introduction' + '\n' +
-        ' * ==============================================================================' + '\n' +
-        ' * ' + pluginHelpIntroduction + '\n' +
-        ' * ==============================================================================' + '\n' +
-        ' *    Changelog (1)' + '\n' +
-        ' * ==============================================================================' + '\n' +
-        ' *  Version 1.00:' + '\n' +
-        ' * - Finished Plugin!' + '\n' +
-        ' */',
-        '//===============================================================================' + '\n' +
-        '// IMPORT PLUGIN' + '\n' +
-        '//===============================================================================' + '\n' +
-        'var Imported = Imported || {};' + '\n' +
-        'Imported[' + pluginImportedName.toStringMarks(0) + '] = ' + pluginFileVersion.toStringMarks(0) + ';' + '\n\n' +
-        'var ' + pluginVariableNameSpace + ' = ' + pluginVariableNameSpace + ' || {};' + '\n' +
-        pluginVariableNameSpace + '.' + pluginNameSpace + ' = ' + pluginVariableNameSpace + '.' +
-        pluginNameSpace + ' || {};' + '\n',
-        '//===============================================================================' + '\n' +
-        '// ' + pluginName.toUpperCase() + ' MODULE' + '\n' +
-        '//===============================================================================' + '\n' +
-        '(function(' + pluginCodePrefix + ') {' + '\n' + useStrict.toStringMarks(0) + ';' + '\n\n' +
-        ' //-----------------------------------------------------------------------------' + '\n' +
-        ' // Parameters' + '\n' +
-        ' //' + '\n' +
-        ' var params = PluginManager.parameters(' + pluginFileName.toStringMarks(1) + ');' + '\n' +
-        ' console.log(params)' + '\n' +
-        '})(' + pluginVariableNameSpace + '.' + pluginNameSpace + ');',
-        '//===============================================================================' + '\n' +
-        '//           ✰ Dr.Xamã ✰ KADOKAWA ✰ Yoji Ojima ✰ Degica ✰' + '\n' +
-        '//==============================================================================='
-      ];
-      fs.writeFileSync(pathFile, dataFile.join('\r\n'));
-      var parameters = {};
-      parameters[pluginParameterName] = pluginParameterValueDefault;
-      var plugin = {
-        "description": 'v' + pluginFileVersion + '- ' + pluginDescription,
-        "name": pluginFileName,
-        "parameters": parameters,
-        "status": true
-      }
-      PluginManager.setupDebugEx(plugin);
+    if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+    var pathFile = folderPath + '\\' + fileName + '.js';
+    var pluginName = fileConfig["pluginName"] || 'pluginName';
+    var pluginFileAuthor = fileConfig["fileAuthor"] || 'author';
+    var pluginFileName = fileConfig["fileName"] || fileName;
+    var pluginFileVersion = fileConfig["fileVersion"] || '1.00';
+    var pluginDescription = fileConfig["pluginDescription"] || 'Plugin Description.';
+    var pluginParameterName = fileConfig["pluginParameter"] || 'paramName';
+    var pluginParameterDescription = fileConfig["pluginParameterDescription"] || 'paramDesc';
+    var pluginParameterValueDefault = fileConfig["pluginParameterValue"] || 'paramDefault';
+    var pluginHelpIntroduction = fileConfig["pluginHelpIntroduction"] || 'Plugin introduction.';
+    var pluginVariableNameSpace = fileConfig["pluginVariableNameSpace"] || 'VSP';
+    var pluginNameSpace = fileConfig["pluginNameSpace"] || 'nameSpace';
+    var pluginCodePrefix = fileConfig["pluginCodePrefix"] || '$';
+    var pluginImportedName = fileConfig["pluginImportedName"] || fileName;
+    var useStrict = 'use strict';
+    var dataFile = [
+      '//===============================================================================' + '\n' +
+      '// ' + pluginName + '\n' +
+      '// By ' + pluginFileAuthor + '\n' +
+      '// ' + pluginFileName + '.js' + '\n' +
+      '// Version: ' + pluginFileVersion + '\n' +
+      '//===============================================================================',
+      '/*\:' + '\n' +
+      ' * @plugindesc v' + pluginFileVersion + '- ' + pluginDescription + '\n' + ' *' + '\n' +
+      ' * @author ' + pluginFileAuthor + '\n' + ' *' + '\n' +
+      ' * @param ' + pluginParameterName + '\n' +
+      ' * @desc ' + pluginParameterDescription + '\n' +
+      ' * @default ' + pluginParameterValueDefault + '\n' + ' *' + '\n' +
+      ' * @help' + '\n' +
+      ' * ============================================================================== ' + '\n' +
+      ' *    Introduction' + '\n' +
+      ' * ==============================================================================' + '\n' +
+      ' * ' + pluginHelpIntroduction + '\n' +
+      ' * ==============================================================================' + '\n' +
+      ' *    Changelog (1)' + '\n' +
+      ' * ==============================================================================' + '\n' +
+      ' *  Version 1.00:' + '\n' +
+      ' * - Finished Plugin!' + '\n' +
+      ' */',
+      '//===============================================================================' + '\n' +
+      '// IMPORT PLUGIN' + '\n' +
+      '//===============================================================================' + '\n' +
+      'var Imported = Imported || {};' + '\n' +
+      'Imported[' + pluginImportedName.toStringMarks(0) + '] = ' + pluginFileVersion.toStringMarks(0) + ';' + '\n\n' +
+      'var ' + pluginVariableNameSpace + ' = ' + pluginVariableNameSpace + ' || {};' + '\n' +
+      pluginVariableNameSpace + '.' + pluginNameSpace + ' = ' + pluginVariableNameSpace + '.' +
+      pluginNameSpace + ' || {};' + '\n',
+      '//===============================================================================' + '\n' +
+      '// ' + pluginName.toUpperCase() + ' MODULE' + '\n' +
+      '//===============================================================================' + '\n' +
+      '(function(' + pluginCodePrefix + ') {' + '\n' + useStrict.toStringMarks(0) + ';' + '\n\n' +
+      ' //-----------------------------------------------------------------------------' + '\n' +
+      ' // Parameters' + '\n' +
+      ' //' + '\n' +
+      ' var params = PluginManager.parameters(' + pluginFileName.toStringMarks(1) + ');' + '\n' +
+      ' console.log(params)' + '\n' +
+      '})(' + pluginVariableNameSpace + '.' + pluginNameSpace + ');',
+      '//===============================================================================' + '\n' +
+      '//           ✰ Dr.Xamã ✰ KADOKAWA ✰ Yoji Ojima ✰ Degica ✰' + '\n' +
+      '//==============================================================================='
+    ];
+    fs.writeFileSync(pathFile, dataFile.join('\r\n'));
+    var parameters = {};
+    parameters[pluginParameterName] = pluginParameterValueDefault;
+    var plugin = {
+      "description": 'v' + pluginFileVersion + '- ' + pluginDescription,
+      "name": pluginFileName,
+      "parameters": parameters,
+      "status": true
     }
+    PluginManager.setupDebugEx(plugin);
   };
 
   /** 

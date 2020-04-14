@@ -2,9 +2,29 @@
 // DrXama_updateManager.js
 //==================================================================================================
 /*:
- * @plugindesc v2.02 - Gerenciador de atualizações
+ * @plugindesc v3.04 - Gerenciador de atualizações
  *
  * @author Dr.Xamã
+ * 
+ * @param Skip Title
+ * @desc Pular ou não a tela de titulo
+ * @type Boolean
+ * @on Pular
+ * @off Manter
+ * @default false
+ * 
+ * @param Skip Scene
+ * @desc Escreva uma Scene customizada no lugar da Scene_Map
+ * @parent Skip Title
+ * @type string
+ * @default
+ * 
+ * @param Bitmap de Loading
+ * @desc Arquivo exibido enquanto os arquivos estão sendo baixados.
+ * @default Loading
+ * @require 1
+ * @dir img/system/
+ * @type file
  * 
  * @param Arquivo de atualizações
  * @desc Url para baixar o arquivo e verificar novas atualizações
@@ -55,15 +75,43 @@
  * ================================================================================
  *    Atualização
  * ================================================================================
- * Para atualizar esse plugin vá no github do Dr.Xamã
- * http://drxama.epizy.com/?page_id=299
+ * Para atualizar esse plugin acesse:
+ * https://drxama.com.br/plugins/drxama_updatemanager/
  */
+var DX = DX || {
+    'site': function () { return require('nw.gui').Shell.openExternal('https://drxama.com.br/'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('https://drxama.com.br/termos-de-uso/'); },
+    'compatibility': function () {
+        if (Utils.RPGMAKER_VERSION == '1.4.1' ||
+            Utils.RPGMAKER_VERSION == '1.4.0' ||
+            Utils.RPGMAKER_VERSION == '1.3.5' ||
+            Utils.RPGMAKER_VERSION == '1.3.4' ||
+            Utils.RPGMAKER_VERSION == '1.3.3' ||
+            Utils.RPGMAKER_VERSION == '1.3.2' ||
+            Utils.RPGMAKER_VERSION == '1.3.1' ||
+            Utils.RPGMAKER_VERSION == '1.3.0' ||
+            Utils.RPGMAKER_VERSION == '1.2.0' ||
+            Utils.RPGMAKER_VERSION == '1.1.0' ||
+            Utils.RPGMAKER_VERSION == '1.0.1' ||
+            Utils.RPGMAKER_NAME != 'MV')
+            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_updateManager'), SceneManager.stop();
+    }
+};
+DX.updateManager = DX.updateManager || {
+    'page': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/plugins/drxama_updatemanager/'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/z7ga3ezn6fynnvf/DrXama_updateManager.js?dl=0'); },
+    'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_updateManager.md'); },
+    'version': function () { return console.log('v3.04') }
+};
+
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
     // Parâmetros
     //
     const params = PluginManager.parameters('DrXama_updateManager'),
+        skipTitle = eval(String(params['Skip Title'])),
+        bitmapLoading = String(params['Bitmap de Loading']),
         updateFile = String(params['Arquivo de atualizações']),
         fs = require('fs');
 
@@ -155,49 +203,80 @@
     //-----------------------------------------------------------------------------
     // Scene_Boot
     //
-    const __scene_boot_start = Scene_Boot.prototype.start;
-    Scene_Boot.prototype.start = function () {
+    const _scene_title_start = Scene_Title.prototype.start;
+    Scene_Title.prototype.start = function () {
         if (!roster_downloadsComplete) {
-            this.drawLoadUpdate();
-            isInternetStates({
-                success: () => {
-                    initializeSystem();
-                },
-                failure: () => {
-                    roster_downloadsComplete = true;
-                    completeAllDownloads();
-                }
-            });
+            return SceneManager.goto(Scene_Update);
         } else {
-            __scene_boot_start.call(this);
+            if (skipTitle) {
+                if ($dataSystem.startMapId === 0) {
+                    throw new Error('Player\'s starting position is not set');
+                }
+                DataManager.setupNewGame();
+                return SceneManager.goto(Scene_Map);
+            }
+            _scene_title_start.call(this);
         }
     };
 
-    Scene_Boot.prototype.updateDownloadComplete = function () {
-        this._updateDownloadComplete = true;
-    };
-
-    Scene_Boot.prototype.updateDownloadCompleteStatus = function () {
-        this._updateDownloadCompleteStatus = true;
-    };
-
-    Scene_Boot.prototype.updateDownloadRestoreStatus = function () {
-        this._updateDownloadRestoreStatus = true;
-    };
-
-    const Scene_Boot_update = Scene_Boot.prototype.update;
-    Scene_Boot.prototype.update = function () {
-        Scene_Boot_update.call(this);
-        if (!scene_system_reload) {
-            this.updateProgressBar();
-            this.updateLoadUpdate();
-            this.updateCompleteUpdate();
-            this.updateRestoreUpdate();
-            updateDownloadToRoster();
+    const _scene_title_create = Scene_Title.prototype.create;
+    Scene_Title.prototype.create = function () {
+        _scene_title_create.call(this);
+        if (!roster_downloadsComplete || skipTitle) {
+            this.fillAllBlackout();
         }
     };
 
-    Scene_Boot.prototype.drawLoadUpdate = function () {
+    Scene_Title.prototype.fillAllBlackout = function () {
+        this._backSprite1 = new Sprite(new Bitmap(Graphics.width, Graphics.height));
+        this._backSprite1.bitmap.fillAll('black');
+        this.addChild(this._backSprite1);
+    };
+
+    //-----------------------------------------------------------------------------
+    // Scene_Update
+    //
+
+    function Scene_Update() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Scene_Update.prototype = Object.create(Scene_Base.prototype);
+    Scene_Update.prototype.constructor = Scene_Update;
+
+    Scene_Update.prototype.initialize = function () {
+        Scene_Base.prototype.initialize.call(this);
+    };
+
+    Scene_Update.prototype.create = function () {
+        Scene_Base.prototype.create.call(this);
+        this.createBackground();
+        this.createWindowLayer();
+    };
+
+    Scene_Update.prototype.createBackground = function () {
+        this._backgroundSprite = new Sprite();
+        this._backgroundSprite.bitmap = SceneManager.backgroundBitmap();
+        this.addChild(this._backgroundSprite);
+    };
+
+    Scene_Update.prototype.start = function () {
+        Scene_Base.prototype.start.call(this);
+        SceneManager.clearStack();
+        this.startFadeIn(this.fadeSpeed(), false);
+        this.drawLoadUpdate();
+        isInternetStates({
+            success: () => {
+                initializeSystem();
+            },
+            failure: () => {
+                roster_downloadsComplete = true;
+                completeAllDownloads();
+            }
+        });
+    };
+
+    Scene_Update.prototype.drawLoadUpdate = function () {
         this._loadUpdateSprite = [
             new Sprite(),
             new Sprite(),
@@ -210,7 +289,7 @@
         this._loadUpdateSprite[0].bitmap = new Bitmap(Graphics.width, Graphics.height);
         this._loadUpdateSprite[0].bitmap.fillAll('black');
         // Sprite 2
-        this._loadUpdateSprite[1].bitmap = ImageManager.loadSystem('Downloading');
+        this._loadUpdateSprite[1].bitmap = ImageManager.loadSystem(bitmapLoading);
         this._loadUpdateSprite[1].x = Graphics.width / 2;
         this._loadUpdateSprite[1].y = Graphics.height / 2;
         this._loadUpdateSprite[1].anchor.x = 0.5;
@@ -254,61 +333,7 @@
         this.addChild(this._loadUpdateSprite[5]);
     };
 
-    Scene_Boot.prototype.updateProgressBar = function () {
-        this._loadUpdateSprite[3].bitmap.clear();
-        this._loadUpdateSprite[4].bitmap.clear();
-        this._loadUpdateSprite[5].bitmap.clear();
-        this._loadUpdateSprite[3].bitmap.fillRect(0, 0, windowDownloadProgress.getProgressBar(), 20, '#66ff33');
-        this._loadUpdateSprite[4].bitmap.drawText(windowDownloadProgress.getTextFile(), 0, 20, Graphics.width - 20, 0, 'center');
-        this._loadUpdateSprite[5].bitmap.drawText(windowDownloadProgress.getTextBar(), 0, 20, Graphics.width - 20, 0, 'center');
-    };
-
-    Scene_Boot.prototype.updateLoadUpdate = function () {
-        if (this._updateDownloadComplete) {
-            var fadeOut = false;
-            this._loadUpdateSprite.map(function (sprite) {
-                if (sprite.opacity > 0) {
-                    fadeOut = false
-                    sprite.opacity -= 4;
-                }
-                else
-                    fadeOut = true;
-            });
-            if (fadeOut) {
-                if (!this._updateDownloadCompleteStatus && !this._updateDownloadRestoreStatus) {
-                    scene_system_reload = true;
-                    SceneManager.goto(Scene_Boot);
-                }
-                if (this._updateDownloadCompleteStatus) {
-                    this._completeDownloadStatusSpriteOpacity = true;
-                }
-                if (this._updateDownloadRestoreStatus) {
-                    this._restoreDownloadStatusSpriteOpacity = true;
-                }
-            }
-            return;
-        }
-        if (this._loadUpdateSpriteFrames == undefined) {
-            this._loadUpdateSpriteFrames = [30, 35];
-        }
-        if (this._loadUpdateSpriteFrames[0] > 0) {
-            this._loadUpdateSpriteFrames[0] -= 0.60;
-            if (this._loadUpdateSprite[1].opacity > 0) {
-                this._loadUpdateSprite[1].opacity -= 4;
-            }
-        } else {
-            if (this._loadUpdateSpriteFrames[1] > 0) {
-                this._loadUpdateSpriteFrames[1] -= 0.60;
-                if (this._loadUpdateSprite[1].opacity < 255) {
-                    this._loadUpdateSprite[1].opacity += 4;
-                }
-            } else {
-                this._loadUpdateSpriteFrames = undefined;
-            }
-        }
-    };
-
-    Scene_Boot.prototype.drawCompleteUpdate = function () {
+    Scene_Update.prototype.drawCompleteUpdate = function () {
         if (!this._completeUpdateStatusSprite) {
             this._completeUpdateStatusSprite = [
                 new Sprite(new Bitmap(Graphics.width, Graphics.height)),
@@ -414,7 +439,7 @@
             function EXIST_STATUS() {
                 if (!this._updateDownloadRestoreStatus) {
                     scene_system_reload = true;
-                    SceneManager.goto(Scene_Boot);
+                    SceneManager.goto(Scene_Title);
                 } else {
                     this._updateDownloadCompleteStatus = false;
                 }
@@ -431,25 +456,7 @@
         }
     };
 
-    Scene_Boot.prototype.updateCompleteUpdate = function () {
-        if (this._updateDownloadCompleteStatus && this._completeDownloadStatusSpriteOpacity) {
-            this.drawCompleteUpdate();
-            if (this._completeUpdateStatusSprite[0].opacity < 255)
-                this._completeUpdateStatusSprite[0].opacity += 4;
-            if (this._completeUpdateStatusSprite[1].opacity < 255)
-                this._completeUpdateStatusSprite[1].opacity += 4;
-            if (this._completeUpdateStatusSprite[2].opacity < 255)
-                this._completeUpdateStatusSprite[2].opacity += 4;
-            if (this._completeUpdateStatusSprite[3].opacity < 255)
-                this._completeUpdateStatusSprite[3].opacity += 4;
-            if (this._completeUpdateStatusSprite[4].opacity < 255)
-                this._completeUpdateStatusSprite[4].opacity += 4;
-            if (this._completeUpdateStatusSprite[5].opacity < 255)
-                this._completeUpdateStatusSprite[5].opacity += 4;
-        }
-    };
-
-    Scene_Boot.prototype.drawRestoreUpdate = function () {
+    Scene_Update.prototype.drawRestoreUpdate = function () {
         if (!this._restoreUpdateStatusSprite) {
             this._restoreUpdateStatusSprite = [
                 new Sprite(new Bitmap(Graphics.width, Graphics.height)),
@@ -554,7 +561,7 @@
             }
             function EXIST_STATUS() {
                 scene_system_reload = true;
-                SceneManager.goto(Scene_Boot);
+                SceneManager.goto(Scene_Title);
             };
             LIST.call(this);
             LIST.call(this, 1);
@@ -568,7 +575,102 @@
         }
     };
 
-    Scene_Boot.prototype.updateRestoreUpdate = function () {
+    Scene_Update.prototype.update = function () {
+        Scene_Base.prototype.update.call(this);
+        if (!scene_system_reload) {
+            this.updateProgressBar();
+            this.updateLoadUpdate();
+            this.updateCompleteUpdate();
+            this.updateRestoreUpdate();
+            updateDownloadToRoster();
+        }
+    };
+
+    Scene_Update.prototype.updateDownloadComplete = function () {
+        this._updateDownloadComplete = true;
+    };
+
+    Scene_Update.prototype.updateDownloadCompleteStatus = function () {
+        this._updateDownloadCompleteStatus = true;
+    };
+
+    Scene_Update.prototype.updateDownloadRestoreStatus = function () {
+        this._updateDownloadRestoreStatus = true;
+    };
+
+    Scene_Update.prototype.updateProgressBar = function () {
+        this._loadUpdateSprite[3].bitmap.clear();
+        this._loadUpdateSprite[4].bitmap.clear();
+        this._loadUpdateSprite[5].bitmap.clear();
+        this._loadUpdateSprite[3].bitmap.fillRect(0, 0, windowDownloadProgress.getProgressBar(), 20, '#66ff33');
+        this._loadUpdateSprite[4].bitmap.drawText(windowDownloadProgress.getTextFile(), 0, 20, Graphics.width - 20, 0, 'center');
+        this._loadUpdateSprite[5].bitmap.drawText(windowDownloadProgress.getTextBar(), 0, 20, Graphics.width - 20, 0, 'center');
+    };
+
+    Scene_Update.prototype.updateLoadUpdate = function () {
+        if (this._updateDownloadComplete) {
+            var fadeOut = false;
+            this._loadUpdateSprite.map(function (sprite) {
+                if (sprite.opacity > 0) {
+                    fadeOut = false
+                    sprite.opacity -= 4;
+                }
+                else
+                    fadeOut = true;
+            });
+            if (fadeOut) {
+                if (!this._updateDownloadCompleteStatus && !this._updateDownloadRestoreStatus) {
+                    scene_system_reload = true;
+                    SceneManager.goto(Scene_Title);
+                }
+                if (this._updateDownloadCompleteStatus) {
+                    this._completeDownloadStatusSpriteOpacity = true;
+                }
+                if (this._updateDownloadRestoreStatus) {
+                    this._restoreDownloadStatusSpriteOpacity = true;
+                }
+            }
+            return;
+        }
+        if (this._loadUpdateSpriteFrames == undefined) {
+            this._loadUpdateSpriteFrames = [30, 35];
+        }
+        if (this._loadUpdateSpriteFrames[0] > 0) {
+            this._loadUpdateSpriteFrames[0] -= 0.60;
+            if (this._loadUpdateSprite[1].opacity > 0) {
+                this._loadUpdateSprite[1].opacity -= 4;
+            }
+        } else {
+            if (this._loadUpdateSpriteFrames[1] > 0) {
+                this._loadUpdateSpriteFrames[1] -= 0.60;
+                if (this._loadUpdateSprite[1].opacity < 255) {
+                    this._loadUpdateSprite[1].opacity += 4;
+                }
+            } else {
+                this._loadUpdateSpriteFrames = undefined;
+            }
+        }
+    };
+
+    Scene_Update.prototype.updateCompleteUpdate = function () {
+        if (this._updateDownloadCompleteStatus && this._completeDownloadStatusSpriteOpacity) {
+            this.drawCompleteUpdate();
+            if (this._completeUpdateStatusSprite[0].opacity < 255)
+                this._completeUpdateStatusSprite[0].opacity += 4;
+            if (this._completeUpdateStatusSprite[1].opacity < 255)
+                this._completeUpdateStatusSprite[1].opacity += 4;
+            if (this._completeUpdateStatusSprite[2].opacity < 255)
+                this._completeUpdateStatusSprite[2].opacity += 4;
+            if (this._completeUpdateStatusSprite[3].opacity < 255)
+                this._completeUpdateStatusSprite[3].opacity += 4;
+            if (this._completeUpdateStatusSprite[4].opacity < 255)
+                this._completeUpdateStatusSprite[4].opacity += 4;
+            if (this._completeUpdateStatusSprite[5].opacity < 255)
+                this._completeUpdateStatusSprite[5].opacity += 4;
+        }
+    };
+
+    Scene_Update.prototype.updateRestoreUpdate = function () {
         if (this._updateDownloadCompleteStatus) return;
         if (this._updateDownloadRestoreStatus && this._restoreDownloadStatusSpriteOpacity) {
             this.drawRestoreUpdate();
@@ -841,7 +943,7 @@
      * @description Chamada quando todos os downloads estão completos
      */
     function completeAllDownloads() {
-        if (SceneManager._scene instanceof Scene_Boot) {
+        if (SceneManager._scene instanceof Scene_Update) {
             if (roster_downloadsFiles > 0) {
                 SceneManager._scene.updateDownloadCompleteStatus();
             } else if (roster_downloadsRestore instanceof Array &&

@@ -1,3 +1,9 @@
+# v3.04 - 14 de abril de 2020
+- Removido a Scene_Boot
+- Adicionado a Scene_Title
+- Adicionado a Scene_Update
+- Adicionado novo parametro para pular a Scene_Title
+
 # v2.02 - 22 de agosto de 2018
 - Corrigido erro no sistema quando estava sem internet
 

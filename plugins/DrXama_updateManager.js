@@ -13,12 +13,6 @@
  * @off Manter
  * @default false
  * 
- * @param Skip Scene
- * @desc Escreva uma Scene customizada no lugar da Scene_Map
- * @parent Skip Title
- * @type string
- * @default
- * 
  * @param Bitmap de Loading
  * @desc Arquivo exibido enquanto os arquivos estão sendo baixados.
  * @default Loading

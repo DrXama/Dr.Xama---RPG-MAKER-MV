@@ -42,12 +42,12 @@
  * @default %1 acaba de perder um troféu(%2)!
  * 
  * @param Text Login Page
- * @desc Textos apresentados na tela de login
+ * @desc Textos apresentados na tela de login.
  * @type string[]
  * @default ["Nome de usuario","Game Token","Não compartilhe seu Game Token com ninguém.","Game Token inválido.","Entrar","Carregando..."]
  * 
  * @param Text Logout Page
- * @desc Textos apresentados na tela de logout
+ * @desc Textos apresentados na tela de logout.
  * @type string[]
  * @default ["Deseja desconectar?","Carregando..."]
  * 

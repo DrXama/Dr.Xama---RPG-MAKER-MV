@@ -2,7 +2,7 @@
 // DrXama_gameJolt.js
 //==================================================================================================
 /*:
- * @plugindesc v1.2.1 - Integração do Game Jolt
+ * @plugindesc v1.3.4 - Integração do Game Jolt
  *
  * @author Dr.Xamã
  * 
@@ -41,18 +41,21 @@
  * @type string
  * @default %1 acaba de perder um troféu(%2)!
  * 
+ * @param Text Login Page
+ * @desc Textos apresentados na tela de login
+ * @type string[]
+ * @default ["Nome de usuario","Game Token","Não compartilhe seu Game Token com ninguém.","Game Token inválido.","Entrar","Carregando..."]
+ * 
+ * @param Text Logout Page
+ * @desc Textos apresentados na tela de logout
+ * @type string[]
+ * @default ["Deseja desconectar?","Carregando..."]
+ * 
  * @help
  * ================================================================================
  *    CHANGELOG
  * ================================================================================
- * v1.2.1
- * - Novo sistema de notificações.
- * - Agora a função 'update' da classe dos usuários é atualizada junto a 
- *   Scene_Base.
- * - Corrigido a falha na declaração de callbacks.
- * 
- * v1.0.0
- * - Plugin Lançado!
+ * https://drxama.com/changelog/drxama_gamejolt-2/
  * ================================================================================
  *    Introdução
  * ================================================================================
@@ -73,6 +76,8 @@
  * - GameJoltScoresAddGuestPoints Guestname TableID Score ScoreLimit
  * - GameJoltTrophiesAddUser Username TrophyID
  * - GameJoltTrophiesRemoveUser Username TrophyID
+ * - GameJoltOpenWindowLogin
+ * - GameJoltOpenWindowLogout
  * ================================================================================
  *    Comandos de script
  * ================================================================================
@@ -84,15 +89,18 @@
  * - $gameTemp.gamejoltTrophiesUser(username, trophyId, achieved, callback);
  * - $gameTemp.gamejoltTrophiesAddUser(username, trophyId, callback);
  * - $gameTemp.gamejoltTrophiesRemoveUser(username, trophyId, callback);
+ * - $gameTemp.gameJoltOpenWindowLogin();
+ * - $gameTemp.gameJoltOpenWindowLogout();
  * ================================================================================
  *    Atualização
  * ================================================================================
- * Para atualizar esse plugin vá no github do Dr.Xamã.
- * https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV
+ * Para atualizar esse plugin acesse.
+ * https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/
+ * plugins/DrXama_gameJolt.js
  */
 var DX = DX || {
-    'site': function () { return require('nw.gui').Shell.openExternal('https://gs-game-words.github.io/Dr.Xama---RPG-MAKER-MV/'); },
-    'terms': function () { return require('nw.gui').Shell.openExternal('https://gs-game-words.github.io/Dr.Xama---RPG-MAKER-MV/plugins-license.html'); },
+    'site': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/termos-de-uso/'); },
     'compatibility': function () {
         if (Utils.RPGMAKER_VERSION == '1.4.1' ||
             Utils.RPGMAKER_VERSION == '1.4.0' ||
@@ -113,8 +121,9 @@ var DX = DX || {
 DX.gameJolt = DX.gameJolt || {
     'update': function () { return require('nw.gui').Shell.openExternal('https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_gameJolt.js'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_gameJolt.md'); },
-    'version': function () { return console.log('v1.2.1') }
+    'version': function () { return console.log('v1.3.4') }
 };
+
 (function () {
     "use strict";
     //-----------------------------------------------------------------------------
@@ -125,7 +134,9 @@ DX.gameJolt = DX.gameJolt || {
         textDisconnected = String(params['Text Disconnected']) || '%1 está desconectado!',
         textAddPoints = String(params['Text AddPonts']) || '%1 acaba de marcar %2 pontos na tabela(%3)!',
         textAddTrophies = String(params['Text AddTrophies']) || '%1 acaba de receber um troféu(%2)!',
-        textRemoveTrophies = String(params['Text RemoveTrophies']) || '%1 acaba de perder um troféu(%2)!';
+        textRemoveTrophies = String(params['Text RemoveTrophies']) || '%1 acaba de perder um troféu(%2)!',
+        textLoginPage = JSON.parse(params['Text Login Page'] || []),
+        textLogoutPage = JSON.parse(params['Text Logout Page'] || []);
 
     //-----------------------------------------------------------------------------
     // Variables
@@ -148,18 +159,42 @@ DX.gameJolt = DX.gameJolt || {
             }
         },
         users: [],
-        win: require('nw.gui').Window.get()
+        win: require('nw.gui').Window.get(),
+        server: null,
+        loginWin: null,
+        logoutWin: null
     };
-
 
     //-----------------------------------------------------------------------------
     // Events
     //
     api.win.on('close', function () {
+        if (api.loginWin) api.loginWin.close();
         this.hide();
         this.closeDevTools();
         Game_Jolt_User.close();
-    });
+    })
+
+    window.addEventListener('beforeunload', function () {
+        api.server.close();
+    }, false);
+
+    //-----------------------------------------------------------------------------
+    // Functions
+    //
+
+    // Retorna o caminho local para o arquivo/pasta
+    function localPath(p) {
+        // Retira uma parte da string
+        if (p.substring(0, 1) === '/')
+            p = p.substring(1);
+        // Importa o modulo PATH do Node
+        var path = require('path'),
+            // Cria a base para o caminho local
+            base = path.dirname(process.mainModule.filename);
+        // Retorna a base do caminho associado ao caminho
+        return path.join(base, p);
+    };
 
     //-----------------------------------------------------------------------------
     // HTTPS
@@ -341,7 +376,7 @@ DX.gameJolt = DX.gameJolt || {
             width = bitmap.measureTextWidth(text);
         bitmap.resize(width, 60);
         bitmap.fillRect(0, 0, width + 10, 8, '#2fe228');
-        bitmap.fillRect(0, 8, width + 10, 50, '#211f1f');
+        bitmap.fillRect(0, 8, width + 10, 60, '#211f1f');
         bitmap.fontSize = 14;
         bitmap.drawText(text, 8, 60 / 2, width + 10, 8, 'left');
         sprite.bitmap = bitmap;
@@ -417,8 +452,6 @@ DX.gameJolt = DX.gameJolt || {
                 if (this._gameJoltNotify[0].opacity > 0) {
                     this._gameJoltNotify[0].opacity -= 8;
                     this._gameJoltNotify[0]._drawSprite.opacity -= 8;
-                    if (this._gameJoltNotify[0]._drawSprite.scale.x > 0)
-                        this._gameJoltNotify[0]._drawSprite.scale.x -= .030;
                 }
                 else {
                     if (this._gameJoltNotifyRefresh === undefined) {
@@ -481,6 +514,12 @@ DX.gameJolt = DX.gameJolt || {
         });
     };
 
+    Game_Jolt_User.setSessionLogged = function (username, sessionLogged) {
+        api.users.map(user => {
+            if (user.username() === username) user._session_logged = sessionLogged;
+        });
+    };
+
     Game_Jolt_User.setLoginNotify = function (username, loginNotify) {
         api.users.map(user => {
             if (user.username() === username) user._login_notify = loginNotify;
@@ -497,6 +536,7 @@ DX.gameJolt = DX.gameJolt || {
         this._signed_up_timestamp = null;
         this._last_logged_in = null;
         this._last_logged_in_timestamp = null;
+        this._session_logged = null;
         this._status = null;
         this._developer_name = null;
         this._developer_website = null;
@@ -551,6 +591,10 @@ DX.gameJolt = DX.gameJolt || {
         return this._last_logged_in_timestamp;
     };
 
+    Game_Jolt_User.prototype.sessionLogged = function () {
+        return this._session_logged;
+    };
+
     Game_Jolt_User.prototype.status = function () {
         return this._status;
     };
@@ -593,6 +637,10 @@ DX.gameJolt = DX.gameJolt || {
 
     Game_Jolt_User.prototype.setTick = function (content, tick) {
         this._tick[content] = tick;
+    };
+
+    Game_Jolt_User.prototype.setUserToken = function (token) {
+        this._userToken = token;
     };
 
     Game_Jolt_User.prototype.update = function () {
@@ -663,11 +711,13 @@ DX.gameJolt = DX.gameJolt || {
             sessionsOpen = () => {
                 HTTPS.sessionsOpen(username, userToken, {
                     success: (data) => {
-                        if (data.response.success) {
+                        if (eval(data.response.success)) {
                             Game_Jolt_User.sessionsConnected++;
                             Game_Jolt_User.setLoginPing(username, setInterval(() => {
                                 HTTPS.sessionsPing(username, userToken, {
-                                    success: () => { },
+                                    success: () => {
+                                        Game_Jolt_User.setSessionLogged(username, true);
+                                    },
                                     error: (e) => {
                                         return console.error(e);
                                     }
@@ -675,6 +725,8 @@ DX.gameJolt = DX.gameJolt || {
                             }, 3600));
                             Game_Jolt_User.setLoginNotify(username, true);
                             callback(true);
+                        } else {
+                            callback(false);
                         }
                     },
                     error: (e) => {
@@ -686,7 +738,7 @@ DX.gameJolt = DX.gameJolt || {
             sessionsClose = () => {
                 HTTPS.sessionsClose(username, userToken, {
                     success: (data) => {
-                        if (data.response.success)
+                        if (eval(data.response.success))
                             return sessionsOpen();
                     },
                     error: (e) => {
@@ -728,9 +780,10 @@ DX.gameJolt = DX.gameJolt || {
             usertype = this.type();
         HTTPS.sessionsClose(username, userToken, {
             success: (data) => {
-                if (data.response.success) {
+                if (eval(data.response.success)) {
                     SceneManager._scene.gameJoltAddNotify(userAvatarURL, textDisconnected.format(`${username}(${usertype})`));
                     Game_Jolt_User.sessionsConnected--;
+                    Game_Jolt_User.setSessionLogged(username, false);
                     clearInterval(this._login_ping);
                     callback(true);
                 }
@@ -865,15 +918,47 @@ DX.gameJolt = DX.gameJolt || {
     //-----------------------------------------------------------------------------
     // Game_Temp
     //
+    Game_Temp.prototype.gameJoltOpenWindowLogin = function () {
+        if (api.users.filter(user => {
+            if (user.sessionLogged()) return true;
+        }).length <= 0) {
+            if (!api.loginWin)
+                require('nw.gui').Window.open(localPath('gamejolt/login.html'), { resizable: false }, (newWin) => {
+                    api.loginWin = newWin;
+                    api.loginWin.on('closed', function () {
+                        api.loginWin = null;
+                    })
+                });
+        }
+    };
+
+    Game_Temp.prototype.gameJoltOpenWindowLogout = function () {
+        if (api.users.filter(user => {
+            if (user.sessionLogged()) return true;
+        }).length > 0) {
+            if (!api.logoutWin)
+                require('nw.gui').Window.open(localPath('gamejolt/logout.html'), { resizable: false }, (newWin) => {
+                    api.logoutWin = newWin;
+                    api.logoutWin.on('closed', function () {
+                        api.logoutWin = null;
+                    })
+                });
+        }
+    };
+
     Game_Temp.prototype.gameJoltAddUser = function (username, userToken) {
         if (api.users.filter(user => {
-            if (user.username() === String(username)) return true;
+            if (user.username() === String(username)) {
+                user.setUserToken(userToken);
+                return true;
+            }
         }).length <= 0) {
             let user = new Game_Jolt_User(String(username), String(userToken));
             api.users.push(user);
             return user;
+        } else {
+            return true;
         }
-        return false;
     };
 
     Game_Temp.prototype.gameJoltLoginUser = function (username, callback) {
@@ -1043,5 +1128,112 @@ DX.gameJolt = DX.gameJolt || {
                 }
             });
         }
+        if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltopenwindowlogin') {
+            $gameTemp.gameJoltOpenWindowLogin();
+        }
+        if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltopenwindowlogout') {
+            $gameTemp.gameJoltOpenWindowLogin();
+        }
     };
+
+
+    //-----------------------------------------------------------------------------
+    // Server
+    //
+    (function () {
+        const http = require('http');
+        const port = 8080;
+        const ip = 'localhost';
+
+        let cache = {};
+
+        api.server = http.createServer((req, res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+
+            let params = {};
+            if (req.url.indexOf('?') != -1) {
+                let url = req.url.slice(req.url.indexOf('?'));
+                req.url = req.url.replace(url, '');
+
+                let i = 1, l = url.length,
+                    str = '',
+                    __set_name__ = true,
+                    __param__name__,
+                    __param__value__;
+
+                for (; i < l; i++) {
+                    let letter = url[i];
+
+                    // NOME DO PARAMETRO
+                    if (__set_name__) {
+                        if (letter === '=') {
+                            __param__name__ = str;
+                            str = '';
+                            __set_name__ = false;
+                        } else {
+                            str += letter;
+                        }
+                    }
+
+                    // VALOR DO PARAMETRO
+                    if (!__set_name__) {
+                        if (letter != '=' && letter != '&') str += letter;
+                        if (letter === '&' || !url[i + 1]) {
+                            __param__value__ = str;
+                            str = '';
+                            __set_name__ = true;
+
+                            // DEFINIÇÃO DO PARAMETRO
+                            params[__param__name__] = __param__value__;
+                        }
+                    }
+                }
+            }
+
+            /**
+             * CHAMADAS DA PAGINA DE LOGIN
+             */
+            if (req.url == '/page/login/') {
+                if ($gameTemp.gameJoltAddUser(params['username'], params['gametoken'])) {
+                    $gameTemp.gameJoltLoginUser(params['username'], (success) => {
+                        if (success) {
+                            cache['username'] = params['username'];
+                            cache['gametoken'] = params['gametoken'];
+                            res.end(JSON.stringify({ success: true }));
+                        } else {
+                            res.end(JSON.stringify({ success: false }));
+                        }
+                    });
+                }
+            } else if (req.url == '/page/login/success/') {
+                Game_Jolt_User.setSessionLogged(cache['username'], true);
+                api.loginWin.close();
+            } else if (req.url == '/page/login/translate/') {
+                res.end(JSON.stringify(textLoginPage));
+            }
+            /**
+             * CHAMADAS DA PAGINA DE LOGOUT
+             */
+            else if (req.url == '/page/logout/') {
+                $gameTemp.gameJoltLogoutUser(cache['username'], (success) => {
+                    if (success) {
+                        Game_Jolt_User.setSessionLogged(cache['username'], false);
+                        api.logoutWin.close();
+                        res.end(JSON.stringify({}));
+                    }
+                });
+            } else if (req.url == '/page/logout/translate/') {
+                res.end(JSON.stringify(textLogoutPage));
+            }
+            else {
+                res.end(JSON.stringify({}));
+            }
+        })
+
+        api.server.listen(port, ip, () => {
+            // console.log(`Servidor rodando em http://${ip}:${port}`)
+            // console.log('Para derrubar o servidor: feche a janela do seu jogo.');
+        })
+
+    })();
 })();

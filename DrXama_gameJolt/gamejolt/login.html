@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="https://imgur.com/6PcilzL.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #1a1a1a;
+        }
+    </style>
+    <title>GameJolt Login</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 mt-5">
+                <img src="https://imgur.com/icNJr6B.png" class="img-fluid" alt="Game Jolt">
+            </div>
+            <div class="col-12 mt-2">
+                <div id="_form_login">
+                    <div class="form-group">
+                        <label id="label_username" class="text-white" for="username">Nome de usuario</label>
+                        <input type="email" class="form-control" id="username">
+                    </div>
+                    <div class="form-group">
+                        <label id="label_gametoken" class="text-white" for="gametoken">Game Token</label>
+                        <input type="password" class="form-control" id="gametoken" aria-describedby="gametokenhelp">
+                        <small id="gametokenhelp" class="form-text text-muted">
+                            Não compartilhe seu Game Token com ninguém.
+                        </small>
+                        <small id="gametokeninvalid" class="form-text text-danger">
+                            Game Token inválido.
+                        </small>
+                    </div>
+                    <div id="btn_login_container">
+                        <button id="btn_login" class="btn btn-dark" disabled>Login</button>
+                        <button id="btn_login_loading" class="btn btn-dark" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                        <small class="form-text text-muted">
+                            © 2020 Dr.Xamã. Todos Direitos Reservados.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script>
+        /**
+         * Initialize
+         */
+        $('#gametokeninvalid').hide();
+        $('#btn_login_loading').hide();
+
+        /**
+         * Class Socket
+         * 
+         * Controla as conexões
+         */
+        class Socket {
+            constructor() {
+                this.xhr = new XMLHttpRequest();
+            }
+
+            connect(path, callback) {
+                this.xhr.addEventListener("readystatechange", function () {
+                    if (this.readyState === this.DONE) {
+                        callback(this.responseText);
+                    }
+                })
+                this.xhr.open("GET", `http://localhost:8080${path}`);
+                this.xhr.send();
+            }
+        }
+
+        const socket = new Socket();
+
+        /**
+         * Translate
+         */
+        socket.connect(`/page/login/translate/`, (res) => {
+            res = JSON.parse(res);
+            if (res instanceof Array) {
+                $('#label_username').text(res[0]);
+                $('#label_gametoken').text(res[1]);
+                $('#gametokenhelp').text(res[2]);
+                $('#gametokeninvalid').text(res[3]);
+                $('#btn_login').text(res[4]);
+                $('#btn_login_loading').html(`\
+               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>\
+               ${res[5]}\
+               `);
+            }
+        })
+
+        /**
+         * Events
+         */
+        $("#btn_login").on("click", function () {
+            const username = $('#username').val(), gametoken = $('#gametoken').val();
+            if (username.length <= 0 || gametoken.length <= 0) return;
+            $('#username').prop('disabled', true);
+            $('#gametoken').prop('disabled', true);
+            $('#btn_login').hide();
+            $('#gametokeninvalid').hide();
+            $('#btn_login_loading').show();
+
+            setTimeout(function () {
+                socket.connect(`/page/login/?username=${username}&gametoken=${gametoken}`, (res) => {
+                    res = JSON.parse(res);
+                    if (!res.success) {
+                        $('#username').prop('disabled', false);
+                        $('#gametoken').prop('disabled', false);
+                        $('#btn_login_loading').hide();
+                        $('#gametokeninvalid').show();
+                        $('#btn_login').show();
+                    } else {
+                        $('#gametokeninvalid').hide();
+                        $('#btn_login_loading').hide();
+                        socket.connect(`/page/login/success/`);
+                    }
+                })
+            }, 1300)
+        });
+
+        $('#username').keyup(function () {
+            if (!this.value || this.value && this.value.length <= 0) $('#btn_login').prop('disabled', true);
+
+            if (this.value.length > 0 && $('#gametoken').val().length > 0) $('#btn_login').prop('disabled', false);
+        });
+
+        $('#gametoken').keyup(function () {
+            if (!this.value || this.value && this.value.length <= 0) $('#btn_login').prop('disabled', true);
+
+            if (this.value.length > 0 && $('#username').val().length > 0) $('#btn_login').prop('disabled', false);
+        });
+
+    </script>
+</body>
+
+</html>

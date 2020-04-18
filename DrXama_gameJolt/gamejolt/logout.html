@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="https://imgur.com/6PcilzL.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #1a1a1a;
+        }
+    </style>
+    <title>GameJolt Logout</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 mt-5">
+                <img src="https://imgur.com/icNJr6B.png" class="img-fluid" alt="Game Jolt">
+            </div>
+            <div class="col-12 mt-2">
+                <button id="btn_logout" class="btn btn-dark btn-block">Logout</button>
+                <button id="btn_logout_loading" class="btn btn-dark btn-block" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
+                <small class="form-text text-muted">
+                    © 2020 Dr.Xamã. Todos Direitos Reservados.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script>
+        /**
+         * Initialize
+         */
+        $('#btn_logout_loading').hide();
+
+        /**
+         * Class Socket
+         * 
+         * Controla as conexões
+         */
+        class Socket {
+            constructor() {
+                this.xhr = new XMLHttpRequest();
+            }
+
+            connect(path, callback) {
+                this.xhr.addEventListener("readystatechange", function () {
+                    if (this.readyState === this.DONE) {
+                        callback(this.responseText);
+                    }
+                })
+                this.xhr.open("GET", `http://localhost:8080${path}`);
+                this.xhr.send();
+            }
+        }
+
+        const socket = new Socket();
+
+        /**
+         * Translate
+         */
+        socket.connect(`/page/logout/translate/`, (res) => {
+            res = JSON.parse(res);
+            if (res instanceof Array) {
+                $('#btn_logout').text(res[0]);
+                $('#btn_logout_loading').html(`\
+               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>\
+               ${res[1]}\
+               `);
+            }
+        })
+
+        /**
+         * Events
+         */
+        $("#btn_logout").on("click", function () {
+            $('#btn_logout').hide();
+            $('#btn_logout_loading').show();
+
+            setInterval(function () {
+                socket.connect(`/page/logout/`);
+            }, 1300)
+        });
+    </script>
+</body>
+
+</html>

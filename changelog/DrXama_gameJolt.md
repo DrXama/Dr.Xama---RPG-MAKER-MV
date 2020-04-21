@@ -1,3 +1,10 @@
+# v2.5.0 - 21 de abril de 2020
+- Novo sistema de armazenamento na nuvem.
+- Nova função para verificar se o jogador está logado adicionada a janela de login.
+- Agora o sistema conecta somente um usuario pela janela de login.
+- Novo metodo de conexão com a API do Game Jolt.
+- Correção de erros.
+
 # v1.3.4 - 18 de abril de 2020
 - O erro da notificação sendo exibida sem os jogadores estarem logados foi resolvido.
 - Adicionada novas janelas de Login e Logout

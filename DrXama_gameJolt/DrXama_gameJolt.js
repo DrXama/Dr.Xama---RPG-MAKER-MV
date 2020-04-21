@@ -2,55 +2,74 @@
 // DrXama_gameJolt.js
 //==================================================================================================
 /*:
- * @plugindesc v1.3.4 - Integração do Game Jolt
+ * @plugindesc v2.5.0 - Integração do Game Jolt
  *
  * @author Dr.Xamã
+ *
+ * @param DevOPS
+ * @desc Opções de desenvolvedor
+ * 
+ * @param DevOPS Debug
+ * @parent DevOPS
+ * @desc Ativar depuração do sistema.
+ * @text Debug
+ * @type boolean
+ * @on Ativar
+ * @off Desativar
+ * @default false
  * 
  * @param Game ID
  * @desc ID do seu jogo.
  * @type string
  * @default ???
- * 
+ *
  * @param Private Key
  * @desc Chave de acesso ao seu jogo.
  * @type string
  * @default ???
  * 
+ * @param Save Cloud
+ * @desc Deseja ativar o save na nuvem?
+ * @type boolean
+ * @on Ativar
+ * @off Desativar
+ * @default true
+ *
  * @param Text Connected
  * @desc Texto apresentado quando o usuário é conectado.
  * @type string
  * @default %1 está conectado!
- * 
+ *
  * @param Text Disconnected
  * @desc Texto apresentado quando o usuário é desconectado.
  * @type string
  * @default %1 está desconectado!
- * 
+ *
  * @param Text AddPonts
  * @desc Texto apresentado quando o usuário marca uma pontuação.
  * @type string
  * @default %1 acaba de marcar %2 pontos na tabela(%3)!
- * 
+ *
  * @param Text AddTrophies
  * @desc Texto apresentado quando o usuário recebe um troféu.
  * @type string
  * @default %1 acaba de receber um troféu(%2)!
- * 
+ *
  * @param Text RemoveTrophies
  * @desc Texto apresentado quando o usuário perde um troféu.
  * @type string
  * @default %1 acaba de perder um troféu(%2)!
- * 
+ *
  * @param Text Login Page
  * @desc Textos apresentados na tela de login.
  * @type string[]
- * @default ["Nome de usuario","Game Token","Não compartilhe seu Game Token com ninguém.","Game Token inválido.","Entrar","Carregando..."]
- * 
+ * @default ["Nome de usuario","Game Token","Não compartilhe seu Game Token com ninguém.","Usuário já está logado.","Game Token inválido.","Entrar","Carregando..."]
+ *
  * @param Text Logout Page
  * @desc Textos apresentados na tela de logout.
  * @type string[]
  * @default ["Deseja desconectar?","Carregando..."]
- * 
+ *
  * @help
  * ================================================================================
  *    CHANGELOG
@@ -83,7 +102,7 @@
  * ================================================================================
  * - $gameTemp.gamejoltScoresUserTable(username, tableID, callback);
  * - $gameTemp.gamejoltScoresTables(callback);
- * - $gameTemp.gamejoltScoresAddPoint(username, tableID, score, sort, callback);
+ * - $gameTemp.gamejoltScoresAddPoints(username, tableID, score, sort, callback);
  * - $gameTemp.gamejoltScoresAddGuestPoints(guestname, tableID, score, sort, callback);
  * - $gameTemp.gamejoltScoresGetRankTables(tableID, sort, callback);
  * - $gameTemp.gamejoltTrophiesUser(username, trophyId, achieved, callback);
@@ -121,7 +140,7 @@ var DX = DX || {
 DX.gameJolt = DX.gameJolt || {
     'update': function () { return require('nw.gui').Shell.openExternal('https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_gameJolt.js'); },
     'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_gameJolt.md'); },
-    'version': function () { return console.log('v1.3.4') }
+    'version': function () { return console.log('v2.5.0') }
 };
 
 (function () {
@@ -130,6 +149,8 @@ DX.gameJolt = DX.gameJolt || {
     // Parametros
     //
     var params = PluginManager.parameters('DrXama_gameJolt'),
+        devops_debug = JSON.parse(String(params['DevOPS Debug'] || "false")),
+        saveCloud = JSON.parse(String(params['Save Cloud'] || 'true')),
         textConnected = String(params['Text Connected']) || '%1 está conectado!',
         textDisconnected = String(params['Text Disconnected']) || '%1 está desconectado!',
         textAddPoints = String(params['Text AddPonts']) || '%1 acaba de marcar %2 pontos na tabela(%3)!',
@@ -147,15 +168,49 @@ DX.gameJolt = DX.gameJolt || {
         url: 'https://api.gamejolt.com/api/game/v1_2',
         https: {
             get: (url, callback) => {
-                require('https').get(url, (res) => {
-                    if (res.statusCode === 400)
-                        return callback.error('Error 400');
-                    res.on('data', (data) => {
-                        callback.success(JSON.parse(data));
-                    });
-                }).on('error', (e) => {
-                    callback.error(e);
+                var data = null;
+
+                var xhr = new XMLHttpRequest();
+                xhr.withCredentials = true;
+
+                xhr.addEventListener('readystatechange', function () {
+                    if (this.status === 200 && this.readyState === this.DONE) {
+                        callback.success(JSON.parse(this.responseText));
+                    }
                 });
+
+                xhr.onerror = function (e) {
+                    callback.error(e);
+                };
+
+                xhr.open('GET', url);
+                xhr.setRequestHeader('Access-Control-Allow-Origin', "*");
+                xhr.setRequestHeader('Access-Control-Allow-Headers', "*");
+
+                xhr.send(data);
+            },
+            send: (url, data, callback) => {
+                var data = JSON.stringify(data);
+
+                var xhr = new XMLHttpRequest();
+                xhr.withCredentials = true;
+
+                xhr.addEventListener('readystatechange', function () {
+                    if (this.status === 200 && this.readyState === this.DONE) {
+                        callback.success(JSON.parse(this.responseText));
+                    }
+                });
+
+                xhr.onerror = function (e) {
+                    callback.error(e);
+                };
+
+                xhr.open('POST', url);
+                xhr.setRequestHeader('Access-Control-Allow-Origin', "*");
+                xhr.setRequestHeader('Access-Control-Allow-Headers', "*");
+                xhr.setRequestHeader('content-type', 'application/json');
+
+                xhr.send(JsonEx.stringify(data));
             }
         },
         users: [],
@@ -320,6 +375,37 @@ DX.gameJolt = DX.gameJolt || {
         return api.https.get(url, callback);
     };
 
+    HTTPS.dataStoreSet = function (username, user_token, key, data, callback) {
+        let url = `${api.url}/data-store/set/?game_id=${api.gameId}&username=${username}&user_token=${user_token}\
+        &key=${key}&data=${data}&format=json`.replace(/\s{1,}/g, ""),
+            signature = this.signature(url + api.privateKey);
+        url += `&signature=${signature}`;
+        return api.https.send(url, data, callback);
+    };
+
+    HTTPS.dataStoreFetch = function (username, user_token, key, callback) {
+        let url = `${api.url}/data-store/?game_id=${api.gameId}&username=${username}&user_token=${user_token}\
+        &key=${key}&format=json`.replace(/\s{1,}/g, ""),
+            signature = this.signature(url + api.privateKey);
+        url += `&signature=${signature}`;
+        return api.https.get(url, callback);
+    };
+
+    HTTPS.dataStoreGetKeys = function (username, user_token, callback) {
+        let url = `${api.url}/data-store/get-keys/?game_id=${api.gameId}&username=${username}&user_token=${user_token}&format=json`.replace(/\s{1,}/g, ""),
+            signature = this.signature(url + api.privateKey);
+        url += `&signature=${signature}`;
+        return api.https.get(url, callback);
+    };
+
+    HTTPS.dataStoreRemove = function (username, user_token, key, callback) {
+        let url = `${api.url}/data-store/remove/?game_id=${api.gameId}&username=${username}&user_token=${user_token}\
+        &key=${key}&format=json`.replace(/\s{1,}/g, ""),
+            signature = this.signature(url + api.privateKey);
+        url += `&signature=${signature}`;
+        return api.https.get(url, callback);
+    };
+
     //-----------------------------------------------------------------------------
     // ImageManager
     //
@@ -419,6 +505,65 @@ DX.gameJolt = DX.gameJolt || {
     };
 
     //-----------------------------------------------------------------------------
+    // Sprite_GameJolt_SaveCloud
+    //
+    function Sprite_GameJolt_SaveCloud() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Sprite_GameJolt_SaveCloud.prototype = Object.create(Sprite.prototype);
+    Sprite_GameJolt_SaveCloud.prototype.constructor = Sprite_GameJolt_SaveCloud;
+
+    Sprite_GameJolt_SaveCloud.prototype.initialize = function (url, text, scene) {
+        Sprite.prototype.initialize.call(this);
+        this.bitmap = ImageManager.gameJoltloadFile(url);
+        this.scale = new Point(.5, .5);
+        this.move(5, SceneManager._screenHeight - 33);
+        this._stage = 0;
+        this._scene = scene;
+        this._text = text;
+        this.opacity = 0;
+    };
+
+    Sprite_GameJolt_SaveCloud.prototype.draw = function (text) {
+        if (this._drawSprite) return;
+        if (typeof text != 'string') text = '???';
+        let sprite = new Sprite(),
+            bitmap = new Bitmap(0, 0),
+            width = bitmap.measureTextWidth(text);
+        bitmap.resize(width, 60);
+        bitmap.fontSize = 14;
+        bitmap.drawText(text, 8, 60 / 2, width + 10, 8, 'left');
+        sprite.bitmap = bitmap;
+        sprite.move(32, SceneManager._screenHeight - 53);
+        this._drawSprite = sprite;
+        this._drawSprite.opacity = 0;
+        this._scene.addChild(sprite);
+    };
+
+    Sprite_GameJolt_SaveCloud.prototype.remove = function () {
+        this._hiding = true;
+    };
+
+    Sprite_GameJolt_SaveCloud.prototype.update = function () {
+        if (this._activated) {
+            this.draw(this._text);
+            if (this._stage === 0 && this.opacity < 255) {
+                this.opacity += 4;
+                this._drawSprite.opacity += 4;
+            } else {
+                if (this._stage === 0) this._stage = 1;
+            }
+            if (this._stage === 1 && this.opacity > 0) {
+                this.opacity -= 4;
+                this._drawSprite.opacity -= 4;
+            } else {
+                if (this._stage === 1) this._stage = 0;
+            }
+        }
+    };
+
+    //-----------------------------------------------------------------------------
     // Scene_Base
     //
     const _scene_base_update = Scene_Base.prototype.update;
@@ -426,12 +571,24 @@ DX.gameJolt = DX.gameJolt || {
         _scene_base_update.call(this);
         this.updateGameJoltUsers();
         this.updateGameJoltNotify();
+        this.updateGameJoltNotifySaveCloud();
     };
 
     Scene_Base.prototype.gameJoltAddNotify = function (url, text) {
         if (!this._gameJoltNotify) this._gameJoltNotify = [];
         let notify = new Sprite_GameJolt_Notify(url, text, this);
         this._gameJoltNotify.push(notify);
+    };
+
+    Scene_Base.prototype.gameJoltAddNotifySaveCloud = function (url, text) {
+        if (this._gameJoltNotifySaveCloud) return;
+        this._gameJoltNotifySaveCloud = new Sprite_GameJolt_SaveCloud(url, text, this);
+    };
+
+    Scene_Base.prototype.gameJoltRemoveNotifySaveCloud = function () {
+        if (this._gameJoltNotifySaveCloud) {
+            this._gameJoltNotifySaveCloud.remove();
+        }
     };
 
     Scene_Base.prototype.updateGameJoltUsers = function () {
@@ -463,12 +620,41 @@ DX.gameJolt = DX.gameJolt || {
                             this._gameJoltNotifyRefresh -= .60;
                         } else {
                             this._gameJoltNotifyRefresh = undefined;
-                            this._gameJoltNotifyList = false;
                             this._gameJoltNotify.splice(0, 1);
                             this._gameJoltNotifyActivated = false;
                         }
                     }
                 }
+        }
+    };
+
+    Scene_Base.prototype.updateGameJoltNotifySaveCloud = function () {
+        if (this._gameJoltNotifySaveCloud instanceof Sprite_GameJolt_SaveCloud) {
+            if (!this._gameJoltNotifySaveCloudActivated) {
+                this._gameJoltNotifySaveCloudActivated = true;
+                this._gameJoltNotifySaveCloud._activated = true;
+                this.addChild(this._gameJoltNotifySaveCloud);
+            }
+            this._gameJoltNotifySaveCloud.update();
+            if (this._gameJoltNotifySaveCloud._hiding) {
+                if (!this._gameJoltNotifySaveCloudDelay) this._gameJoltNotifySaveCloudDelay = 60;
+                if (this._gameJoltNotifySaveCloudDelay > 0) {
+                    this._gameJoltNotifySaveCloudDelay -= .60;
+                } else {
+                    this._gameJoltNotifySaveCloud._activated = false;
+                    if (this._gameJoltNotifySaveCloud.opacity > 0) {
+                        this._gameJoltNotifySaveCloud.opacity -= 8;
+                        this._gameJoltNotifySaveCloud._drawSprite.opacity -= 8;
+                    }
+                    else {
+                        this.removeChild(this._gameJoltNotifySaveCloud);
+                        this.removeChild(this._gameJoltNotifySaveCloud._drawSprite);
+                        this._gameJoltNotifySaveCloud = null;
+                        this._gameJoltNotifySaveCloudDelay = null;
+                        this._gameJoltNotifySaveCloudActivated = false;
+                    }
+                }
+            }
         }
     };
 
@@ -537,6 +723,7 @@ DX.gameJolt = DX.gameJolt || {
         this._last_logged_in = null;
         this._last_logged_in_timestamp = null;
         this._session_logged = null;
+        this._loggedWithWindow = null;
         this._status = null;
         this._developer_name = null;
         this._developer_website = null;
@@ -593,6 +780,18 @@ DX.gameJolt = DX.gameJolt || {
 
     Game_Jolt_User.prototype.sessionLogged = function () {
         return this._session_logged;
+    };
+
+    Game_Jolt_User.prototype.loggedWithWindow = function () {
+        return this._loggedWithWindow;
+    };
+
+    Game_Jolt_User.prototype.enableloggedWithWindow = function () {
+        this._loggedWithWindow = true;
+    };
+
+    Game_Jolt_User.prototype.disableloggedWithWindow = function () {
+        this._loggedWithWindow = false;
     };
 
     Game_Jolt_User.prototype.status = function () {
@@ -677,7 +876,7 @@ DX.gameJolt = DX.gameJolt || {
                     });
                 },
                 error: e => {
-                    return console.error(e);
+                    if (devops_debug) return console.error(e);
                 }
             });
         }
@@ -699,13 +898,13 @@ DX.gameJolt = DX.gameJolt || {
                     });
                 },
                 error: e => {
-                    return console.error(e);
+                    if (devops_debug) return console.error(e);
                 }
             });
         }
     };
 
-    Game_Jolt_User.prototype.login = function (callback) {
+    Game_Jolt_User.prototype.login = function (callback = function () { }) {
         let username = this.username(),
             userToken = this.userToken(),
             sessionsOpen = () => {
@@ -719,7 +918,7 @@ DX.gameJolt = DX.gameJolt || {
                                         Game_Jolt_User.setSessionLogged(username, true);
                                     },
                                     error: (e) => {
-                                        return console.error(e);
+                                        if (devops_debug) return console.error(e);
                                     }
                                 });
                             }, 3600));
@@ -731,7 +930,7 @@ DX.gameJolt = DX.gameJolt || {
                     },
                     error: (e) => {
                         callback(false);
-                        return console.error(e);
+                        if (devops_debug) return console.error(e);
                     }
                 });
             },
@@ -742,7 +941,7 @@ DX.gameJolt = DX.gameJolt || {
                             return sessionsOpen();
                     },
                     error: (e) => {
-                        return console.error(e);
+                        if (devops_debug) return console.error(e);
                     }
                 });
             };
@@ -753,22 +952,22 @@ DX.gameJolt = DX.gameJolt || {
                         return Game_Jolt_User.update(username, data);
                     },
                     error: (e) => {
-                        return console.error(e);
+                        if (devops_debug) return console.error(e);
                     }
                 });
                 HTTPS.sessionsCheck(username, userToken, {
                     success: (data) => {
-                        if (data.response.success === "false")
+                        if (!eval(data.response.success))
                             return sessionsOpen();
                         return sessionsClose();
                     },
                     error: (e) => {
-                        return console.error(e);
+                        if (devops_debug) return console.error(e);
                     }
                 });
             },
             error: (e) => {
-                return console.error(e);
+                if (devops_debug) return console.error(e);
             }
         });
     };
@@ -784,13 +983,15 @@ DX.gameJolt = DX.gameJolt || {
                     SceneManager._scene.gameJoltAddNotify(userAvatarURL, textDisconnected.format(`${username}(${usertype})`));
                     Game_Jolt_User.sessionsConnected--;
                     Game_Jolt_User.setSessionLogged(username, false);
+                    $gameMap.finishSaveCloud();
+                    this.disableloggedWithWindow();
                     clearInterval(this._login_ping);
                     callback(true);
                 }
             },
             error: (e) => {
                 callback(false);
-                return console.error(e);
+                if (devops_debug) return console.error(e);
             }
         });
     };
@@ -801,7 +1002,7 @@ DX.gameJolt = DX.gameJolt || {
         return new Promise((resolve, reject) => {
             HTTPS.sessionsCheck(username, userToken, {
                 success: (data) => {
-                    if (data.response.success === "true") {
+                    if (eval(data.response.success)) {
                         HTTPS.scoresFetchTable(username, userToken, tableID, {
                             success: (data) => {
                                 return resolve(data.response.scores);
@@ -819,16 +1020,16 @@ DX.gameJolt = DX.gameJolt || {
         });
     };
 
-    Game_Jolt_User.prototype.scoresAddPoint = function (tableID, score, sort) {
+    Game_Jolt_User.prototype.scoresAddPoints = function (tableID, score, sort) {
         let username = this.username(),
             userToken = this.userToken();
         return new Promise((resolve, reject) => {
             HTTPS.sessionsCheck(username, userToken, {
                 success: (data) => {
-                    if (data.response.success === "true") {
+                    if (eval(data.response.success)) {
                         HTTPS.scoresAddPoints(username, userToken, tableID, score, sort, {
                             success: data => {
-                                return resolve(data.response.success);
+                                return resolve(eval(data.response.success));
                             },
                             error: e => {
                                 return reject(e);
@@ -849,10 +1050,10 @@ DX.gameJolt = DX.gameJolt || {
         return new Promise((resolve, reject) => {
             HTTPS.sessionsCheck(username, userToken, {
                 success: (data) => {
-                    if (data.response.success === "true") {
+                    if (eval(data.response.success)) {
                         HTTPS.trophiesFetch(username, userToken, trophyId, achieved, {
                             success: (data) => {
-                                return resolve(data.response.trophies);
+                                return resolve(eval(data.response.trophies));
                             },
                             error: (e) => {
                                 return reject(e);
@@ -873,10 +1074,10 @@ DX.gameJolt = DX.gameJolt || {
         return new Promise((resolve, reject) => {
             HTTPS.sessionsCheck(username, userToken, {
                 success: (data) => {
-                    if (data.response.success === "true") {
+                    if (eval(data.response.success)) {
                         HTTPS.trophiesAdd(username, userToken, trophyId, {
                             success: (data) => {
-                                return resolve(data.response.success);
+                                return resolve(eval(data.response.success));
                             },
                             error: (e) => {
                                 return reject(e);
@@ -897,10 +1098,111 @@ DX.gameJolt = DX.gameJolt || {
         return new Promise((resolve, reject) => {
             HTTPS.sessionsCheck(username, userToken, {
                 success: (data) => {
-                    if (data.response.success === "true") {
+                    if (eval(data.response.success)) {
                         HTTPS.trophiesRemove(username, userToken, trophyId, {
                             success: (data) => {
-                                return resolve(data.response.success);
+                                return resolve(eval(data.response.success));
+                            },
+                            error: (e) => {
+                                return reject(e);
+                            }
+                        });
+                    }
+                },
+                error: (e) => {
+                    return reject(e);
+                }
+            });
+        });
+    };
+
+    Game_Jolt_User.prototype.dataStoreSet = function (savekey, savedata) {
+        let username = this.username(),
+            userToken = this.userToken();
+        return new Promise((resolve, reject) => {
+            HTTPS.sessionsCheck(username, userToken, {
+                success: (data) => {
+                    if (devops_debug) console.log('SESSION CHECK FROM STORE ITEM', username, savekey, data);
+                    if (eval(data.response.success)) {
+                        if (devops_debug) console.log('SEND FROM SERVER TO STORE ITEM', username, savekey);
+                        HTTPS.dataStoreSet(username, userToken, savekey, savedata, {
+                            success: (data) => {
+                                if (devops_debug) console.log('STORE ITEM CALLBACK', username, savekey, data);
+                                return resolve(eval(data.response.success));
+                            },
+                            error: (e) => {
+                                return reject(e);
+                            }
+                        });
+                    }
+                },
+                error: (e) => {
+                    return reject(e);
+                }
+            });
+        });
+    };
+
+    Game_Jolt_User.prototype.dataStoreFetch = function (savekey) {
+        let username = this.username(),
+            userToken = this.userToken();
+        return new Promise((resolve, reject) => {
+            HTTPS.sessionsCheck(username, userToken, {
+                success: (data) => {
+                    if (devops_debug) console.log('STORE CHECK CONNECTION FROM', username, savekey, data);
+                    if (eval(data.response.success)) {
+                        HTTPS.dataStoreFetch(username, userToken, savekey, {
+                            success: (data) => {
+                                if (devops_debug) console.log('STORE ITEM CHECK RESPONSE FROM', username, savekey, data);
+                                return resolve(data.response.data);
+                            },
+                            error: (e) => {
+                                return reject(e);
+                            }
+                        });
+                    }
+                },
+                error: (e) => {
+                    return reject(e);
+                }
+            });
+        });
+    };
+
+    Game_Jolt_User.prototype.dataStoreGetKeys = function () {
+        let username = this.username(),
+            userToken = this.userToken();
+        return new Promise((resolve, reject) => {
+            HTTPS.sessionsCheck(username, userToken, {
+                success: (data) => {
+                    if (eval(data.response.success)) {
+                        HTTPS.dataStoreGetKeys(username, userToken, {
+                            success: (data) => {
+                                return resolve(data.response.keys);
+                            },
+                            error: (e) => {
+                                return reject(e);
+                            }
+                        });
+                    }
+                },
+                error: (e) => {
+                    return reject(e);
+                }
+            });
+        });
+    };
+
+    Game_Jolt_User.prototype.dataStoreRemove = function (savekey) {
+        let username = this.username(),
+            userToken = this.userToken();
+        return new Promise((resolve, reject) => {
+            HTTPS.sessionsCheck(username, userToken, {
+                success: (data) => {
+                    if (eval(data.response.success)) {
+                        HTTPS.dataStoreRemove(username, userToken, savekey, {
+                            success: (data) => {
+                                return resolve(eval(data.response.success));
                             },
                             error: (e) => {
                                 return reject(e);
@@ -916,11 +1218,327 @@ DX.gameJolt = DX.gameJolt || {
     };
 
     //-----------------------------------------------------------------------------
+    // Class Save Cloud
+    //
+    class SaveCloud {
+        constructor() {
+            this._tick = 0;
+            this._files = [];
+            this._uploadFiles = 0;
+            this._save = true;
+            this._load = true;
+            this._users = null;
+        }
+
+        static SECOND() {
+            return 5 * 60;
+        }
+
+        tick() {
+            return this._tick;
+        }
+
+        resetTick() {
+            this._tick = 0;
+        }
+
+        againTick() {
+            this._tick += .60;
+        }
+
+        files() {
+            return this._files;
+        }
+
+        file(index) {
+            return this._files[index];
+        }
+
+        resetFiles() {
+            this._files = [];
+        }
+
+        addFile(data) {
+            this._files.push(data);
+        }
+
+        filesUpload() {
+            return this._uploadFiles;
+        }
+
+        addfileToUpload() {
+            this._uploadFiles++;
+        }
+
+        removefileFromUpload() {
+            this._uploadFiles--;
+        }
+
+        save() {
+            return this._save;
+        }
+
+        disableSave() {
+            this._save = false;
+        }
+
+        enableSave() {
+            this._save = true;
+        }
+
+        load() {
+            return this._load;
+        }
+
+        disableLoad() {
+            this._load = false;
+        }
+
+        enableLoad() {
+            this._load = true;
+        }
+
+        users() {
+            return this._users;
+        }
+
+        user(index) {
+            return this._users[index];
+        }
+
+        defineUsers() {
+            this._users = api.users.filter(user => user.sessionLogged() && user.loggedWithWindow());
+        }
+
+        update() {
+            if (this.save()) {
+                if (this.tick() >= SaveCloud.SECOND()) {
+                    this.resetTick();
+                    this.updateSave();
+                } else {
+                    this.againTick();
+                }
+            } else {
+                if (this.tick() > 0) this.resetTick();
+            }
+        }
+
+        updateSave() {
+            if (this.save()) {
+                this.defineUsers();
+                if (this.users().filter(user => user instanceof Game_Jolt_User).length > 0) {
+                    this.disableSave();
+                    this.copyFilesSave();
+                }
+            }
+
+        }
+
+        notifySaveCloud() {
+            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/9D12Mlo.png', 'Salvando...');
+        }
+
+        notifySaveCloudLoad() {
+            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/FhBiEBD.png', 'Carregando...');
+        }
+
+        clearNotifySaveCloud() {
+            SceneManager._scene.gameJoltRemoveNotifySaveCloud();
+        }
+
+        finishSaveCloud() {
+            this.clearNotifySaveCloud();
+            this.resetFiles();
+            this.enableSave();
+        }
+
+        copyFilesSave() {
+            const fs = require('fs');
+            if (fs.existsSync(localPath('save'))) {
+                let files = fs.readdirSync(localPath('save'));
+                if (files.length > 0) {
+                    files.map(file => {
+                        let data = fs.readFileSync(localPath(`save\\${file}`), 'utf8');
+                        if (devops_debug) console.log('DATA FROM FILE', file, data);
+                        if (data.length > 0)
+                            return this.addFile({ value: data, key: file });
+                    })
+                    this.uploadFilesSave();
+                } else {
+                    this.finishSaveCloud();
+                }
+            }
+        }
+
+        uploadFilesSave() {
+            if (this.files().length > 0) {
+                this.notifySaveCloud();
+                this.files().map((data) => {
+                    this.addfileToUpload();
+                    this.uploadFile(data);
+                })
+            } else {
+                this.finishSaveCloud();
+            }
+        }
+
+        uploadFile(data) {
+            this.users().map(user => {
+                data = this.files().filter(file => file.key === data.key)[0];
+                if (devops_debug) console.log('DATA VALUE STORE', user.username(), data.key, data.value);
+                $gameTemp.gamejoltDataStoreSetUser(user.username(), `save_cloud_${data.key}`, data.value, response => {
+                    if (devops_debug) console.log('RESPONSE FROM KEY', user.username(), data.key, response);
+                    if (response) {
+                        this.removefileFromUpload();
+                        if (this.filesUpload() <= 0) this.finishSaveCloud();
+                    }
+                });
+            }, this);
+        }
+
+        clearFilesSave() {
+            this.users().map(user => {
+                $gameTemp.gamejoltDataStoreGetKeyUser(user.username(), keys => {
+                    if (keys instanceof Array)
+                        keys.map(key => {
+                            $gameTemp.gamejoltDataStoreRemoveUser(user.username(), key.key, () => { });
+                        })
+                })
+            })
+        }
+
+        createFilesSave() {
+            if (this.load()) {
+                this.users().map(user => {
+                    $gameTemp.gamejoltDataStoreGetKeyUser(user.username(), keys => {
+                        $gameMap.disableLoadSaveCloud();
+                        if (keys instanceof Array) {
+                            $gameMap.notifySaveCloudLoad();
+                            keys.map((key) => {
+                                let fs = require('fs'),
+                                    fileName = key.key.replace('save_cloud_', '');
+                                if ($gameMap.saveCloudFilesFetch().filter(file => file === fileName).length <= 0) {
+                                    $gameMap.saveCloudFilesFetchAdd(fileName);
+                                    $gameTemp.gamejoltDataStoreFetchUser(user.username(), key.key, data => {
+                                        if (devops_debug) console.log(`DATA KEYS GET`, user.username(), keys)
+                                        if (devops_debug) console.log(`DATA VALUE GET(${$gameMap.savecloudFilesIndex()}/${keys.length - 1})`, user.username(), key.key, data);
+                                        if (devops_debug) console.log(`TYPE OF DATA VALUE GET(${$gameMap.savecloudFilesIndex()}/${keys.length - 1})`, user.username(), key.key, typeof data);
+                                        if (user.sessionLogged() && user.loggedWithWindow() && data) {
+                                            if (devops_debug) console.log(`WRITE DATA VALUE GET(${$gameMap.savecloudFilesIndex()}/${keys.length - 1})`, user.username(), key.key, String(data).replace(/\s{1,}/g, '+'));
+                                            fs.writeFileSync(localPath(`save/${fileName}`), String(data).replace(/\s{1,}/g, '+'), 'utf8');
+                                        }
+                                        if ($gameMap.savecloudFilesIndex() >= keys.length - 1) {
+                                            $gameMap.clearNotifySaveCloud();
+                                            $gameMap.clearSaveCloud();
+                                            $gameMap.enableLoadSaveCloud();
+                                            $gameMap.completeLoadSaveCloud();
+                                        }
+                                        $gameMap.savecloudFilesIndexAdd();
+                                    });
+                                }
+                            })
+                        } else {
+                            $gameMap.enableLoadSaveCloud();
+                            $gameMap.completeLoadSaveCloud();
+                        }
+                    });
+                })
+            }
+        }
+    };
+
+    //-----------------------------------------------------------------------------
+    // Game_Map
+    //
+    let _savecloud = new SaveCloud();
+    let _loadSaves = false,
+        _savecloudFilesFetch = [],
+        _savecloudFilesIndex = 0;
+
+    Game_Map.prototype.createNewSaveCloud = function () {
+        _savecloud = new SaveCloud();
+        _loadSaves = false;
+        _savecloudFilesFetch = [];
+        _savecloudFilesIndex = 0;
+    };
+
+    const _game_map_update_alias_ = Game_Map.prototype.update;
+    Game_Map.prototype.update = function (sceneActive) {
+        _game_map_update_alias_.apply(this, arguments);
+        if (sceneActive && saveCloud) {
+            this.updateSaveCloud();
+            this.updateLoadSavesCloud();
+        }
+    };
+
+    Game_Map.prototype.updateSaveCloud = function () {
+        if (_loadSaves) {
+            _savecloud.update();
+        }
+    };
+
+    Game_Map.prototype.updateLoadSavesCloud = function () {
+        if (!_loadSaves && api.users.filter(user => {
+            if (user.sessionLogged() && user.loggedWithWindow()) return true;
+        }).length > 0) {
+            _savecloud.defineUsers();
+            _savecloud.createFilesSave();
+        }
+    };
+
+    Game_Map.prototype.notifySaveCloudLoad = function () {
+        _savecloud.notifySaveCloudLoad();
+    };
+
+    Game_Map.prototype.clearNotifySaveCloud = function () {
+        _savecloud.clearNotifySaveCloud();
+    };
+
+    Game_Map.prototype.finishSaveCloud = function () {
+        _savecloud.finishSaveCloud();
+    };
+
+    Game_Map.prototype.clearSaveCloud = function () {
+        _savecloud.clearFilesSave();
+    };
+
+    Game_Map.prototype.loadSaveCloud = function () {
+        return _loadSaves;
+    };
+    Game_Map.prototype.completeLoadSaveCloud = function () {
+        _loadSaves = true;
+    };
+
+    Game_Map.prototype.enableLoadSaveCloud = function () {
+        _savecloud.enableLoad();
+    };
+
+    Game_Map.prototype.disableLoadSaveCloud = function () {
+        _savecloud.disableLoad();
+    };
+
+    Game_Map.prototype.saveCloudFilesFetch = function () {
+        return _savecloudFilesFetch;
+    };
+
+    Game_Map.prototype.saveCloudFilesFetchAdd = function (file) {
+        _savecloudFilesFetch.push(file);
+    };
+
+    Game_Map.prototype.savecloudFilesIndex = function () {
+        return _savecloudFilesIndex;
+    };
+
+    Game_Map.prototype.savecloudFilesIndexAdd = function () {
+        _savecloudFilesIndex++;
+    };
+
+    //-----------------------------------------------------------------------------
     // Game_Temp
     //
     Game_Temp.prototype.gameJoltOpenWindowLogin = function () {
         if (api.users.filter(user => {
-            if (user.sessionLogged()) return true;
+            if (user.loggedWithWindow()) return true;
         }).length <= 0) {
             if (!api.loginWin)
                 require('nw.gui').Window.open(localPath('gamejolt/login.html'), { resizable: false }, (newWin) => {
@@ -934,7 +1552,7 @@ DX.gameJolt = DX.gameJolt || {
 
     Game_Temp.prototype.gameJoltOpenWindowLogout = function () {
         if (api.users.filter(user => {
-            if (user.sessionLogged()) return true;
+            if (user.sessionLogged() && user.loggedWithWindow()) return true;
         }).length > 0) {
             if (!api.logoutWin)
                 require('nw.gui').Window.open(localPath('gamejolt/logout.html'), { resizable: false }, (newWin) => {
@@ -994,9 +1612,9 @@ DX.gameJolt = DX.gameJolt || {
         })
     };
 
-    Game_Temp.prototype.gamejoltScoresAddPoint = function (username, tableID, score, sort, callback) {
+    Game_Temp.prototype.gamejoltScoresAddPoints = function (username, tableID, score, sort, callback) {
         return api.users.map(user => {
-            if (user.username() === String(username)) return user.scoresAddPoint(
+            if (user.username() === String(username)) return user.scoresAddPoints(
                 String(tableID),
                 String(score),
                 String(sort)
@@ -1060,6 +1678,46 @@ DX.gameJolt = DX.gameJolt || {
         }).length > 0;
     };
 
+    Game_Temp.prototype.gamejoltDataStoreSetUser = function (username, savekey, savedata, callback) {
+        return api.users.map(user => {
+            if (user.username() === String(username)) return user.dataStoreSet(String(savekey), String(savedata)).then(response => {
+                return callback(response);
+            }, e => {
+                return callback(e);
+            });
+        });
+    };
+
+    Game_Temp.prototype.gamejoltDataStoreFetchUser = function (username, savekey, callback) {
+        return api.users.map(user => {
+            if (user.username() === String(username)) return user.dataStoreFetch(String(savekey)).then(response => {
+                return callback(response);
+            }, e => {
+                return callback(e);
+            });
+        });
+    };
+
+    Game_Temp.prototype.gamejoltDataStoreGetKeyUser = function (username, callback) {
+        return api.users.map(user => {
+            if (user.username() === String(username)) return user.dataStoreGetKeys().then(response => {
+                return callback(response);
+            }, e => {
+                return callback(e);
+            });
+        });
+    };
+
+    Game_Temp.prototype.gamejoltDataStoreRemoveUser = function (username, savekey, callback) {
+        return api.users.map(user => {
+            if (user.username() === String(username)) return user.dataStoreRemove(String(savekey)).then(response => {
+                return callback(response);
+            }, e => {
+                return callback(e);
+            });
+        });
+    };
+
     //-----------------------------------------------------------------------------
     // Game_Interpreter
     //
@@ -1076,7 +1734,7 @@ DX.gameJolt = DX.gameJolt || {
             $gameTemp.gameJoltLogoutUser(String(args[0]));
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltscoresaddpoints') {
-            $gameTemp.gamejoltScoresAddPoint(String(args[0]), String(args[1]),
+            $gameTemp.gamejoltScoresAddPoints(String(args[0]), String(args[1]),
                 String(args[2]), String(args[3]), response => {
                     if (response) {
                         return api.users.map(user => {
@@ -1145,8 +1803,6 @@ DX.gameJolt = DX.gameJolt || {
         const port = 8080;
         const ip = 'localhost';
 
-        let cache = {};
-
         api.server = http.createServer((req, res) => {
             res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -1194,20 +1850,34 @@ DX.gameJolt = DX.gameJolt || {
              * CHAMADAS DA PAGINA DE LOGIN
              */
             if (req.url == '/page/login/') {
-                if ($gameTemp.gameJoltAddUser(params['username'], params['gametoken'])) {
-                    $gameTemp.gameJoltLoginUser(params['username'], (success) => {
-                        if (success) {
-                            cache['username'] = params['username'];
-                            cache['gametoken'] = params['gametoken'];
-                            res.end(JSON.stringify({ success: true }));
-                        } else {
-                            res.end(JSON.stringify({ success: false }));
-                        }
-                    });
+                if (api.users.filter(user => {
+                    if (user.username() === params['username'] && user.sessionLogged()) return true;
+                }).length <= 0) {
+                    if ($gameTemp.gameJoltAddUser(params['username'], params['gametoken'])) {
+                        $gameTemp.gameJoltLoginUser(params['username'], (success) => {
+                            if (success) {
+                                api.users.map(user => {
+                                    if (user.username() === params['username']) {
+                                        if ($gameMap.loadSaveCloud()) $gameMap.createNewSaveCloud();
+                                        user.enableloggedWithWindow();
+                                    }
+                                });
+                                res.end(JSON.stringify({ success: 'success' }));
+                            } else {
+                                res.end(JSON.stringify({ success: false }));
+                            }
+                        });
+                    }
+                } else {
+                    res.end(JSON.stringify({ success: 'logged' }));
                 }
             } else if (req.url == '/page/login/success/') {
-                Game_Jolt_User.setSessionLogged(cache['username'], true);
-                api.loginWin.close();
+                api.users.map(user => {
+                    if (user.loggedWithWindow()) {
+                        Game_Jolt_User.setSessionLogged(user.username(), true);
+                        api.loginWin.close();
+                    }
+                });
             } else if (req.url == '/page/login/translate/') {
                 res.end(JSON.stringify(textLoginPage));
             }
@@ -1215,11 +1885,14 @@ DX.gameJolt = DX.gameJolt || {
              * CHAMADAS DA PAGINA DE LOGOUT
              */
             else if (req.url == '/page/logout/') {
-                $gameTemp.gameJoltLogoutUser(cache['username'], (success) => {
-                    if (success) {
-                        Game_Jolt_User.setSessionLogged(cache['username'], false);
-                        api.logoutWin.close();
-                        res.end(JSON.stringify({}));
+                api.users.map(user => {
+                    if (user.loggedWithWindow()) {
+                        $gameTemp.gameJoltLogoutUser(user.username(), (success) => {
+                            if (success) {
+                                api.logoutWin.close();
+                                res.end(JSON.stringify({}));
+                            }
+                        });
                     }
                 });
             } else if (req.url == '/page/logout/translate/') {
@@ -1231,8 +1904,11 @@ DX.gameJolt = DX.gameJolt || {
         })
 
         api.server.listen(port, ip, () => {
-            // console.log(`Servidor rodando em http://${ip}:${port}`)
-            // console.log('Para derrubar o servidor: feche a janela do seu jogo.');
+            if (devops_debug) {
+                console.log(`Servidor rodando em http://${ip}:${port}`)
+                console.log('Para derrubar o servidor: Basta sair do jogo.');
+                api.win.showDevTools();
+            }
         })
 
     })();

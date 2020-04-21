@@ -100,16 +100,17 @@
          */
         socket.connect(`/page/login/translate/`, (res) => {
             res = JSON.parse(res);
+            console.log(res)
             if (res instanceof Array) {
                 $('#label_username').text(res[0]);
                 $('#label_gametoken').text(res[1]);
                 $('#gametokenhelp').text(res[2]);
-                $('#useralradylogged').text(res[4]);
-                $('#gametokeninvalid').text(res[5]);
-                $('#btn_login').text(res[6]);
+                $('#useralradylogged').text(res[3]);
+                $('#gametokeninvalid').text(res[4]);
+                $('#btn_login').text(res[5]);
                 $('#btn_login_loading').html(`\
                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>\
-               ${res[7]}\
+               ${res[6]}\
                `);
             }
         })

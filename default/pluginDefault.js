@@ -14,12 +14,12 @@
  * ================================================================================
  *    Atualização
  * ================================================================================
- * Para atualizar esse plugin vá no Github do Dr.Xamã!
- * - https://gs-game-words.github.io/Dr.Xama---RPG-MAKER-MV/
+ * Para atualizar use o script:
+ * - DX.pluginName.update();
  */
 var DX = DX || {
-    'site': function () { return require('nw.gui').Shell.openExternal('https://gs-game-words.github.io/Dr.Xama---RPG-MAKER-MV/'); },
-    'terms': function () { return require('nw.gui').Shell.openExternal('https://gs-game-words.github.io/Dr.Xama---RPG-MAKER-MV/plugins-license.html'); },
+    'site': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('https://drxama.com.br/termos-de-uso/'); },
     'compatibility': function () {
         if (Utils.RPGMAKER_VERSION == '1.4.1' ||
             Utils.RPGMAKER_VERSION == '1.4.0' ||
@@ -55,5 +55,5 @@ DX.pluginName = DX.pluginName || {
     var params = PluginManager.parameters('DrXama_pluginName');
 })();
 // =====================================================================================================================================
-//					Dr.Xamã © 2018-2019, Todos os direitos reservados.
+//					Dr.Xamã © 2018-2020, Todos os direitos reservados.
 // =====================================================================================================================================

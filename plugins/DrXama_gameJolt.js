@@ -1,8 +1,9 @@
 //==================================================================================================
 // DrXama_gameJolt.js
 //==================================================================================================
-/*:
- * @plugindesc v2.5.0 - Integração do Game Jolt
+
+/*:pt
+ * @plugindesc v2.5.2 - Integração com a API do Game Jolt
  *
  * @author Dr.Xamã
  *
@@ -34,6 +35,18 @@
  * @on Ativar
  * @off Desativar
  * @default true
+ * 
+ * @param Text Save Cloud
+ * @parent Save Cloud
+ * @desc Texto apresentado quando o jogo está armazenando na nuvem.
+ * @type string
+ * @default Salvando...
+ * 
+ * @param Text Loading Cloud
+ * @parent Save Cloud
+ * @desc Texto apresentado quando o jogo está carregando os arquivos da nuvem.
+ * @type string
+ * @default Carregando...
  *
  * @param Text Connected
  * @desc Texto apresentado quando o usuário é conectado.
@@ -83,8 +96,8 @@
  * ================================================================================
  *    Documentação
  * ================================================================================
- * Leia a documentação completa para usar por completo o plugin.
- * - https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/wiki/DrXama_gameJolt
+ * Arquivo em PDF da documentação v2.5.0.
+ * - https://bit.ly/DrXamaGameJolt_pt-br
  * ================================================================================
  *    Comandos de plugin
  * ================================================================================
@@ -114,6 +127,135 @@
  *    Atualização
  * ================================================================================
  * Para atualizar esse plugin acesse.
+ * https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/
+ * plugins/DrXama_gameJolt.js
+ */
+
+/*:
+ * @plugindesc v2.5.2 - Integration with Game Jolt API
+ *
+ * @author Dr.Xamã
+ *
+ * @param DevOPS
+ * @desc Developer Options
+ * 
+ * @param DevOPS Debug
+ * @parent DevOPS
+ * @desc Activate system debugging.
+ * @text Debug
+ * @type boolean
+ * @on Ativar
+ * @off Desativar
+ * @default false
+ * 
+ * @param Game ID
+ * @desc ID of your game.
+ * @type string
+ * @default ???
+ *
+ * @param Private Key
+ * @desc Private key to your game.
+ * @type string
+ * @default ???
+ * 
+ * @param Save Cloud
+ * @desc Do you wish to activate cloud storage for saved games?
+ * @type boolean
+ * @on Ativar
+ * @off Desativar
+ * @default true
+ * 
+ * @param Text Save Cloud
+ * @parent Save Cloud
+ * @desc Text displayed when the game is storing in the cloud.
+ * @type string
+ * @default Saving...
+ * 
+ * @param Text Loading Cloud
+ * @parent Save Cloud
+ * @desc Text displayed when the game is loading the files from the cloud.
+ * @type string
+ * @default Loading...
+ *
+ * @param Text Connected
+ * @desc Text presented when the user is connected.
+ * @type string
+ * @default %1 is connected!
+ *
+ * @param Text Disconnected
+ * @desc Text displayed when the user is disconnected.
+ * @type string
+ * @default %1 is offline!
+ *
+ * @param Text AddPonts
+ * @desc Text presented when the user marks a punctuation.
+ * @type string
+ * @default %1 has just marked %2 table points(%3)!
+ *
+ * @param Text AddTrophies
+ * @desc Text presented when the user receives a trophy.
+ * @type string
+ * @default %1 has just received a trophy(%2)!
+ *
+ * @param Text RemoveTrophies
+ * @desc Text presented when the user loses a trophy.
+ * @type string
+ * @default %1 has just lost a trophy(%2)!
+ *
+ * @param Text Login Page
+ * @desc Texts displayed on the login screen.
+ * @type string[]
+ * @default ["Username","Game Token","Do not share your Game Token with anyone.","User is already logged in.","Game Token invalid.","Join","Loading..."]
+ *
+ * @param Text Logout Page
+ * @desc Texts displayed on the logout screen.
+ * @type string[]
+ * @default ["Do you wish to disconnect?","Loading..."]
+ *
+ * @help
+ * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * https://drxama.com/changelog/drxama_gamejolt-2/
+ * ================================================================================
+ *    Introduction
+ * ================================================================================
+ * This plugin allows you to integrate the Game Jolt into your project, providing 
+ * full Game Jolt API support to developers.
+ * ================================================================================
+ *    Documentation
+ * ================================================================================
+ * PDF file of documentation v2.5.0.
+ * - https://bit.ly/DrXamaGameJolt_en-us
+ * ================================================================================
+ *    Plugin commands
+ * ================================================================================
+ * - GameJoltAddUser Username Game Token
+ * - GameJoltLoginUser Username
+ * - GameJoltLogoutUser Username
+ * - GameJoltScoresAddPoints Username TableID Score ScoreLimit
+ * - GameJoltScoresAddGuestPoints Guestname TableID Score ScoreLimit
+ * - GameJoltTrophiesAddUser Username TrophyID
+ * - GameJoltTrophiesRemoveUser Username TrophyID
+ * - GameJoltOpenWindowLogin
+ * - GameJoltOpenWindowLogout
+ * ================================================================================
+ *    Script commands
+ * ================================================================================
+ * - $gameTemp.gamejoltScoresUserTable(username, tableID, callback);
+ * - $gameTemp.gamejoltScoresTables(callback);
+ * - $gameTemp.gamejoltScoresAddPoints(username, tableID, score, sort, callback);
+ * - $gameTemp.gamejoltScoresAddGuestPoints(guestname, tableID, score, sort, callback);
+ * - $gameTemp.gamejoltScoresGetRankTables(tableID, sort, callback);
+ * - $gameTemp.gamejoltTrophiesUser(username, trophyId, achieved, callback);
+ * - $gameTemp.gamejoltTrophiesAddUser(username, trophyId, callback);
+ * - $gameTemp.gamejoltTrophiesRemoveUser(username, trophyId, callback);
+ * - $gameTemp.gameJoltOpenWindowLogin();
+ * - $gameTemp.gameJoltOpenWindowLogout();
+ * ================================================================================
+ *    Update
+ * ================================================================================
+ * To update this plugin access.
  * https://raw.githubusercontent.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/master/
  * plugins/DrXama_gameJolt.js
  */
@@ -151,6 +293,8 @@ DX.gameJolt = DX.gameJolt || {
     var params = PluginManager.parameters('DrXama_gameJolt'),
         devops_debug = JSON.parse(String(params['DevOPS Debug'] || "false")),
         saveCloud = JSON.parse(String(params['Save Cloud'] || 'true')),
+        textSaveCloud = String(params['Text Save Cloud']) || 'Salvando...',
+        textLoadingCloud = String(params['Text Loading Cloud']) || 'Carregando...',
         textConnected = String(params['Text Connected']) || '%1 está conectado!',
         textDisconnected = String(params['Text Disconnected']) || '%1 está desconectado!',
         textAddPoints = String(params['Text AddPonts']) || '%1 acaba de marcar %2 pontos na tabela(%3)!',
@@ -1335,11 +1479,11 @@ DX.gameJolt = DX.gameJolt || {
         }
 
         notifySaveCloud() {
-            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/9D12Mlo.png', 'Salvando...');
+            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/9D12Mlo.png', textSaveCloud);
         }
 
         notifySaveCloudLoad() {
-            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/FhBiEBD.png', 'Carregando...');
+            SceneManager._scene.gameJoltAddNotifySaveCloud('https://imgur.com/FhBiEBD.png', textLoadingCloud);
         }
 
         clearNotifySaveCloud() {

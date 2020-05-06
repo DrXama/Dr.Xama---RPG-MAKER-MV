@@ -1,3 +1,7 @@
+# v2.5.2 - 06 de maio de 2020
+- Nova tradução em inglês
+- Agora, o desenvolvedor pode alterar o texto 'Salvando...' e 'Carregando...' no sistema de armazenamento em nuvem.
+
 # v2.5.0 - 21 de abril de 2020
 - Novo sistema de armazenamento na nuvem.
 - Nova função para verificar se o jogador está logado adicionada a janela de login.

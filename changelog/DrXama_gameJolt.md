@@ -1,4 +1,4 @@
-v2.5.4 - 07 de maio de 2020
+# v2.5.4 - 07 de maio de 2020
 - Corrigido o problema que fazia o plugin não funcionar.
 - Agora as pontuações dos convidados são exibidas na tela.
 - Nova demo criada.

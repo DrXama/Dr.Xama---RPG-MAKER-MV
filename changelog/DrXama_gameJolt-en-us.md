@@ -1,3 +1,8 @@
+# v2.5.4 - May 07, 2020
+- Fixed problem that made the plugin not work.
+- Now the guests' scores are displayed on the screen.
+- New demo created.
+
 # v2.5.2 - May 06, 2020
 - New English translation
 - Now, the developer can change the text 'Saving...' and 'Loading...' in the cloud storage system.

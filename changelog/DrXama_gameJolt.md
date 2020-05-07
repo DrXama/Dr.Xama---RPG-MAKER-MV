@@ -1,3 +1,8 @@
+v2.5.4 - 07 de maio de 2020
+- Corrigido o problema que fazia o plugin não funcionar.
+- Agora as pontuações dos convidados são exibidas na tela.
+- Nova demo criada.
+
 # v2.5.2 - 06 de maio de 2020
 - Nova tradução em inglês
 - Agora, o desenvolvedor pode alterar o texto 'Salvando...' e 'Carregando...' no sistema de armazenamento em nuvem.

@@ -3,7 +3,7 @@
 //==================================================================================================
 
 /*:pt
- * @plugindesc v2.5.2 - Integração com a API do Game Jolt
+ * @plugindesc v2.5.4 - Integração com a API do Game Jolt
  *
  * @author Dr.Xamã
  *
@@ -63,6 +63,11 @@
  * @type string
  * @default %1 acaba de marcar %2 pontos na tabela(%3)!
  *
+ * @param Text AddGuestPonts
+ * @desc Texto apresentado quando o convidado marca uma pontuação.
+ * @type string
+ * @default %1 acaba de marcar %2 pontos na tabela!
+ *
  * @param Text AddTrophies
  * @desc Texto apresentado quando o usuário recebe um troféu.
  * @type string
@@ -101,7 +106,7 @@
  * ================================================================================
  *    Comandos de plugin
  * ================================================================================
- * - GameJoltAddUser Username Game Token
+ * - GameJoltAddUser Username GameToken
  * - GameJoltLoginUser Username
  * - GameJoltLogoutUser Username
  * - GameJoltScoresAddPoints Username TableID Score ScoreLimit
@@ -113,6 +118,9 @@
  * ================================================================================
  *    Comandos de script
  * ================================================================================
+ * - $gameTemp.gameJoltAddUser(username, gametoken);
+ * - $gameTemp.gameJoltLoginUser(username, callback);
+ * - $gameTemp.gameJoltLogoutUser(username, callback);
  * - $gameTemp.gamejoltScoresUserTable(username, tableID, callback);
  * - $gameTemp.gamejoltScoresTables(callback);
  * - $gameTemp.gamejoltScoresAddPoints(username, tableID, score, sort, callback);
@@ -132,7 +140,7 @@
  */
 
 /*:
- * @plugindesc v2.5.2 - Integration with Game Jolt API
+ * @plugindesc v2.5.4 - Integration with Game Jolt API
  *
  * @author Dr.Xamã
  *
@@ -191,6 +199,11 @@
  * @desc Text presented when the user marks a punctuation.
  * @type string
  * @default %1 has just marked %2 table points(%3)!
+ * 
+ * @param Text AddGuestPonts
+ * @desc Text presented when the guest marks a punctuation.
+ * @type string
+ * @default %1 has just marked %2 table points!
  *
  * @param Text AddTrophies
  * @desc Text presented when the user receives a trophy.
@@ -230,7 +243,7 @@
  * ================================================================================
  *    Plugin commands
  * ================================================================================
- * - GameJoltAddUser Username Game Token
+ * - GameJoltAddUser Username GameToken
  * - GameJoltLoginUser Username
  * - GameJoltLogoutUser Username
  * - GameJoltScoresAddPoints Username TableID Score ScoreLimit
@@ -242,6 +255,9 @@
  * ================================================================================
  *    Script commands
  * ================================================================================
+ * - $gameTemp.gameJoltAddUser(username, gametoken);
+ * - $gameTemp.gameJoltLoginUser(username, callback);
+ * - $gameTemp.gameJoltLogoutUser(username, callback);
  * - $gameTemp.gamejoltScoresUserTable(username, tableID, callback);
  * - $gameTemp.gamejoltScoresTables(callback);
  * - $gameTemp.gamejoltScoresAddPoints(username, tableID, score, sort, callback);
@@ -298,6 +314,7 @@ DX.gameJolt = DX.gameJolt || {
         textConnected = String(params['Text Connected']) || '%1 está conectado!',
         textDisconnected = String(params['Text Disconnected']) || '%1 está desconectado!',
         textAddPoints = String(params['Text AddPonts']) || '%1 acaba de marcar %2 pontos na tabela(%3)!',
+        textAddGuestPoints = String(params['Text AddGuestPonts']) || '%1 acaba de marcar %2 pontos!',
         textAddTrophies = String(params['Text AddTrophies']) || '%1 acaba de receber um troféu(%2)!',
         textRemoveTrophies = String(params['Text RemoveTrophies']) || '%1 acaba de perder um troféu(%2)!',
         textLoginPage = JSON.parse(params['Text Login Page'] || []),
@@ -1896,7 +1913,11 @@ DX.gameJolt = DX.gameJolt || {
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejoltscoresaddguestpoints') {
             $gameTemp.gamejoltScoresAddGuestPoints(String(args[0]), String(args[1]),
-                String(args[2]), String(args[3]), () => { });
+                String(args[2]), String(args[3]), (success) => {
+                    if (eval(success)) {
+                        SceneManager._scene.gameJoltAddNotify('https://imgur.com/mSuhmYN.png', textAddGuestPoints.format(String(args[0]), String(args[2])));
+                    }
+                });
         }
         if (String(command).toLowerCase().replace(/\s{1,}/g, "") === 'gamejolttrophiesadduser') {
             $gameTemp.gamejoltTrophiesAddUser(String(args[0]), String(args[1]), response => {
@@ -2049,8 +2070,8 @@ DX.gameJolt = DX.gameJolt || {
 
         api.server.listen(port, ip, () => {
             if (devops_debug) {
-                console.log(`Servidor rodando em http://${ip}:${port}`)
-                console.log('Para derrubar o servidor: Basta sair do jogo.');
+                console.log(`Server running on http://${ip}:${port}`)
+                console.log('To take down the server: Just leave the game.');
                 api.win.showDevTools();
             }
         })

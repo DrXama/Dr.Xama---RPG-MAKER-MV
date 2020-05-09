@@ -1,15 +1,16 @@
 //==================================================================================================
 // DrXama_copyEvents.js
 //==================================================================================================
-/*:
- * @plugindesc v1.2.13 - Copie seus eventos de uma maneira simples
+/*:pt
+ * @plugindesc v1.2.14 - Copie seus eventos para qualquer mapa.
  *
  * @author Dr.Xamã
  *
- * @param Exibir no console
+ * @param Show on debug
+ * @text Exibir no console
  * @desc Deseja exibir a depuração no console?
  * @type boolean
- * @default true
+ * @default false
  * @on Sim
  * @off Não
  *
@@ -31,7 +32,7 @@
  * ================================================================================
  *    Introdução
  * ================================================================================
- * Faça uma copia de qualquer evento que quiser.
+ * Faça uma copia de qualquer evento que quiser para qualquer mapa do seu jogo.
  * ================================================================================
  *    Comandos de plugin
  * ================================================================================
@@ -57,18 +58,20 @@
  * switchLocalD - Copia o evento para o mapa pelo nome do evento
  * 
  * Exemplo: copyEvent 1 1 10 4 - Copia o evento 1 do mapa 1 para a posição x e y
+ * 
  * Exemplo: copyEventFrontPlayer 1 1 - Copia o evento 1 do mapa 1 para trás do
  *                                     jogador
+ * 
  * Exemplo: copyEventRegion 1 1 1 8 - Copia o evento 1 do mapa 1 para a região 1
  *                                    8 vezes
+ * 
  * Exemplo: copyEventRegion 1 1 1 0 - Copia o evento 1 do mapa 1 para a região 1
  *                                    por completo
+ * 
  * Exemplo: copyEventName Teste 1 4 5 - Copia o evento 1 do mapa 1 para a posição
  *                                      x e y
- *          copyEventName Teste 1 frontPlayer - Copia o evento 1 do mapa 1 para a
- *                                              frente do jogador
- *          copyEventName Teste 1 Region 1 8 - Copia o evento 1 do mapa 1 para a
- *                                             região 1, 8 vezes
+ * 
+ * 
  * CODES:
  * - copyEventName:
  *  - frontPlayer
@@ -105,14 +108,123 @@
  *   - Copia o evento 2 do mapa 1 para a posição 4(X) e 8(Y), definindo o switch 
  *     local A para true(ativado)
  * ================================================================================
- *    Informações
+ *    Update
  * ================================================================================
- * Esse plugin faz parte do projeto "RPG MAKER MV + Javascript" do Dr.Xamã
- * - http://www.condadobraveheart.com/forum/index.php?topic=4717.msg37035
+ * Para atualizar esse plugin acesse
+ * - https://raw.githubusercontent.com/DrXama/Dr.Xama---RPG-MAKER-MV/master/plugins/
+ *   DrXama_copyEvents.js
+ */
+/*:
+ * @plugindesc v1.2.14 - Copy your events to any map.
+ *
+ * @author Dr.Xamã
+ *
+ * @param Show on debug
+ * @desc Want to display debugging on the console?
+ * @type boolean
+ * @default false
+ * @on Yes
+ * @off No
+ *
+ * @help
+ * ================================================================================
+ *    CHANGELOG
+ * ================================================================================
+ * v1.2.13
+ * - Fixed the error where the selfSwitches were all being activated.
+ * 
+ * v1.2.12
+ * - Now it is not necessary to have the delay to copy an event to a region.
+ * - Fixed bugs.
+ * 
+ * v1.1.09:
+ * - A new feature has been added that enables the developer to activate/deactivate 
+ * the selfSwitches of events.
+ * ================================================================================
+ *    Introduction
+ * ================================================================================
+ * Make a copy of any event you want to any map in your game.
+ * ================================================================================
+ *    Plugin commands
+ * ================================================================================
+ * copyEvent mapId eventId tileX tileY switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event on the current map.
+ * 
+ * copyEventFrontPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event in front of the player.
+ * 
+ * copyEventBackPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event behind the player.
+ * 
+ * copyEventLeftPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event to the left of the player.
+ * 
+ * copyEventRightPlayer mapId eventId switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event to the player's right.
+ * 
+ * copyEventRegion mapId eventId regionId quantity switchLocalA switchLocalB 
+ * switchLocalC switchLocalD - Copy the event to the region.
+ * 
+ * copyEventName eventName mapId tileX tileY switchLocalA switchLocalB switchLocalC 
+ * switchLocalD - Copy the event to the map by the name of the event.
+ * 
+ * Exemplo: copyEvent 1 1 10 4 - Copy event 1 from map 1 to position x and y.
+ * 
+ * Exemplo: copyEventFrontPlayer 1 1 - Copy event 1 from map 1 behind the player.
+ * 
+ * Exemplo: copyEventRegion 1 1 1 8 - Copy event 1 from map 1 to region 1. 
+ *                                    The event will be copied 8 times.
+ * 
+ * Exemplo: copyEventRegion 1 1 1 0 - Copy event 1 from map 1 to region 1.
+ *                                    The region will be filled with the event.
+ * 
+ * Exemplo: copyEventName Teste 1 4 5 - Copy event 1 from map 1 to position x and y
+ * 
+ * CODES:
+ * - copyEventName:
+ *  - frontPlayer
+ *  - backPlayer
+ *  - leftPlayer
+ *  - RightPlayer
+ *  - Region
+ * ================================================================================
+ *    Comandos de script
+ * ================================================================================
+ * $gameMap.copyEvent(mapId, eventId, mapX, mapY, selfSwitches) 
+ * - Copy the event on the current map.
+ * 
+ * $gameMap.copyEventFrontPlayer(mapId, eventId, selfSwitches) 
+ * - copy the event in front of the player.
+ * 
+ * $gameMap.copyEventBackPlayer(mapId, eventId, selfSwitches) 
+ * - Copy the event behind the player.
+ * 
+ * $gameMap.copyEventLeftPlayer(mapId, eventId, selfSwitches) 
+ * - Copy the event to the left of the player.
+ * 
+ * $gameMap.copyEventRightPlayer(mapId, eventId, selfSwitches) 
+ * - Copy the event to the player's right.
+ * 
+ * $gameMap.copyEventRegion(mapId, eventId, regionId, quantity, selfSwitches) 
+ * - Copy the event to the region.
+ * 
+ * $gameMap.copyEventName(eventName, mapId, tileX, tileY, quantity, selfSwitches)
+ *  - Copy the event to the map by the name of the event.
+ * 
+ * Exemplo: 
+ * - $gameMap.copyEvent(1, 2, 4, 8, [true])
+ *   - Copy event 2 from map 1 to position 4(X) and 8(Y), define the SelfSwitch A 
+ *     to true(activate)
+ * ================================================================================
+ *    Update
+ * ================================================================================
+ * To update this plugin go to
+ * - https://raw.githubusercontent.com/DrXama/Dr.Xama---RPG-MAKER-MV/master/plugins/
+ *   DrXama_copyEvents.js
  */
 var DX = DX || {
-    'site': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?i=1'); },
-    'terms': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?page_id=296'); },
+    'site': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/'); },
+    'terms': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/termos-de-uso/'); },
     'compatibility': function () {
         if (Utils.RPGMAKER_VERSION == '1.4.1' ||
             Utils.RPGMAKER_VERSION == '1.4.0' ||
@@ -126,14 +238,14 @@ var DX = DX || {
             Utils.RPGMAKER_VERSION == '1.1.0' ||
             Utils.RPGMAKER_VERSION == '1.0.1' ||
             Utils.RPGMAKER_NAME != 'MV')
-            return Graphics.printError('Dr.Xamã', 'Atualmente seu RPG MAKER MV não suporta o seguinte plugin: DrXama_copyEvents'), SceneManager.stop();
+            return Graphics.printError('Dr.Xamã', 'Currently your RPG MAKER MV does not support the following plugin: DrXama_copyEvents'), SceneManager.stop();
     }
 };
 DX.copyEvents = DX.copyEvents || {
-    'page': function () { return require('nw.gui').Shell.openExternal('http://drxama.epizy.com/?p=294'); },
-    'update': function () { return require('nw.gui').Shell.openExternal('https://www.dropbox.com/s/2hxrzef194ghtr9/DrXama_copyEvents.js?dl=0'); },
-    'changelog': function () { return require('nw.gui').Shell.openExternal('https://github.com/GS-GAME-WORDS/Dr.Xama---RPG-MAKER-MV/blob/master/changelog/DrXama_copyEvents.md'); },
-    'version': function () { return console.log('v1.2.13') }
+    'page': function () { return require('nw.gui').Shell.openExternal('https://drxama.com/plugins/drxama_copyevents/'); },
+    'update': function () { return require('nw.gui').Shell.openExternal('https://raw.githubusercontent.com/DrXama/Dr.Xama---RPG-MAKER-MV/master/plugins/DrXama_copyEvents.js'); },
+    'changelog': function () { return require('nw.gui').Shell.openExternal('https://raw.githubusercontent.com/DrXama/Dr.Xama---RPG-MAKER-MV/master/changelog/DrXama_copyEvents_en-us.md'); },
+    'version': function () { return console.log('v1.2.14') }
 };
 (function () {
     "use strict";
@@ -147,7 +259,7 @@ DX.copyEvents = DX.copyEvents || {
     // Parameters
     //
     const params = PluginManager.parameters('DrXama_copyEvents');
-    const console_user = JSON.parse(params['Exibir no console']);
+    const console_user = JSON.parse(params['Show on debug']);
 
     //================================================================================
     // Game_Interpreter
